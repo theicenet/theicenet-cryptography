@@ -27,7 +27,7 @@ class JCAAESCryptographyServiceTest {
   final BlockCipherModeOfOperation OFB = BlockCipherModeOfOperation.OFB;
   final BlockCipherModeOfOperation CTR = BlockCipherModeOfOperation.CTR;
 
-  final byte[] CLEAR_MESSAGE =
+  final byte[] CLEAR_CONTENT =
       "Content to encrypt with AES and different options for block cipher mode of operation"
           .getBytes(StandardCharsets.UTF_8);
 
@@ -39,7 +39,7 @@ class JCAAESCryptographyServiceTest {
   final byte[] INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS =
       "KLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
 
-  final byte[] ENCRYPTED_MESSAGE_AES_CBC =
+  final byte[] ENCRYPTED_CONTENT_AES_CBC =
       Hex.decodeHex(
           "e9ace3b5980b905b3c5823555dbea50b69d0b312"
               + "9f3aa2540255b35dc5d46128a83ae6989e4d94ed"
@@ -47,7 +47,7 @@ class JCAAESCryptographyServiceTest {
               + "332a63dfe642db91b1e39bad80fa8a86329b04ee"
               + "8ee57305ff62e7daf001897f7c4a1e5a");
 
-  final byte[] ENCRYPTED_MESSAGE_AES_CFB =
+  final byte[] ENCRYPTED_CONTENT_AES_CFB =
       Hex.decodeHex(
           "813d91455835f9650de0506a0cbc9126d4c171c5e"
               + "fc1c3c7137e9d2fb2f711897b3261d0f760243583"
@@ -55,14 +55,14 @@ class JCAAESCryptographyServiceTest {
               + "669dfc61c082e932ec53767b3de363beb10fa3ceb"
               + "2ed8");
 
-  final byte[] ENCRYPTED_MESSAGE_AES_OFB =
+  final byte[] ENCRYPTED_CONTENT_AES_OFB =
       Hex.decodeHex(
           "813d91455835f9650de0506a0cbc91263746a29bdf"
               + "2e031c65d44d000366eff30193861a14b73867329d"
               + "a374a511cc52dbfa0fc116f47423ed37694ceb016a"
               + "fd3b208a31e1aa4a7eb99b4f7e57966ec1376588d1");
 
-  final byte[] ENCRYPTED_MESSAGE_AES_CTR =
+  final byte[] ENCRYPTED_CONTENT_AES_CTR =
       Hex.decodeHex(
           "813d91455835f9650de0506a0cbc9126da73e6"
               + "e016a787a39e6f0bd8914874f6af0f2fca3094"
@@ -81,13 +81,13 @@ class JCAAESCryptographyServiceTest {
 
   @Test
   void producesNotNullWhenEncrypting() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
     assertThat(encrypted, is(notNullValue()));
@@ -95,13 +95,13 @@ class JCAAESCryptographyServiceTest {
 
   @Test
   void producesNotEmptyWhenEncrypting() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
     assertThat(encrypted.length, is(greaterThan(0)));
@@ -120,122 +120,281 @@ class JCAAESCryptographyServiceTest {
           CTR,
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
-          CLEAR_MESSAGE);
+          CLEAR_CONTENT);
     });
   }
 
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingAndBlockModeCFB() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted.length, is(equalTo(CLEAR_MESSAGE.length)));
+    assertThat(encrypted.length, is(equalTo(CLEAR_CONTENT.length)));
   }
 
   @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingAndBlockModeCBC() {
-    // When encrypting
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingAndBlockModeCBC() {
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
     assertThat(
         encrypted.length,
-        is(equalTo(CLEAR_MESSAGE.length + (16 - CLEAR_MESSAGE.length % 16))));
+        is(equalTo(CLEAR_CONTENT.length + (16 - CLEAR_CONTENT.length % 16))));
   }
 
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingAndBlockModeOFB() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted.length, is(equalTo(CLEAR_MESSAGE.length)));
+    assertThat(encrypted.length, is(equalTo(CLEAR_CONTENT.length)));
   }
 
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingAndBlockModeCTR() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted.length, is(equalTo(CLEAR_MESSAGE.length)));
+    assertThat(encrypted.length, is(equalTo(CLEAR_CONTENT.length)));
   }
 
   @Test
   void producesTheRightEncryptedResultWhenEncrypting_CBC_PKCS5PADDING() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_MESSAGE_AES_CBC)));
+    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CBC)));
   }
 
   @Test
   void producesTheRightEncryptedResultWhenEncrypting_CFB_NOPADDING() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_MESSAGE_AES_CFB)));
+    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CFB)));
   }
 
   @Test
   void producesTheRightEncryptedResultWhenEncrypting_OFB_NOPADDING() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_MESSAGE_AES_OFB)));
+    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_OFB)));
   }
 
   @Test
   void producesTheRightEncryptedResultWhenEncryptingAES_CTR_NOPADDING() {
-    // When encrypting
+    // When
     var encrypted =
         AESCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_MESSAGE);
+            CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_MESSAGE_AES_CTR)));
+    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CTR)));
+  }
+
+  @Test
+  void producesNotNullWhenDecrypting() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CTR,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CTR);
+
+    // Then
+    assertThat(decrypted, is(notNullValue()));
+  }
+
+  @Test
+  void producesNotEmptyWhenDecrypting() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CTR,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CTR);
+
+    // Then
+    assertThat(decrypted.length, is(greaterThan(0)));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenDecryptingAndInvalidIVSize() {
+    // Given initialization vector of invalid size (= 64 bits)
+    final byte[] INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
+        "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
+
+    // When decrypting AES with invalid IV size
+    // Then throws IllegalArgumentException
+    assertThrows(IllegalArgumentException.class, () -> {
+      AESCryptographyService.decrypt(
+          CTR,
+          SECRET_KEY_1234567890123456_128_BITS,
+          INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
+          ENCRYPTED_CONTENT_AES_CTR);
+    });
+  }
+
+  @Test
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingAndBlockModeCFB() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CFB,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CFB);
+
+    // Then
+    assertThat(decrypted.length, is(equalTo(ENCRYPTED_CONTENT_AES_CFB.length)));
+  }
+
+  @Test
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentMinusPaddingWhenDecryptingAndBlockModeCBC() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CBC,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CBC);
+
+    // Then
+    assertThat(
+        decrypted.length,
+        is(equalTo(ENCRYPTED_CONTENT_AES_CBC.length - (16 - CLEAR_CONTENT.length % 16))));
+  }
+
+  @Test
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingAndBlockModeOFB() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            OFB,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_OFB);
+
+    // Then
+    assertThat(decrypted.length, is(equalTo(ENCRYPTED_CONTENT_AES_OFB.length)));
+  }
+
+  @Test
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingAndBlockModeCTR() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CTR,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_OFB);
+
+    // Then
+    assertThat(decrypted.length, is(equalTo(ENCRYPTED_CONTENT_AES_OFB.length)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecrypting_CBC_PKCS5PADDING() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CBC,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CBC);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecrypting_CFB_NOPADDING() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CFB,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CFB);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecrypting_OFB_NOPADDING() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            OFB,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_OFB);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingAES_CTR_NOPADDING() {
+    // When
+    var decrypted =
+        AESCryptographyService.decrypt(
+            CTR,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CTR);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
   }
 }
 
