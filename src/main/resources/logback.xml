@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- Console appender -->
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>
+        %date{HH:mm:ss.SSS} %-5level | [%thread] | %logger{36} | %message%n
+      </pattern>
+    </layout>
+  </appender>
+
+  <!-- File appender -->
+  <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/app.log</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>logs/archived/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>10MB</maxFileSize>
+      <totalSizeCap>20GB</totalSizeCap>
+      <maxHistory>60</maxHistory>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>
+        %date %level | [%thread] | %logger{1.} | %message%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <!-- Application logger -->
+  <logger name="com.theicenet.cryptography" level="${APPLICATION_LOGGER_LEVEL:-INFO}" additivity="false">
+    <appender-ref ref="console"/>
+    <appender-ref ref="file"/>
+  </logger>
+
+  <!-- Root logger -->
+  <root level="${APPLICATION_LOGGER_LEVEL:-INFO}">
+    <appender-ref ref="console"/>
+    <appender-ref ref="file"/>
+  </root>
+</configuration>
