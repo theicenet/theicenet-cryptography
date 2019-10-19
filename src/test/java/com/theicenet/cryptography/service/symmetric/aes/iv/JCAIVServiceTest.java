@@ -32,42 +32,42 @@ class JCAIVServiceTest {
   @Test
   void producesNotNullWhenGeneratingRandomIV() {
     // When generating a random IV
-    var generatedKey = ivService.generateRandomIV(IV_LENGTH_16_BYTES);
+    var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey, is(notNullValue()));
   }
 
   @Test
-  void producesNotEmptyValueWhenGeneratingRandomIV() {
+  void producesNotEmptyWhenGeneratingRandomIV() {
     // When generating a random IV
-    var generatedKey = ivService.generateRandomIV(IV_LENGTH_16_BYTES);
+    var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey.length, is(greaterThan(0)));
   }
 
   @Test
-  void producesValueWithTheRequestLengthWhenGeneratingRandomIV() {
+  void producesIVWithTheRequestLengthWhenGeneratingRandomIV() {
     // When generating a random IV
-    var generatedKey = ivService.generateRandomIV(IV_LENGTH_16_BYTES);
+    var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey.length, is(equalTo(IV_LENGTH_16_BYTES)));
   }
 
   @Test
-  void producesDifferentValuesWhenGeneratingTwoConsecutiveRandomIVsWithTheSameLength() {
+  void producesDifferentIVsWhenGeneratingTwoConsecutiveRandomIVsWithTheSameLength() {
     // When generating two consecutive random IVs with the same length
-    var generatedKey_1 = ivService.generateRandomIV(IV_LENGTH_16_BYTES);
-    var generatedKey_2 = ivService.generateRandomIV(IV_LENGTH_16_BYTES);
+    var generatedKey_1 = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    var generatedKey_2 = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then the generated random IVs are different
     assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
   }
 
   @Test
-  void producesDifferentValuesWhenGeneratingManyConsecutiveRandomIVsWithTheSameLength() {
+  void producesDifferentIVsWhenGeneratingManyConsecutiveRandomIVsWithTheSameLength() {
     // Given
     final var _100 = 100;
 
@@ -75,7 +75,7 @@ class JCAIVServiceTest {
     var generatedKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> ivService.generateRandomIV(IV_LENGTH_16_BYTES))
+            .mapToObj(index -> ivService.generateRandom(IV_LENGTH_16_BYTES))
             .map(String::new)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -84,7 +84,7 @@ class JCAIVServiceTest {
   }
 
   @Test
-  void producesDifferentValuesWhenGeneratingConcurrentlyManyRandomIVsWithTheSameLength()
+  void producesDifferentIVsWhenGeneratingConcurrentlyManyRandomIVsWithTheSameLength()
       throws InterruptedException {
     // Given
     final var _500 = 500;
@@ -107,9 +107,7 @@ class JCAIVServiceTest {
                 throw new RuntimeException(e);
               }
 
-              generatedKeys.add(ivService.generateRandomIV(IV_LENGTH_16_BYTES));
-
-              synchronized (generatedKeys) {}
+              generatedKeys.add(ivService.generateRandom(IV_LENGTH_16_BYTES));
             }));
 
     executorService.awaitTermination(1, TimeUnit.SECONDS);

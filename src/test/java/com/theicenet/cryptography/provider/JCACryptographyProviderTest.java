@@ -20,22 +20,22 @@ class JCACryptographyProviderTest {
   }
 
   @Test
-  void addProviderProperlyWhenAddingCryptographyProvider() {
+  void addsProviderProperlyWhenAddingCryptographyProvider() {
     // Given a cryptography provider not provided by JVM
-    final var cryptographyProvider =
+    final var newCryptographyProvider =
         new Provider(
             "test-provider",
             "1.0",
             "for testing purpose") {};
 
-    assumeFalse(Arrays.asList(Security.getProviders()).contains(cryptographyProvider));
+    assumeFalse(Arrays.asList(Security.getProviders()).contains(newCryptographyProvider));
 
     // When adding the new cryptography provider
-    this.cryptographyProvider.addCryptographyProvider(cryptographyProvider);
+    cryptographyProvider.addCryptographyProvider(newCryptographyProvider);
 
     // Then the cryptography provider has been added to the JVM
     assertThat(
-        Arrays.asList(Security.getProviders()).contains(cryptographyProvider),
+        Arrays.asList(Security.getProviders()).contains(newCryptographyProvider),
         is(true));
   }
 }

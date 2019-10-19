@@ -72,7 +72,7 @@ public class JCAAESCryptographyService implements AESCryptographyService {
             AES_CIPHER_BLOCK_SIZE_16_BYTES));
     Validate.notNull(content);
 
-    final Padding padding = inferPaddingFromModeOfOperation(blockMode);
+    final Padding padding = paddingForBlockMode(blockMode);
     final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
 
     try {
@@ -106,7 +106,7 @@ public class JCAAESCryptographyService implements AESCryptographyService {
     return cipher;
   }
 
-  private Padding inferPaddingFromModeOfOperation(BlockCipherModeOfOperation mode) {
+  private Padding paddingForBlockMode(BlockCipherModeOfOperation mode) {
 
     final Padding padding;
     switch (mode) {

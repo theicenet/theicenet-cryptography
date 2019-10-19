@@ -12,7 +12,7 @@ public class JCAAESKeyService implements AESKeyService {
   private static final String AES = "AES";
 
   @Override
-  public SecretKey generateAESKey(int keyLengthInBits) {
+  public SecretKey generateKey(int keyLengthInBits) {
     KeyGenerator keyGenerator;
     try {
       keyGenerator = KeyGenerator.getInstance(AES);

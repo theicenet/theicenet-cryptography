@@ -4,5 +4,5 @@ import javax.crypto.SecretKey;
 
 public interface AESKeyService {
 
-  SecretKey generateAESKey(int keyLengthInBits);
+  SecretKey generateKey(int keyLengthInBits);
 }

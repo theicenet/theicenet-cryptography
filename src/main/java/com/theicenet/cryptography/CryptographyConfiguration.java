@@ -17,11 +17,11 @@ public class CryptographyConfiguration {
   }
 
   @Bean
-  public CryptographyProvider cryptographyCommon(BouncyCastleProvider bouncyCastleProvider) {
-    var cryptographyCommon = new JCACryptographyProvider();
-    cryptographyCommon.addCryptographyProvider(bouncyCastleProvider);
+  public CryptographyProvider addCryptographyProvider(BouncyCastleProvider bouncyCastleProvider) {
+    var cryptographyProvider = new JCACryptographyProvider();
+    cryptographyProvider.addCryptographyProvider(bouncyCastleProvider);
 
-    return cryptographyCommon;
+    return cryptographyProvider;
   }
 
   @Bean

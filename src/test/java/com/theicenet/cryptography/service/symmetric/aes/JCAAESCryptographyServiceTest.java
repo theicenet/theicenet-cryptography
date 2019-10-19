@@ -70,20 +70,20 @@ class JCAAESCryptographyServiceTest {
               + "20e0ea5e2e60ec70b0f31255a4dc6cf304edb41"
               + "92d28c725751474");
 
-  AESCryptographyService AESCryptographyService;
+  AESCryptographyService aesCryptographyService;
 
   JCAAESCryptographyServiceTest() throws DecoderException {}
 
   @BeforeEach
   void setUp() {
-    AESCryptographyService = new JCAAESCryptographyService();
+    aesCryptographyService = new JCAAESCryptographyService();
   }
 
   @Test
   void producesNotNullWhenEncrypting() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -97,7 +97,7 @@ class JCAAESCryptographyServiceTest {
   void producesNotEmptyWhenEncrypting() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -108,7 +108,7 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingAndInvalidIVSize() {
+  void throwsIllegalArgumentExceptionWhenEncryptingWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
     final byte[] INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -116,7 +116,7 @@ class JCAAESCryptographyServiceTest {
     // When encrypting AES with invalid IV size
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
-      AESCryptographyService.encrypt(
+      aesCryptographyService.encrypt(
           CTR,
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
@@ -125,10 +125,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingAndBlockModeCFB() {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeCFB() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -139,10 +139,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingAndBlockModeCBC() {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingWithBlockModeCBC() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -155,10 +155,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingAndBlockModeOFB() {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeOFB() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -169,10 +169,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingAndBlockModeCTR() {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeCTR() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -183,10 +183,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightEncryptedResultWhenEncrypting_CBC_PKCS5PADDING() {
+  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCBC() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -197,10 +197,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightEncryptedResultWhenEncrypting_CFB_NOPADDING() {
+  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCFB() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -211,10 +211,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightEncryptedResultWhenEncrypting_OFB_NOPADDING() {
+  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeOFB() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -225,10 +225,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightEncryptedResultWhenEncryptingAES_CTR_NOPADDING() {
+  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCTR() {
     // When
     var encrypted =
-        AESCryptographyService.encrypt(
+        aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -242,7 +242,7 @@ class JCAAESCryptographyServiceTest {
   void producesNotNullWhenDecrypting() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -256,7 +256,7 @@ class JCAAESCryptographyServiceTest {
   void producesNotEmptyWhenDecrypting() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -267,7 +267,7 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingAndInvalidIVSize() {
+  void throwsIllegalArgumentExceptionWhenDecryptingWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
     final byte[] INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -275,7 +275,7 @@ class JCAAESCryptographyServiceTest {
     // When decrypting AES with invalid IV size
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
-      AESCryptographyService.decrypt(
+      aesCryptographyService.decrypt(
           CTR,
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
@@ -284,10 +284,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingAndBlockModeCFB() {
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeCFB() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -298,10 +298,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentMinusPaddingWhenDecryptingAndBlockModeCBC() {
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentMinusPaddingWhenDecryptingWithBlockModeCBC() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -314,10 +314,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingAndBlockModeOFB() {
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeOFB() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -328,10 +328,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingAndBlockModeCTR() {
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeCTR() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -342,10 +342,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightDecryptedResultWhenDecrypting_CBC_PKCS5PADDING() {
+  void producesTheRightDecryptedResultWhenDecryptingWithBlockCBC() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -356,10 +356,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightDecryptedResultWhenDecrypting_CFB_NOPADDING() {
+  void producesTheRightDecryptedResultWhenDecryptingWithBlockModeCFB() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -370,10 +370,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightDecryptedResultWhenDecrypting_OFB_NOPADDING() {
+  void producesTheRightDecryptedResultWhenDecryptingWithBlockModeOFB() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
@@ -384,10 +384,10 @@ class JCAAESCryptographyServiceTest {
   }
 
   @Test
-  void producesTheRightDecryptedResultWhenDecryptingAES_CTR_NOPADDING() {
+  void producesTheRightDecryptedResultWhenDecryptingWithBlockModeCTR() {
     // When
     var decrypted =
-        AESCryptographyService.decrypt(
+        aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
