@@ -26,13 +26,14 @@ class JCAIVServiceTest {
 
   @BeforeEach
   void setUp() {
+    // Unfortunately, this test can't use a mock for SecureRandom.
     ivService = new JCAIVService(new SecureRandom());
   }
 
   @Test
   void producesNotNullWhenGeneratingRandomIV() {
     // When generating a random IV
-    var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey, is(notNullValue()));
@@ -41,7 +42,7 @@ class JCAIVServiceTest {
   @Test
   void producesNotEmptyWhenGeneratingRandomIV() {
     // When generating a random IV
-    var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey.length, is(greaterThan(0)));
@@ -50,7 +51,7 @@ class JCAIVServiceTest {
   @Test
   void producesIVWithTheRequestLengthWhenGeneratingRandomIV() {
     // When generating a random IV
-    var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey.length, is(equalTo(IV_LENGTH_16_BYTES)));
@@ -59,8 +60,8 @@ class JCAIVServiceTest {
   @Test
   void producesDifferentIVsWhenGeneratingTwoConsecutiveRandomIVsWithTheSameLength() {
     // When generating two consecutive random IVs with the same length
-    var generatedKey_1 = ivService.generateRandom(IV_LENGTH_16_BYTES);
-    var generatedKey_2 = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey_1 = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey_2 = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then the generated random IVs are different
     assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
@@ -72,7 +73,7 @@ class JCAIVServiceTest {
     final var _100 = 100;
 
     // When generating consecutive random IVs with the same length
-    var generatedKeys =
+    final var generatedKeys =
         IntStream
             .range(0, _100)
             .mapToObj(index -> ivService.generateRandom(IV_LENGTH_16_BYTES))
@@ -110,7 +111,10 @@ class JCAIVServiceTest {
               generatedKeys.add(ivService.generateRandom(IV_LENGTH_16_BYTES));
             }));
 
-    executorService.awaitTermination(1, TimeUnit.SECONDS);
+    executorService.shutdown();
+    while (!executorService.isTerminated()) {
+      Thread.sleep(100);
+    }
 
     // Then all IVs have been generated and them all are different
     assertThat(

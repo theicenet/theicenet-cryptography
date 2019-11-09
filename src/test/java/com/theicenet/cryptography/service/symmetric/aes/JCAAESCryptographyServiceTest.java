@@ -82,7 +82,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesNotNullWhenEncrypting() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -96,7 +96,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesNotEmptyWhenEncrypting() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -110,7 +110,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void throwsIllegalArgumentExceptionWhenEncryptingWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
-    final byte[] INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
+    final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
     // When encrypting AES with invalid IV size
@@ -127,7 +127,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeCFB() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -141,7 +141,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingWithBlockModeCBC() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -157,7 +157,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeOFB() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -171,7 +171,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeCTR() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -185,7 +185,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCBC() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -199,7 +199,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCFB() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -213,7 +213,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithBlockModeOFB() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -227,7 +227,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCTR() {
     // When
-    var encrypted =
+    final var encrypted =
         aesCryptographyService.encrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -241,7 +241,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesNotNullWhenDecrypting() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -255,7 +255,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesNotEmptyWhenDecrypting() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -269,7 +269,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void throwsIllegalArgumentExceptionWhenDecryptingWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
-    final byte[] INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
+    final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
     // When decrypting AES with invalid IV size
@@ -286,7 +286,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeCFB() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -300,7 +300,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentMinusPaddingWhenDecryptingWithBlockModeCBC() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -316,7 +316,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeOFB() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -330,7 +330,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeCTR() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -344,7 +344,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightDecryptedResultWhenDecryptingWithBlockCBC() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CBC,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -358,7 +358,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightDecryptedResultWhenDecryptingWithBlockModeCFB() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -372,7 +372,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightDecryptedResultWhenDecryptingWithBlockModeOFB() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             OFB,
             SECRET_KEY_1234567890123456_128_BITS,
@@ -386,7 +386,7 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesTheRightDecryptedResultWhenDecryptingWithBlockModeCTR() {
     // When
-    var decrypted =
+    final var decrypted =
         aesCryptographyService.decrypt(
             CTR,
             SECRET_KEY_1234567890123456_128_BITS,
