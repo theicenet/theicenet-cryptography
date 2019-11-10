@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.service.symmetric.pbe.salt;
+package com.theicenet.cryptography.service.symmetric.salt;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -8,6 +8,8 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 
+import com.theicenet.cryptography.service.symmetric.salt.JCASaltService;
+import com.theicenet.cryptography.service.symmetric.salt.SaltService;
 import java.security.SecureRandom;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;

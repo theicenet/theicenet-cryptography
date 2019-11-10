@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.service.symmetric.pbe.salt;
+package com.theicenet.cryptography.service.symmetric.salt;
 
 import java.security.SecureRandom;
 import org.springframework.stereotype.Service;

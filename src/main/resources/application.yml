@@ -9,8 +9,8 @@ cryptography:
   rsa:
     key:
       lengthInBits: 4096
-  passwordBasedEncryptation:
-    algorithm: PBEWITHSHA256AND256BITAES-CBC-BC
-    salt:
-      lengthInBytes: 20
+  keyDerivationFunction:
+    pbkdF2WithHmacSHA:
+      shaAlgorithm: SHA512
+      iterations: 131070
 

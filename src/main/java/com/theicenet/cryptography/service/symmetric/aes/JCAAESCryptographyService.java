@@ -22,7 +22,7 @@ public class JCAAESCryptographyService implements AESCryptographyService {
 
   private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
-      "iv size must be equals to AES cipher block size = %s bytes";
+      "IV's size must be equals to AES cipher block size = %s bytes";
 
   @Override
   public byte[] encrypt(
