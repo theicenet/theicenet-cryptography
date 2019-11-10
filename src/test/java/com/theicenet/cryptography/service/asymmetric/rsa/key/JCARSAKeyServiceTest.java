@@ -34,7 +34,6 @@ class JCARSAKeyServiceTest {
 
   @BeforeEach
   void setUp() {
-    // This test can't use a mock for SecureRandom. It needs to use a real one.
     rsaKeyService = new JCARSAKeyService(new SecureRandom());
   }
 

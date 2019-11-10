@@ -28,7 +28,6 @@ class JCAAESKeyServiceTest {
 
   @BeforeEach
   void setUp() {
-    // This test can't use a mock for SecureRandom. It needs to use a real one.
     aesKeyService = new JCAAESKeyService(new SecureRandom());
   }
 

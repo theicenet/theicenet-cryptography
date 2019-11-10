@@ -1,0 +1,16 @@
+cryptography:
+  aes:
+    key:
+      lengthInBits: 256
+    initializationVector:
+      lengthInBytes: 16
+    blockCipher:
+      modeOfOperation: CTR
+  rsa:
+    key:
+      lengthInBits: 4096
+  passwordBasedEncryptation:
+    algorithm: PBEWITHSHA256AND256BITAES-CBC-BC
+    salt:
+      lengthInBytes: 20
+

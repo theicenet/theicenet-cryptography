@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.service.symmetric.aes.iv;
+package com.theicenet.cryptography.service.symmetric.pbe.salt;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -17,22 +17,21 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class JCAIVServiceTest {
+class JCASaltServiceTest {
+  final int SALT_LENGTH_16_BYTES = 16;
+  final int SALT_LENGTH_32_BYTES = 32;
 
-  final int IV_LENGTH_16_BYTES = 16;
-  final int IV_LENGTH_32_BYTES = 32;
-
-  IVService ivService;
+  SaltService saltService;
 
   @BeforeEach
   void setUp() {
-    ivService = new JCAIVService(new SecureRandom());
+    saltService = new JCASaltService(new SecureRandom());
   }
 
   @Test
   void producesNotNullWhenGeneratingRandom() {
     // When
-    final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey = saltService.generateRandom(SALT_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey, is(notNullValue()));
@@ -41,64 +40,64 @@ class JCAIVServiceTest {
   @Test
   void producesNotEmptyWhenGeneratingRandom() {
     // When
-    final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey = saltService.generateRandom(SALT_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey.length, is(greaterThan(0)));
   }
 
   @Test
-  void producesIVWithTheRequestLengthWhenGeneratingRandomWith16Bytes() {
+  void producesSaltWithTheRequestLengthWhenGeneratingRandomWith16Bytes() {
     // When
-    final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey = saltService.generateRandom(SALT_LENGTH_16_BYTES);
 
     // Then
-    assertThat(generatedKey.length, is(equalTo(IV_LENGTH_16_BYTES)));
+    assertThat(generatedKey.length, is(equalTo(SALT_LENGTH_16_BYTES)));
   }
 
   @Test
-  void producesIVWithTheRequestLengthWhenGeneratingRandomWith32Bytes() {
+  void producesSaltWithTheRequestLengthWhenGeneratingRandomWith32Bytes() {
     // When
-    final var generatedKey = ivService.generateRandom(IV_LENGTH_32_BYTES);
+    final var generatedKey = saltService.generateRandom(SALT_LENGTH_32_BYTES);
 
     // Then
-    assertThat(generatedKey.length, is(equalTo(IV_LENGTH_32_BYTES)));
+    assertThat(generatedKey.length, is(equalTo(SALT_LENGTH_32_BYTES)));
   }
 
   @Test
-  void producesDifferentIVsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength() {
-    // When generating two consecutive random IVs with the same length
-    final var generatedKey_1 = ivService.generateRandom(IV_LENGTH_16_BYTES);
-    final var generatedKey_2 = ivService.generateRandom(IV_LENGTH_16_BYTES);
+  void producesDifferentSaltsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength() {
+    // When generating two consecutive random Salts with the same length
+    final var generatedKey_1 = saltService.generateRandom(SALT_LENGTH_16_BYTES);
+    final var generatedKey_2 = saltService.generateRandom(SALT_LENGTH_16_BYTES);
 
-    // Then the generated random IVs are different
+    // Then the generated random Salts are different
     assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
   }
 
   @Test
-  void producesDifferentIVsWhenGeneratingManyConsecutiveRandomsWithTheSameLength() {
+  void producesDifferentSaltsWhenGeneratingManyConsecutiveRandomsWithTheSameLength() {
     // Given
     final var _100 = 100;
 
-    // When generating consecutive random IVs with the same length
+    // When generating consecutive random Salts with the same length
     final var generatedKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> ivService.generateRandom(IV_LENGTH_16_BYTES))
+            .mapToObj(index -> saltService.generateRandom(SALT_LENGTH_16_BYTES))
             .map(String::new)
             .collect(Collectors.toUnmodifiableSet());
 
-    // Then all IVs have been generated and all them are different
+    // Then all Salts have been generated and all them are different
     assertThat(generatedKeys, hasSize(_100));
   }
 
   @Test
-  void producesDifferentIVsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength()
+  void producesDifferentSaltsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength()
       throws InterruptedException {
     // Given
     final var _500 = 500;
 
-    // When generating concurrently at the same time random IVs with the same length
+    // When generating concurrently at the same time random Salts with the same length
     final var countDownLatch = new CountDownLatch(_500);
     final var executorService = Executors.newFixedThreadPool(_500);
 
@@ -116,7 +115,7 @@ class JCAIVServiceTest {
                 throw new RuntimeException(e);
               }
 
-              generatedKeys.add(ivService.generateRandom(IV_LENGTH_16_BYTES));
+              generatedKeys.add(saltService.generateRandom(SALT_LENGTH_16_BYTES));
             }));
 
     executorService.shutdown();
@@ -124,7 +123,7 @@ class JCAIVServiceTest {
       Thread.sleep(100);
     }
 
-    // Then all IVs have been generated and all them are different
+    // Then all Salts have been generated and all them are different
     assertThat(
         generatedKeys.stream()
             .map(String::new)
