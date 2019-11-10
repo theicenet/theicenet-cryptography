@@ -12,7 +12,6 @@ import java.security.SecureRandom;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.Test;
 class JCAIVServiceTest {
 
   final int IV_LENGTH_16_BYTES = 16;
+  final int IV_LENGTH_32_BYTES = 32;
 
   IVService ivService;
 
@@ -49,12 +49,21 @@ class JCAIVServiceTest {
   }
 
   @Test
-  void producesIVWithTheRequestLengthWhenGeneratingRandomIV() {
+  void producesIVWithTheRequestLengthWhenGeneratingRandomIVWith16Bytes() {
     // When generating a random IV
     final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then
     assertThat(generatedKey.length, is(equalTo(IV_LENGTH_16_BYTES)));
+  }
+
+  @Test
+  void producesIVWithTheRequestLengthWhenGeneratingRandomIVWith32Bytes() {
+    // When generating a random IV
+    final var generatedKey = ivService.generateRandom(IV_LENGTH_32_BYTES);
+
+    // Then
+    assertThat(generatedKey.length, is(equalTo(IV_LENGTH_32_BYTES)));
   }
 
   @Test
