@@ -13,4 +13,8 @@ cryptography:
     pbkdF2WithHmacSHA:
       shaAlgorithm: SHA512
       iterations: 131070
+    scrypt:
+      cpuMemoryCost: 1048576
+      blockSize: 8
+      parallelization: 1
 

@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2;
+package com.theicenet.cryptography.service.symmetric.pbkd.scrypt;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -7,6 +7,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 
+import com.theicenet.cryptography.service.symmetric.pbkd.PBKDKeyService;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -15,11 +16,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.EnumSource.Mode;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-class JCAPBKDF2WithHmacSHAKeyServiceTest {
+class PBKDScryptServiceTest {
 
   final int KEY_LENGTH_64_BITS = 64;
   final int KEY_LENGTH_128_BITS = 128;
@@ -29,11 +29,11 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   final String RAW = "RAW";
 
-  final String PBKDF2 = "PBKDF2";
-  final String WITH_HMAC = "WithHmac";
-  final String PBKDF2_WITH_HMAC = String.format("%s%s", PBKDF2, WITH_HMAC);
+  final String SCRYPT = "SCrypt";
 
-  final Integer _100_ITERATIONS = 100;
+  final int CPU_MEMORY_COST_1024 = 1024;
+  final int BLOCK_SIZE_8 = 8;
+  final int PARALLELIZATION = 1;
 
   final String PASSWORD_1234567890_80_BITS = "1234567890";
   final String PASSWORD_0123456789_80_BITS = "0123456789";
@@ -44,12 +44,15 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   final byte[] SALT_ZYXWVUTSRQPONMLKJIHG_20_BYTES =
       "ZYXWVUTSRQPONMLKJIHG".getBytes(StandardCharsets.UTF_8);
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesNotNullWhenDerivingKey(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
+  PBKDKeyService pbkdKeyService;
 
+  @BeforeEach
+  void setUp() {
+    pbkdKeyService = new PBKDScryptService(CPU_MEMORY_COST_1024, BLOCK_SIZE_8, PARALLELIZATION);
+  }
+
+  @Test
+  void producesNotNullWhenDerivingKey() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -61,17 +64,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKey, is(notNullValue()));
   }
 
-  @ParameterizedTest
-  @EnumSource(
-      value = ShaAlgorithm.class,
-      names = {"SHA3_256", "SHA3_512"},
-      mode = Mode.EXCLUDE)
-  void producesKeyWithRightAlgorithmWhenDerivingKeyAndSha1And2(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-    final var PBKDF2_WITH_HMAC_ALGORITHM =
-        String.format("%s%s", PBKDF2_WITH_HMAC, shaAlgorithm.toString());
-
+  @Test
+  void producesKeyWithRightAlgorithmWhenDerivingKey() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -80,35 +74,11 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
             KEY_LENGTH_128_BITS);
 
     // Then
-    assertThat(generatedKey.getAlgorithm(), is(equalTo(PBKDF2_WITH_HMAC_ALGORITHM)));
+    assertThat(generatedKey.getAlgorithm(), is(equalTo(SCRYPT)));
   }
 
-  @ParameterizedTest
-  @EnumSource(
-      value = ShaAlgorithm.class,
-      names = {"SHA3_256", "SHA3_512"},
-      mode = Mode.INCLUDE)
-  void producesKeyWithRightAlgorithmWhenDerivingKeyAndSha3(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
-            PASSWORD_1234567890_80_BITS,
-            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
-
-    // Then
-    assertThat(generatedKey.getAlgorithm(), is(equalTo(PBKDF2)));
-  }
-
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesKeyWithRAWFormatWhenDerivingKey(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesKeyWithRAWFormatWhenDerivingKey() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -120,12 +90,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKey.getFormat(), is(equalTo(RAW)));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith64Bit(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesKeyWithTheRequestLengthWhenDerivingKeyWith64Bit() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -138,12 +104,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_64_BITS)));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith128Bit(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesKeyWithTheRequestLengthWhenDerivingKeyWith128Bit() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -156,12 +118,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_128_BITS)));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith256Bit(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesKeyWithTheRequestLengthWhenDerivingKeyWith256Bit() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -174,12 +132,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_256_BITS)));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith512Bit(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesKeyWithTheRequestLengthWhenDerivingKeyWith512Bit() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -192,12 +146,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_512_BITS)));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith1024Bit(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesKeyWithTheRequestLengthWhenDerivingKeyWith1024Bit() {
     // When
     final var generatedKey =
         pbkdKeyService.deriveKey(
@@ -210,12 +160,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_1024_BITS)));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesTheSameKeyWhenDerivingTwoConsecutiveKeysWithTheSamePasswordSaltAndLength(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesTheSameKeyWhenDerivingTwoConsecutiveKeysWithTheSamePasswordSaltAndLength() {
     // When generating two consecutive keys with the same password, salt and length
     final var generatedKey_1 =
         pbkdKeyService.deriveKey(
@@ -232,12 +178,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKey_1.getEncoded(), is(equalTo(generatedKey_2.getEncoded())));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesDifferentKeysWhenDerivingTwoConsecutiveKeysWithTheSameSaltAndLengthButDifferentPassword(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesDifferentKeysWhenDerivingTwoConsecutiveKeysWithTheSameSaltAndLengthButDifferentPassword() {
     // When generating two consecutive keys with the same salt and length but different password
     final var generatedKey_1 =
         pbkdKeyService.deriveKey(
@@ -254,12 +196,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKey_1.getEncoded(), is(not(equalTo(generatedKey_2.getEncoded()))));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesDifferentKeysWhenDerivingTwoConsecutiveKeysWithTheSamePasswordAndLengthButDifferentSalt(ShaAlgorithm shaAlgorithm) {
-    // Given
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
-
+  @Test
+  void producesDifferentKeysWhenDerivingTwoConsecutiveKeysWithTheSamePasswordAndLengthButDifferentSalt() {
     // When generating two consecutive keys with the same password and length but different salt
     final var generatedKey_1 =
         pbkdKeyService.deriveKey(
@@ -276,12 +214,10 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKey_1.getEncoded(), is(not(equalTo(generatedKey_2.getEncoded()))));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesTheSameKeyWhenDerivingManyConsecutiveKeysWithTheSamePasswordSaltAndLength(ShaAlgorithm shaAlgorithm) {
+  @Test
+  void producesTheSameKeyWhenDerivingManyConsecutiveKeysWithTheSamePasswordSaltAndLength() {
     // Given
     final var _100 = 100;
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
 
     // When generating consecutive keys with the same password, salt and length
     final var generatedKeys =
@@ -300,12 +236,10 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThat(generatedKeys, hasSize(1));
   }
 
-  @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesTheSameKeyWhenDerivingConcurrentlyManyKeysWithTheSamePasswordSaltAndLength(ShaAlgorithm shaAlgorithm) throws Exception {
+  @Test
+  void producesTheSameKeyWhenDerivingConcurrentlyManyKeysWithTheSamePasswordSaltAndLength() throws Exception {
     // Given
     final var _500 = 500;
-    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
 
     // When generating concurrently at the same time random keys with the same password, salt and length
     final var countDownLatch = new CountDownLatch(_500);
