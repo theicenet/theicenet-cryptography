@@ -17,4 +17,10 @@ cryptography:
       cpuMemoryCost: 1048576
       blockSize: 8
       parallelization: 1
+    argon2:
+      type: ARGON2_ID
+      version: ARGON2_VERSION_13
+      iterations: 3
+      memoryPowOfTwo: 27
+      parallelism: 4
 

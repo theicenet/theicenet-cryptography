@@ -18,15 +18,16 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
 
   private final String PBKDF2_WITH_HMAC = "PBKDF2WithHmac";
 
-  private final String algorithm;
-  private final Integer iterations;
+  private final PBKDF2Configuration pbkdf2Configuration;
 
   public JCAPBKDF2WithHmacSHAKeyService(
       @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm}") ShaAlgorithm shaAlgorithm,
       @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations}") Integer iterations) {
 
-    this.algorithm = String.format("%s%s", PBKDF2_WITH_HMAC, shaAlgorithm.toString());
-    this.iterations = iterations;
+    this.pbkdf2Configuration =
+        new PBKDF2Configuration(
+            String.format("%s%s", PBKDF2_WITH_HMAC, shaAlgorithm.toString()),
+            iterations);
 
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
@@ -35,13 +36,22 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
   public SecretKey deriveKey(String password, byte[] salt, int keyLengthInBits) {
     Validate.notNull(password);
     Validate.notNull(salt);
+    Validate.isTrue(keyLengthInBits > 0);
+
+    final SecretKeyFactory secretKeyFactory =
+        buildSecretKeyFactory(pbkdf2Configuration.getAlgorithm());
 
     final var pbeKeySpec =
         new PBEKeySpec(
             password.toCharArray(),
             salt,
-            iterations,
+            pbkdf2Configuration.getIterations(),
             keyLengthInBits);
+
+    return generateKey(secretKeyFactory, pbeKeySpec);
+  }
+
+  private SecretKeyFactory buildSecretKeyFactory(String algorithm) {
 
     final SecretKeyFactory secretKeyFactory;
     try {
@@ -50,6 +60,10 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
       throw new PBKDAlgorithmNotFoundException(algorithm, e);
     }
 
+    return secretKeyFactory;
+  }
+
+  private SecretKey generateKey(SecretKeyFactory secretKeyFactory, PBEKeySpec pbeKeySpec) {
     try {
       return secretKeyFactory.generateSecret(pbeKeySpec);
     } catch (InvalidKeySpecException e) {

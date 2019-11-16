@@ -15,6 +15,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
@@ -43,6 +46,69 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   final byte[] SALT_ZYXWVUTSRQPONMLKJIHG_20_BYTES =
       "ZYXWVUTSRQPONMLKJIHG".getBytes(StandardCharsets.UTF_8);
+
+  final byte[] PBKDF2_WITH_HMAC_SHA1_HASH_128_BITS =
+      Hex.decodeHex("e2e2147bd2da3dcf049e6bde51b1fea4");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA1_HASH_256_BITS =
+      Hex.decodeHex("e2e2147bd2da3dcf049e6bde51b1fea40bd4a3e67bb0a4c0fa75214dd0a227a5");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA1_HASH_512_BITS =
+      Hex.decodeHex(
+          "e2e2147bd2da3dcf049e6bde51b1fea40bd4a3e67bb0a4c0f"
+              + "a75214dd0a227a50848979b8698654c5f9235830d9c5af11"
+              + "8912ebdd4e96d8d1059fc680982646a");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA1_HASH_1024_BITS =
+      Hex.decodeHex(
+          "e2e2147bd2da3dcf049e6bde51b1fea40bd4a3e67bb0a4c0fa"
+              + "75214dd0a227a50848979b8698654c5f9235830d9c5af11891"
+              + "2ebdd4e96d8d1059fc680982646a74a13514f6b6f40ad93084"
+              + "4d9bf87d651068b4609bbcd53ecee63002bfdd7a7b06fe9acd3"
+              + "e84ddfeeb3936191013a316f10cdb314cc78a220b759099c13b"
+              + "ab5f");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA256_HASH_128_BITS =
+      Hex.decodeHex("f0e0abdc00625bc7f11f4480f4d5e334");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA256_HASH_256_BITS =
+      Hex.decodeHex("f0e0abdc00625bc7f11f4480f4d5e3347eea018027420fdf9d2aa0cfa5fef65b");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA256_HASH_512_BITS =
+      Hex.decodeHex(
+          "f0e0abdc00625bc7f11f4480f4d5e3347eea018027420fdf9d2aa"
+              + "0cfa5fef65b55f5db5101727f1d81bdfb4a67c49a14126144df9e"
+              + "bf0041deaf95a92d56e7a2");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA256_HASH_1024_BITS =
+      Hex.decodeHex(
+          "f0e0abdc00625bc7f11f4480f4d5e3347eea018027420fdf9d2aa0c"
+              + "fa5fef65b55f5db5101727f1d81bdfb4a67c49a14126144df9ebf00"
+              + "41deaf95a92d56e7a29e852d66a4696a997517ef624ec090b0b78d5"
+              + "e07e955a1679332c160deb689b87d8128d97f48c06bb38c84328519"
+              + "10332e3b8a5a946ad4315fa6d6c68dd9cff0");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA512_HASH_128_BITS =
+      Hex.decodeHex("8f5c08c9d6d4051b5797c6add3179f11");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA512_HASH_256_BITS =
+      Hex.decodeHex("8f5c08c9d6d4051b5797c6add3179f11716afd1db9010cadcae4c5b6ee4a43e7");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA512_HASH_512_BITS =
+      Hex.decodeHex(
+          "8f5c08c9d6d4051b5797c6add3179f11716afd1db9010cadcae4c5b6e"
+              + "e4a43e704fa224ff3841adcc3648b919b2691c939c5248947a9aacd0"
+              + "a889eef537e7887");
+
+  final byte[] PBKDF2_WITH_HMAC_SHA512_HASH_1024_BITS =
+      Hex.decodeHex(
+          "8f5c08c9d6d4051b5797c6add3179f11716afd1db9010cadcae4c5b6ee4"
+              + "a43e704fa224ff3841adcc3648b919b2691c939c5248947a9aacd0a889"
+              + "eef537e7887c0bb0e4c2a55b1839f6b929063f5b76a5e2d8305cfb00f6"
+              + "87228eb203a45d201b680abf971751407b1c319fdda125b81f0a1feb72"
+              + "afdd985d4665963f9a43e9d");
+
+  JCAPBKDF2WithHmacSHAKeyServiceTest() throws DecoderException {}
 
   @ParameterizedTest
   @EnumSource(ShaAlgorithm.class)
@@ -342,5 +408,233 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
     // Then all keys are the same
     assertThat(generatedKeys, hasSize(1));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha1And128Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA1,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_128_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA1_HASH_128_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha1And256Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA1,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_256_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA1_HASH_256_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha1And512Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA1,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_512_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA1_HASH_512_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha1And1024Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA1,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_1024_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA1_HASH_1024_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha256And128Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA256,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_128_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA256_HASH_128_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha256And256Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA256,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_256_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA256_HASH_256_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha256And512Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA256,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_512_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA256_HASH_512_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha256And1024Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA256,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_1024_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA256_HASH_1024_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha512And128Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA512,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_128_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA512_HASH_128_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha512And256Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA512,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_256_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA512_HASH_256_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha512And512Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA512,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_512_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA512_HASH_512_BITS)));
+  }
+
+  @Test
+  void producesTheRightKeyWhenDerivingKeyWithSha512And1024Bit() {
+    // Given
+    final var pbkdKeyService =
+        new JCAPBKDF2WithHmacSHAKeyService(
+            ShaAlgorithm.SHA512,
+            _100_ITERATIONS);
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.deriveKey(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_1024_BITS);
+
+    // Then
+    assertThat(generatedKey.getEncoded(), is(equalTo(PBKDF2_WITH_HMAC_SHA512_HASH_1024_BITS)));
   }
 }
