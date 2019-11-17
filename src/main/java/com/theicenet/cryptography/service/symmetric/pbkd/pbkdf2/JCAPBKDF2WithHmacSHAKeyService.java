@@ -2,8 +2,7 @@ package com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2;
 
 import com.theicenet.cryptography.provider.CryptographyProviderUtil;
 import com.theicenet.cryptography.service.symmetric.pbkd.PBKDKeyService;
-import com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2.exception.PBKDAlgorithmNotFoundException;
-import com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2.exception.PBKDInvalidKeySpecException;
+import com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2.exception.JCAPBKDF2WithHmacSHAKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKey;
@@ -38,36 +37,25 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
     Validate.notNull(salt);
     Validate.isTrue(keyLengthInBits > 0);
 
-    final SecretKeyFactory secretKeyFactory =
-        buildSecretKeyFactory(pbkdf2Configuration.getAlgorithm());
+    try {
+      final var pbeKeySpec =
+          new PBEKeySpec(
+              password.toCharArray(),
+              salt,
+              pbkdf2Configuration.getIterations(),
+              keyLengthInBits);
 
-    final var pbeKeySpec =
-        new PBEKeySpec(
-            password.toCharArray(),
-            salt,
-            pbkdf2Configuration.getIterations(),
-            keyLengthInBits);
-
-    return generateKey(secretKeyFactory, pbeKeySpec);
+      return generateKey(pbkdf2Configuration.getAlgorithm(), pbeKeySpec);
+    } catch (Exception e) {
+      throw new JCAPBKDF2WithHmacSHAKeyException(e);
+    }
   }
 
-  private SecretKeyFactory buildSecretKeyFactory(String algorithm) {
+  private SecretKey generateKey(
+      String algorithm,
+      PBEKeySpec pbeKeySpec) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-    final SecretKeyFactory secretKeyFactory;
-    try {
-      secretKeyFactory = SecretKeyFactory.getInstance(algorithm);
-    } catch (NoSuchAlgorithmException e) {
-      throw new PBKDAlgorithmNotFoundException(algorithm, e);
-    }
-
-    return secretKeyFactory;
-  }
-
-  private SecretKey generateKey(SecretKeyFactory secretKeyFactory, PBEKeySpec pbeKeySpec) {
-    try {
-      return secretKeyFactory.generateSecret(pbeKeySpec);
-    } catch (InvalidKeySpecException e) {
-      throw new PBKDInvalidKeySpecException(e);
-    }
+    final var secretFactory = SecretKeyFactory.getInstance(algorithm);
+    return secretFactory.generateSecret(pbeKeySpec);
   }
 }

@@ -6,6 +6,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.service.symmetric.pbkd.PBKDKeyService;
 import java.math.BigInteger;
@@ -74,6 +75,69 @@ class PBKDSCryptServiceTest {
   @BeforeEach
   void setUp() {
     pbkdKeyService = new PBKDSCryptService(CPU_MEMORY_COST_1024, BLOCK_SIZE_8, PARALLELIZATION);
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullPassword() {
+    // Given
+    final String NULL_PASSWORD = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                NULL_PASSWORD,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_128_BITS));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullSalt() {
+    // Given
+    final byte[] NULL_SALT = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                NULL_SALT,
+                KEY_LENGTH_128_BITS));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNegativeKeyLength() {
+    // Given
+    final var KEY_LENGTH_MINUS_ONE = -1;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_MINUS_ONE));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndZeroKeyLength() {
+    // Given
+    final var KEY_LENGTH_ZERO = 0;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_ZERO));
   }
 
   @Test

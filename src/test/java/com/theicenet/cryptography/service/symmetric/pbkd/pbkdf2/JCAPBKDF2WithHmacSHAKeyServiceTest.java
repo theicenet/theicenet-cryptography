@@ -6,7 +6,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2.exception.JCAPBKDF2WithHmacSHAKeyException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -109,6 +111,98 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
               + "afdd985d4665963f9a43e9d");
 
   JCAPBKDF2WithHmacSHAKeyServiceTest() throws DecoderException {}
+
+  @ParameterizedTest
+  @EnumSource(ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullPassword(ShaAlgorithm shaAlgorithm) {
+    // Given
+    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
+
+    final String NULL_PASSWORD = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                NULL_PASSWORD,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_128_BITS));
+  }
+
+  @ParameterizedTest
+  @EnumSource(ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullSalt(ShaAlgorithm shaAlgorithm) {
+    // Given
+    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
+
+    final byte[] NULL_SALT = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                NULL_SALT,
+                KEY_LENGTH_128_BITS));
+  }
+
+  @ParameterizedTest
+  @EnumSource(ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNegativeKeyLength(ShaAlgorithm shaAlgorithm) {
+    // Given
+    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
+
+    final var KEY_LENGTH_MINUS_ONE = -1;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_MINUS_ONE));
+  }
+
+  @ParameterizedTest
+  @EnumSource(ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndZeroKeyLength(ShaAlgorithm shaAlgorithm) {
+    // Given
+    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, _100_ITERATIONS);
+
+    final var KEY_LENGTH_ZERO = 0;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_ZERO));
+  }
+
+  @ParameterizedTest
+  @EnumSource(ShaAlgorithm.class)
+  void throwsJCAPBKDF2WithHmacSHAKeyExceptionWhenDerivingKeyAndException(ShaAlgorithm shaAlgorithm) {
+    // Given
+    final var MINUS_ONE_ITERATIONS = -1;
+    final var pbkdKeyService = new JCAPBKDF2WithHmacSHAKeyService(shaAlgorithm, MINUS_ONE_ITERATIONS);
+
+    // Then
+    assertThrows(
+        JCAPBKDF2WithHmacSHAKeyException.class,
+        () ->
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_128_BITS));
+  }
 
   @ParameterizedTest
   @EnumSource(ShaAlgorithm.class)

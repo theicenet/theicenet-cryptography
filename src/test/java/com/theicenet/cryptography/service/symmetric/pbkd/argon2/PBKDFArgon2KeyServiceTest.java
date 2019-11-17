@@ -6,6 +6,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -168,6 +169,105 @@ class PBKDFArgon2KeyServiceTest {
               + "c85ec7d281bed87a03c04f7b747");
 
   PBKDFArgon2KeyServiceTest() throws DecoderException {}
+
+  @ParameterizedTest
+  @EnumSource(Argon2Type.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullPassword(Argon2Type argon2Type) {
+    // Given
+    final var pbkdKeyService =
+        new PBKDArgon2Service(
+            argon2Type,
+            ARGON2_VERSION_13,
+            ITERATIONS_2,
+            MEMORY_POW_OF_TWO_14,
+            PARALLELISM_2);
+
+    final String NULL_PASSWORD = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                NULL_PASSWORD,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_128_BITS));
+  }
+
+  @ParameterizedTest
+  @EnumSource(Argon2Type.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullSalt(Argon2Type argon2Type) {
+    // Given
+    final var pbkdKeyService =
+        new PBKDArgon2Service(
+            argon2Type,
+            ARGON2_VERSION_13,
+            ITERATIONS_2,
+            MEMORY_POW_OF_TWO_14,
+            PARALLELISM_2);
+
+    final byte[] NULL_SALT = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                NULL_SALT,
+                KEY_LENGTH_128_BITS));
+  }
+
+  @ParameterizedTest
+  @EnumSource(Argon2Type.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNegativeKeyLength(Argon2Type argon2Type) {
+    // Given
+    final var pbkdKeyService =
+        new PBKDArgon2Service(
+            argon2Type,
+            ARGON2_VERSION_13,
+            ITERATIONS_2,
+            MEMORY_POW_OF_TWO_14,
+            PARALLELISM_2);
+
+    final var KEY_LENGTH_MINUS_ONE = -1;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            // When
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_MINUS_ONE));
+  }
+
+  @ParameterizedTest
+  @EnumSource(Argon2Type.class)
+  void throwsIllegalArgumentExceptionWhenDerivingKeyAndZeroKeyLength(Argon2Type argon2Type) {
+    // Given
+    final var pbkdKeyService =
+        new PBKDArgon2Service(
+            argon2Type,
+            ARGON2_VERSION_13,
+            ITERATIONS_2,
+            MEMORY_POW_OF_TWO_14,
+            PARALLELISM_2);
+
+    final var KEY_LENGTH_ZERO = 0;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            pbkdKeyService.deriveKey(
+                PASSWORD_1234567890_80_BITS,
+                SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                KEY_LENGTH_ZERO));
+  }
 
   @ParameterizedTest
   @EnumSource(Argon2Type.class)
