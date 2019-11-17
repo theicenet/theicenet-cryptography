@@ -9,30 +9,22 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import org.apache.commons.lang.Validate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
 
-  private final String PBKDF2_WITH_HMAC = "PBKDF2WithHmac";
-
   private final PBKDF2Configuration pbkdf2Configuration;
 
-  public JCAPBKDF2WithHmacSHAKeyService(
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm}") ShaAlgorithm shaAlgorithm,
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations}") Integer iterations) {
+  public JCAPBKDF2WithHmacSHAKeyService(PBKDF2Configuration pbkdf2Configuration) {
+    this.pbkdf2Configuration = pbkdf2Configuration;
 
-    this.pbkdf2Configuration =
-        new PBKDF2Configuration(
-            String.format("%s%s", PBKDF2_WITH_HMAC, shaAlgorithm.toString()),
-            iterations);
-
+    // For PBKDF2WithHmacSHA3-XXX it's required Bouncy Castle
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
   @Override
-  public SecretKey deriveKey(String password, byte[] salt, int keyLengthInBits) {
+  public SecretKey generateKey(String password, byte[] salt, int keyLengthInBits) {
     Validate.notNull(password);
     Validate.notNull(salt);
     Validate.isTrue(keyLengthInBits > 0);

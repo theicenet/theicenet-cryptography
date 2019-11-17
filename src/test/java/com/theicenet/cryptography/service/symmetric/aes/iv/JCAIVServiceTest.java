@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class JCAIVServiceTest {
 
@@ -47,36 +49,36 @@ class JCAIVServiceTest {
     assertThat(generatedKey.length, is(greaterThan(0)));
   }
 
-  @Test
-  void producesIVWithTheRequestLengthWhenGeneratingRandomWith16Bytes() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      IV_LENGTH_16_BYTES,
+      IV_LENGTH_32_BYTES})
+  void producesIVWithTheRequestLengthWhenGeneratingRandom(int ivLength) {
     // When
-    final var generatedKey = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey = ivService.generateRandom(ivLength);
 
     // Then
-    assertThat(generatedKey.length, is(equalTo(IV_LENGTH_16_BYTES)));
+    assertThat(generatedKey.length, is(equalTo(ivLength)));
   }
 
-  @Test
-  void producesIVWithTheRequestLengthWhenGeneratingRandomWith32Bytes() {
-    // When
-    final var generatedKey = ivService.generateRandom(IV_LENGTH_32_BYTES);
-
-    // Then
-    assertThat(generatedKey.length, is(equalTo(IV_LENGTH_32_BYTES)));
-  }
-
-  @Test
-  void producesDifferentIVsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      IV_LENGTH_16_BYTES,
+      IV_LENGTH_32_BYTES})
+  void producesDifferentIVsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength(int ivLength) {
     // When generating two consecutive random IVs with the same length
-    final var generatedKey_1 = ivService.generateRandom(IV_LENGTH_16_BYTES);
-    final var generatedKey_2 = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedKey_1 = ivService.generateRandom(ivLength);
+    final var generatedKey_2 = ivService.generateRandom(ivLength);
 
     // Then the generated random IVs are different
     assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
   }
 
-  @Test
-  void producesDifferentIVsWhenGeneratingManyConsecutiveRandomsWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      IV_LENGTH_16_BYTES,
+      IV_LENGTH_32_BYTES})
+  void producesDifferentIVsWhenGeneratingManyConsecutiveRandomsWithTheSameLength(int ivLength) {
     // Given
     final var _100 = 100;
 
@@ -84,7 +86,7 @@ class JCAIVServiceTest {
     final var generatedKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> ivService.generateRandom(IV_LENGTH_16_BYTES))
+            .mapToObj(index -> ivService.generateRandom(ivLength))
             .map(String::new)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -92,8 +94,11 @@ class JCAIVServiceTest {
     assertThat(generatedKeys, hasSize(_100));
   }
 
-  @Test
-  void producesDifferentIVsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength()
+  @ParameterizedTest
+  @ValueSource(ints = {
+      IV_LENGTH_16_BYTES,
+      IV_LENGTH_32_BYTES})
+  void producesDifferentIVsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength(int ivLength)
       throws InterruptedException {
     // Given
     final var _500 = 500;
@@ -116,7 +121,7 @@ class JCAIVServiceTest {
                 throw new RuntimeException(e);
               }
 
-              generatedKeys.add(ivService.generateRandom(IV_LENGTH_16_BYTES));
+              generatedKeys.add(ivService.generateRandom(ivLength));
             }));
 
     executorService.shutdown();

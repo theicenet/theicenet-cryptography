@@ -7,75 +7,66 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang.Validate;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
-import org.springframework.beans.factory.annotation.Value;
 
 public class PBKDArgon2Service implements PBKDKeyService {
 
   private final Argon2Configuration argon2Configuration;
 
-  public PBKDArgon2Service(
-      @Value("${cryptography.keyDerivationFunction.argon2.type}") Argon2Type type,
-      @Value("${cryptography.keyDerivationFunction.argon2.version}") Argon2Version version,
-      @Value("${cryptography.keyDerivationFunction.argon2.iterations}") Integer iterations,
-      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo}") Integer memoryPowOfTwo,
-      @Value("${cryptography.keyDerivationFunction.argon2.parallelism}") Integer parallelism) {
-
-    this.argon2Configuration =
-        new Argon2Configuration(
-            type,
-            version,
-            iterations,
-            memoryPowOfTwo,
-            parallelism);
+  public PBKDArgon2Service(Argon2Configuration argon2Configuration) {
+    this.argon2Configuration = argon2Configuration;
   }
 
   @Override
-  public SecretKey deriveKey(String password, byte[] salt, int keyLengthInBits) {
+  public SecretKey generateKey(String password, byte[] salt, int keyLengthInBits) {
     Validate.notNull(password);
     Validate.notNull(salt);
     Validate.isTrue(keyLengthInBits > 0);
 
-    final Argon2BytesGenerator argon2Generator =
+    byte[] generatedKey =
+        generateKeyAsByteArray(
+            password,
+            salt,
+            keyLengthInBits);
+
+    return new SecretKeySpec(generatedKey, argon2Configuration.getType().toString());
+  }
+
+  private byte[] generateKeyAsByteArray(
+      String password,
+      byte[] salt,
+      int keyLengthInBits) {
+
+    final Argon2BytesGenerator argon2BytesGenerator =
         buildArgon2BytesGenerator(
             argon2Configuration,
             salt);
 
-    byte[] generatedKey =
-        generateKey(
-            password,
-            keyLengthInBits,
-            argon2Generator);
+    byte[] generatedKey = new byte[keyLengthInBits / 8];
+    argon2BytesGenerator.generateBytes(password.getBytes(StandardCharsets.UTF_8), generatedKey);
 
-    return new SecretKeySpec(generatedKey, argon2Configuration.getType().toString());
+    return generatedKey;
   }
 
   private Argon2BytesGenerator buildArgon2BytesGenerator(
       Argon2Configuration argon2Configuration,
       byte[] salt) {
 
-    final var argon2Parameters =
-        new Argon2Parameters.Builder(argon2Configuration.getType().getTypeCode())
-            .withVersion(argon2Configuration.getVersion().getVersionCode())
-            .withIterations(argon2Configuration.getIterations())
-            .withMemoryPowOfTwo(argon2Configuration.getMemoryPowOfTwo())
-            .withParallelism(argon2Configuration.getParallelism())
-            .withSalt(salt)
-            .build();
+    final var argon2BytesGenerator = new Argon2BytesGenerator();
+    argon2BytesGenerator.init(buildArgon2Parameters(argon2Configuration, salt));
 
-    final var argon2Generator = new Argon2BytesGenerator();
-    argon2Generator.init(argon2Parameters);
-
-    return argon2Generator;
+    return argon2BytesGenerator;
   }
 
-  private byte[] generateKey(
-      String password,
-      int keyLengthInBits,
-      Argon2BytesGenerator argon2Generator) {
+  private Argon2Parameters buildArgon2Parameters(
+      Argon2Configuration argon2Configuration,
+      byte[] salt) {
 
-    byte[] generatedKey = new byte[keyLengthInBits / 8];
-    argon2Generator.generateBytes(password.getBytes(StandardCharsets.UTF_8), generatedKey);
-
-    return generatedKey;
+    return new Argon2Parameters.Builder(argon2Configuration.getType().getTypeCode())
+        .withVersion(argon2Configuration.getVersion().getVersionCode())
+        .withIterations(argon2Configuration.getIterations())
+        .withMemoryPowOfTwo(argon2Configuration.getMemoryPowOfTwo())
+        .withParallelism(argon2Configuration.getParallelism())
+        .withSalt(salt)
+        .build();
   }
 }

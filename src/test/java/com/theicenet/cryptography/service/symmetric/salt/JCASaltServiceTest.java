@@ -18,10 +18,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class JCASaltServiceTest {
   final int SALT_LENGTH_16_BYTES = 16;
   final int SALT_LENGTH_32_BYTES = 32;
+  final int SALT_LENGTH_64_BYTES = 64;
+  final int SALT_LENGTH_128_BYTES = 128;
 
   SaltService saltService;
 
@@ -48,36 +52,42 @@ class JCASaltServiceTest {
     assertThat(generatedKey.length, is(greaterThan(0)));
   }
 
-  @Test
-  void producesSaltWithTheRequestLengthWhenGeneratingRandomWith16Bytes() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      SALT_LENGTH_16_BYTES,
+      SALT_LENGTH_32_BYTES,
+      SALT_LENGTH_64_BYTES,
+      SALT_LENGTH_128_BYTES})
+  void producesSaltWithTheRequestedLengthWhenGeneratingRandom(int saltLength) {
     // When
-    final var generatedKey = saltService.generateRandom(SALT_LENGTH_16_BYTES);
+    final var generatedKey = saltService.generateRandom(saltLength);
 
     // Then
-    assertThat(generatedKey.length, is(equalTo(SALT_LENGTH_16_BYTES)));
+    assertThat(generatedKey.length, is(equalTo(saltLength)));
   }
 
-  @Test
-  void producesSaltWithTheRequestLengthWhenGeneratingRandomWith32Bytes() {
-    // When
-    final var generatedKey = saltService.generateRandom(SALT_LENGTH_32_BYTES);
-
-    // Then
-    assertThat(generatedKey.length, is(equalTo(SALT_LENGTH_32_BYTES)));
-  }
-
-  @Test
-  void producesDifferentSaltsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      SALT_LENGTH_16_BYTES,
+      SALT_LENGTH_32_BYTES,
+      SALT_LENGTH_64_BYTES,
+      SALT_LENGTH_128_BYTES})
+  void producesDifferentSaltsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength(int saltLength) {
     // When generating two consecutive random Salts with the same length
-    final var generatedKey_1 = saltService.generateRandom(SALT_LENGTH_16_BYTES);
-    final var generatedKey_2 = saltService.generateRandom(SALT_LENGTH_16_BYTES);
+    final var generatedKey_1 = saltService.generateRandom(saltLength);
+    final var generatedKey_2 = saltService.generateRandom(saltLength);
 
     // Then the generated random Salts are different
     assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
   }
 
-  @Test
-  void producesDifferentSaltsWhenGeneratingManyConsecutiveRandomsWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      SALT_LENGTH_16_BYTES,
+      SALT_LENGTH_32_BYTES,
+      SALT_LENGTH_64_BYTES,
+      SALT_LENGTH_128_BYTES})
+  void producesDifferentSaltsWhenGeneratingManyConsecutiveRandomsWithTheSameLength(int saltLength) {
     // Given
     final var _100 = 100;
 
@@ -85,7 +95,7 @@ class JCASaltServiceTest {
     final var generatedKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> saltService.generateRandom(SALT_LENGTH_16_BYTES))
+            .mapToObj(index -> saltService.generateRandom(saltLength))
             .map(String::new)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -93,8 +103,13 @@ class JCASaltServiceTest {
     assertThat(generatedKeys, hasSize(_100));
   }
 
-  @Test
-  void producesDifferentSaltsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength()
+  @ParameterizedTest
+  @ValueSource(ints = {
+      SALT_LENGTH_16_BYTES,
+      SALT_LENGTH_32_BYTES,
+      SALT_LENGTH_64_BYTES,
+      SALT_LENGTH_128_BYTES})
+  void producesDifferentSaltsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength(int saltLength)
       throws InterruptedException {
     // Given
     final var _500 = 500;
@@ -117,7 +132,7 @@ class JCASaltServiceTest {
                 throw new RuntimeException(e);
               }
 
-              generatedKeys.add(saltService.generateRandom(SALT_LENGTH_16_BYTES));
+              generatedKeys.add(saltService.generateRandom(saltLength));
             }));
 
     executorService.shutdown();

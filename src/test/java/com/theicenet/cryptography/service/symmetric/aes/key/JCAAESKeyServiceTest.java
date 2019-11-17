@@ -16,11 +16,13 @@ import java.util.stream.IntStream;
 import javax.crypto.SecretKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class JCAAESKeyServiceTest {
 
-  final Integer KEY_LENGTH_128_BITS = 128;
-  final Integer KEY_LENGTH_256_BITS = 256;
+  final int KEY_LENGTH_128_BITS = 128;
+  final int KEY_LENGTH_256_BITS = 256;
   final String AES = "AES";
   final String RAW = "RAW";
 
@@ -58,38 +60,37 @@ class JCAAESKeyServiceTest {
     assertThat(generatedKey.getFormat(), is(equalTo(RAW)));
   }
 
-  @Test
-  void producesKeyWithTheRequestLengthWhenGeneratingKeyWith128Bit() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS})
+  void producesKeyWithTheRequestLengthWhenGeneratingKey(int keyLength) {
     // When
-    final var generatedKey = aesKeyService.generateKey(KEY_LENGTH_128_BITS);
+    final var generatedKey = aesKeyService.generateKey(keyLength);
 
     // Then
     final var generatedKeyLengthInBits = generatedKey.getEncoded().length * 8;
-    assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_128_BITS)));
+    assertThat(generatedKeyLengthInBits, is(equalTo(keyLength)));
   }
 
-  @Test
-  void producesKeyWithTheRequestLengthWhenGeneratingKeyWith256Bit() {
-    // When
-    final var generatedKey = aesKeyService.generateKey(KEY_LENGTH_256_BITS);
-
-    // Then
-    final var generatedKeyLengthInBits = generatedKey.getEncoded().length * 8;
-    assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_256_BITS)));
-  }
-
-  @Test
-  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS})
+  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
     // When generating two consecutive keys with the same length
-    final var generatedKey_1 = aesKeyService.generateKey(KEY_LENGTH_128_BITS);
-    final var generatedKey_2 = aesKeyService.generateKey(KEY_LENGTH_128_BITS);
+    final var generatedKey_1 = aesKeyService.generateKey(keyLength);
+    final var generatedKey_2 = aesKeyService.generateKey(keyLength);
 
     // Then the generated keys are different
     assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
   }
 
-  @Test
-  void producesDifferentKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS})
+  void producesDifferentKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength(int keyLength) {
     // Given
     final var _100 = 100;
 
@@ -97,15 +98,18 @@ class JCAAESKeyServiceTest {
     final var generatedKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> aesKeyService.generateKey(KEY_LENGTH_128_BITS))
+            .mapToObj(index -> aesKeyService.generateKey(keyLength))
             .collect(Collectors.toUnmodifiableSet());
 
     // Then all keys have been generated and all them are different
     assertThat(generatedKeys, hasSize(_100));
   }
 
-  @Test
-  void producesDifferentKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS})
+  void producesDifferentKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength(int keyLength) throws Exception {
     // Given
     final var _500 = 500;
 
@@ -127,7 +131,7 @@ class JCAAESKeyServiceTest {
                 throw new RuntimeException(e);
               }
 
-              generatedKeys.add(aesKeyService.generateKey(KEY_LENGTH_128_BITS));
+              generatedKeys.add(aesKeyService.generateKey(keyLength));
             }));
 
     executorService.shutdown();

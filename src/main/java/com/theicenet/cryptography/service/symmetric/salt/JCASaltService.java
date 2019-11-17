@@ -14,7 +14,7 @@ public class JCASaltService implements SaltService {
 
   @Override
   public byte[] generateRandom(int saltLengthInBytes) {
-    final var salt = new byte[saltLengthInBytes];
+    final byte[] salt = new byte[saltLengthInBytes];
     secureRandom.nextBytes(salt);
 
     return salt;

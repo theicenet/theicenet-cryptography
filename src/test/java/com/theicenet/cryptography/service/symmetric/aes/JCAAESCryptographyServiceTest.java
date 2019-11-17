@@ -7,63 +7,67 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class JCAAESCryptographyServiceTest {
 
   // Given
-  final String AES = "AES";
-  final BlockCipherModeOfOperation CBC = BlockCipherModeOfOperation.CBC;
-  final BlockCipherModeOfOperation CFB = BlockCipherModeOfOperation.CFB;
-  final BlockCipherModeOfOperation OFB = BlockCipherModeOfOperation.OFB;
-  final BlockCipherModeOfOperation CTR = BlockCipherModeOfOperation.CTR;
+  static final String AES = "AES";
+  static final BlockCipherModeOfOperation CBC = BlockCipherModeOfOperation.CBC;
+  static final BlockCipherModeOfOperation CFB = BlockCipherModeOfOperation.CFB;
+  static final BlockCipherModeOfOperation OFB = BlockCipherModeOfOperation.OFB;
+  static final BlockCipherModeOfOperation CTR = BlockCipherModeOfOperation.CTR;
 
-  final byte[] CLEAR_CONTENT =
+  static final byte[] CLEAR_CONTENT =
       "Content to encrypt with AES and different options for block cipher mode of operation"
           .getBytes(StandardCharsets.UTF_8);
 
-  final SecretKey SECRET_KEY_1234567890123456_128_BITS =
+  static final SecretKey SECRET_KEY_1234567890123456_128_BITS =
       new SecretKeySpec(
           "1234567890123456".getBytes(StandardCharsets.UTF_8),
           AES);
 
-  final byte[] INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS =
+  static final byte[] INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS =
       "KLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
 
-  final byte[] ENCRYPTED_CONTENT_AES_CBC =
-      Hex.decodeHex(
+  static final byte[] ENCRYPTED_CONTENT_AES_CBC =
+      HexUtil.decodeHex(
           "e9ace3b5980b905b3c5823555dbea50b69d0b312"
               + "9f3aa2540255b35dc5d46128a83ae6989e4d94ed"
               + "83d6ffcb4210ddd9686719807ed8537e6040d3cb"
               + "332a63dfe642db91b1e39bad80fa8a86329b04ee"
               + "8ee57305ff62e7daf001897f7c4a1e5a");
 
-  final byte[] ENCRYPTED_CONTENT_AES_CFB =
-      Hex.decodeHex(
+  static final byte[] ENCRYPTED_CONTENT_AES_CFB =
+      HexUtil.decodeHex(
           "813d91455835f9650de0506a0cbc9126d4c171c5e"
               + "fc1c3c7137e9d2fb2f711897b3261d0f760243583"
               + "5a693ab44f52b0e51c889504655b6a88c64c446b6"
               + "669dfc61c082e932ec53767b3de363beb10fa3ceb"
               + "2ed8");
 
-  final byte[] ENCRYPTED_CONTENT_AES_OFB =
-      Hex.decodeHex(
+  static final byte[] ENCRYPTED_CONTENT_AES_OFB =
+      HexUtil.decodeHex(
           "813d91455835f9650de0506a0cbc91263746a29bdf"
               + "2e031c65d44d000366eff30193861a14b73867329d"
               + "a374a511cc52dbfa0fc116f47423ed37694ceb016a"
               + "fd3b208a31e1aa4a7eb99b4f7e57966ec1376588d1");
 
-  final byte[] ENCRYPTED_CONTENT_AES_CTR =
-      Hex.decodeHex(
+  static final byte[] ENCRYPTED_CONTENT_AES_CTR =
+      HexUtil.decodeHex(
           "813d91455835f9650de0506a0cbc9126da73e6"
               + "e016a787a39e6f0bd8914874f6af0f2fca3094"
               + "65217d86aa55d9a1689666ce4189cb6194e1ac"
@@ -71,8 +75,6 @@ class JCAAESCryptographyServiceTest {
               + "92d28c725751474");
 
   AESCryptographyService aesCryptographyService;
-
-  JCAAESCryptographyServiceTest() throws DecoderException {}
 
   @BeforeEach
   void setUp() {
@@ -124,12 +126,16 @@ class JCAAESCryptographyServiceTest {
     });
   }
 
-  @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeCFB() {
+  @ParameterizedTest
+  @EnumSource(
+      value = BlockCipherModeOfOperation.class,
+      names = {"CBC"},
+      mode = EnumSource.Mode.EXCLUDE)
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncrypting(BlockCipherModeOfOperation blockMode) {
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            CFB,
+            blockMode,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -154,88 +160,54 @@ class JCAAESCryptographyServiceTest {
         is(equalTo(CLEAR_CONTENT.length + (16 - CLEAR_CONTENT.length % 16))));
   }
 
-  @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeOFB() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithClearContentAndSecretKeyAndIVAndBlockModeAndExpectedEncryptedResult")
+  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCBC(
+      byte[] clearContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherModeOfOperation blockMode,
+      byte[] expectedEncryptedResult) {
+
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            OFB,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_CONTENT);
+            blockMode,
+            secretKey,
+            iv,
+            clearContent);
 
     // Then
-    assertThat(encrypted.length, is(equalTo(CLEAR_CONTENT.length)));
+    assertThat(encrypted, is(equalTo(expectedEncryptedResult)));
   }
 
-  @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingWithBlockModeCTR() {
-    // When
-    final var encrypted =
-        aesCryptographyService.encrypt(
-            CTR,
+  static Stream<Arguments> argumentsWithClearContentAndSecretKeyAndIVAndBlockModeAndExpectedEncryptedResult() {
+    return Stream.of(
+        Arguments.of(
+            CLEAR_CONTENT,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    assertThat(encrypted.length, is(equalTo(CLEAR_CONTENT.length)));
-  }
-
-  @Test
-  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCBC() {
-    // When
-    final var encrypted =
-        aesCryptographyService.encrypt(
             CBC,
+            ENCRYPTED_CONTENT_AES_CBC),
+        Arguments.of(
+            CLEAR_CONTENT,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CBC)));
-  }
-
-  @Test
-  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCFB() {
-    // When
-    final var encrypted =
-        aesCryptographyService.encrypt(
             CFB,
+            ENCRYPTED_CONTENT_AES_CFB),
+        Arguments.of(
+            CLEAR_CONTENT,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CFB)));
-  }
-
-  @Test
-  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeOFB() {
-    // When
-    final var encrypted =
-        aesCryptographyService.encrypt(
             OFB,
+            ENCRYPTED_CONTENT_AES_OFB),
+        Arguments.of(
+            CLEAR_CONTENT,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_OFB)));
-  }
-
-  @Test
-  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCTR() {
-    // When
-    final var encrypted =
-        aesCryptographyService.encrypt(
             CTR,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CTR)));
+            ENCRYPTED_CONTENT_AES_CTR)
+    );
   }
 
   @Test
@@ -283,118 +255,104 @@ class JCAAESCryptographyServiceTest {
     });
   }
 
-  @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeCFB() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize")
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecrypting(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherModeOfOperation blockMode,
+      Integer expectedDecryptedSize) {
+
     // When
     final var decrypted =
         aesCryptographyService.decrypt(
+            blockMode,
+            secretKey,
+            iv,
+            encryptedContent);
+
+    // Then
+    assertThat(decrypted.length, is(equalTo(expectedDecryptedSize)));
+  }
+
+  static Stream<Arguments> argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize() {
+    return Stream.of(
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_CFB,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CFB,
+            ENCRYPTED_CONTENT_AES_CFB.length),
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CFB);
-
-    // Then
-    assertThat(decrypted.length, is(equalTo(ENCRYPTED_CONTENT_AES_CFB.length)));
-  }
-
-  @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentMinusPaddingWhenDecryptingWithBlockModeCBC() {
-    // When
-    final var decrypted =
-        aesCryptographyService.decrypt(
             CBC,
+            ENCRYPTED_CONTENT_AES_CBC.length - (16 - CLEAR_CONTENT.length % 16)),
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CBC);
-
-    // Then
-    assertThat(
-        decrypted.length,
-        is(equalTo(ENCRYPTED_CONTENT_AES_CBC.length - (16 - CLEAR_CONTENT.length % 16))));
-  }
-
-  @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeOFB() {
-    // When
-    final var decrypted =
-        aesCryptographyService.decrypt(
             OFB,
+            ENCRYPTED_CONTENT_AES_OFB.length),
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_OFB);
-
-    // Then
-    assertThat(decrypted.length, is(equalTo(ENCRYPTED_CONTENT_AES_OFB.length)));
-  }
-
-  @Test
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingWithBlockModeCTR() {
-    // When
-    final var decrypted =
-        aesCryptographyService.decrypt(
             CTR,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_OFB);
-
-    // Then
-    assertThat(decrypted.length, is(equalTo(ENCRYPTED_CONTENT_AES_OFB.length)));
+            ENCRYPTED_CONTENT_AES_CTR.length)
+    );
   }
 
-  @Test
-  void producesTheRightDecryptedResultWhenDecryptingWithBlockCBC() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesTheRightDecryptedResultWhenDecryptingWithBlockCBC(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherModeOfOperation blockMode,
+      byte[] expectedDecryptedResult) {
+
     // When
     final var decrypted =
         aesCryptographyService.decrypt(
+            blockMode,
+            secretKey,
+            iv,
+            encryptedContent);
+
+    // Then
+    assertThat(decrypted, is(equalTo(expectedDecryptedResult)));
+  }
+
+  static Stream<Arguments> argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult() {
+    return Stream.of(
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_CBC,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CBC,
+            CLEAR_CONTENT),
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_CFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CBC);
-
-    // Then
-    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
-  }
-
-  @Test
-  void producesTheRightDecryptedResultWhenDecryptingWithBlockModeCFB() {
-    // When
-    final var decrypted =
-        aesCryptographyService.decrypt(
             CFB,
+            CLEAR_CONTENT),
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_OFB,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CFB);
-
-    // Then
-    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
-  }
-
-  @Test
-  void producesTheRightDecryptedResultWhenDecryptingWithBlockModeOFB() {
-    // When
-    final var decrypted =
-        aesCryptographyService.decrypt(
             OFB,
+            CLEAR_CONTENT),
+        Arguments.of(
+            ENCRYPTED_CONTENT_AES_CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_OFB);
-
-    // Then
-    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
-  }
-
-  @Test
-  void producesTheRightDecryptedResultWhenDecryptingWithBlockModeCTR() {
-    // When
-    final var decrypted =
-        aesCryptographyService.decrypt(
             CTR,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CTR);
-
-    // Then
-    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+            CLEAR_CONTENT)
+    );
   }
 }
 

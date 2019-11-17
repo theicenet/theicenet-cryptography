@@ -72,8 +72,8 @@ public class JCAAESCryptographyService implements AESCryptographyService {
             AES_CIPHER_BLOCK_SIZE_16_BYTES));
     Validate.notNull(content);
 
-    final Padding padding = paddingForBlockMode(blockMode);
-    final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
+    final var padding = paddingForBlockMode(blockMode);
+    final var cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
 
     try {
       return cipher.doFinal(content);

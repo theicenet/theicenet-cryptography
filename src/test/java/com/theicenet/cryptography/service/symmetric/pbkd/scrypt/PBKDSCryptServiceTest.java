@@ -9,6 +9,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.service.symmetric.pbkd.PBKDKeyService;
+import com.theicenet.cryptography.test.util.HexUtil;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -17,18 +18,21 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class PBKDSCryptServiceTest {
 
-  final int KEY_LENGTH_64_BITS = 64;
-  final int KEY_LENGTH_128_BITS = 128;
-  final int KEY_LENGTH_256_BITS = 256;
-  final int KEY_LENGTH_512_BITS = 512;
-  final int KEY_LENGTH_1024_BITS = 1024;
+  static final int KEY_LENGTH_64_BITS = 64;
+  static final int KEY_LENGTH_128_BITS = 128;
+  static final int KEY_LENGTH_256_BITS = 256;
+  static final int KEY_LENGTH_512_BITS = 512;
+  static final int KEY_LENGTH_1024_BITS = 1024;
 
   final String RAW = "RAW";
 
@@ -38,29 +42,29 @@ class PBKDSCryptServiceTest {
   final int BLOCK_SIZE_8 = 8;
   final int PARALLELIZATION = 1;
 
-  final String PASSWORD_1234567890_80_BITS = "1234567890";
+  static final String PASSWORD_1234567890_80_BITS = "1234567890";
   final String PASSWORD_0123456789_80_BITS = "0123456789";
 
-  final byte[] SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES =
+  static final byte[] SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES =
       "GHIJKLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
 
   final byte[] SALT_ZYXWVUTSRQPONMLKJIHG_20_BYTES =
       "ZYXWVUTSRQPONMLKJIHG".getBytes(StandardCharsets.UTF_8);
 
-  final byte[] SCRYPT_HASH_128_BITS =
-      Hex.decodeHex("accbf0d4873bae1315fa16e1f8840dd8");
+  static final byte[] SCRYPT_HASH_128_BITS =
+      HexUtil.decodeHex("accbf0d4873bae1315fa16e1f8840dd8");
 
-  final byte[] SCRYPT_HASH_256_BITS =
-      Hex.decodeHex("accbf0d4873bae1315fa16e1f8840dd8b09a2a270cfdef1afd65d3039bd97188");
+  static final byte[] SCRYPT_HASH_256_BITS =
+      HexUtil.decodeHex("accbf0d4873bae1315fa16e1f8840dd8b09a2a270cfdef1afd65d3039bd97188");
 
-  final byte[] SCRYPT_HASH_512_BITS =
-      Hex.decodeHex(
+  static final byte[] SCRYPT_HASH_512_BITS =
+      HexUtil.decodeHex(
           "accbf0d4873bae1315fa16e1f8840dd8b09a2a270cfde"
               + "f1afd65d3039bd97188a52028d4b3ac6ccf7e6b9424e"
               + "ef9d1ecf9ce976f173e8e41b2d981b8bdf88e53");
 
-  final byte[] SCRYPT_HASH_1024_BITS =
-      Hex.decodeHex(
+  static final byte[] SCRYPT_HASH_1024_BITS =
+      HexUtil.decodeHex(
           "accbf0d4873bae1315fa16e1f8840dd8b09a2a270cfdef"
               + "1afd65d3039bd97188a52028d4b3ac6ccf7e6b9424eef"
               + "9d1ecf9ce976f173e8e41b2d981b8bdf88e530c2101bf"
@@ -70,15 +74,18 @@ class PBKDSCryptServiceTest {
 
   PBKDKeyService pbkdKeyService;
 
-  PBKDSCryptServiceTest() throws DecoderException {}
-
   @BeforeEach
   void setUp() {
-    pbkdKeyService = new PBKDSCryptService(CPU_MEMORY_COST_1024, BLOCK_SIZE_8, PARALLELIZATION);
+    pbkdKeyService =
+        new PBKDSCryptService(
+            new SCryptConfiguration(
+                CPU_MEMORY_COST_1024,
+                BLOCK_SIZE_8,
+                PARALLELIZATION));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullPassword() {
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullPassword() {
     // Given
     final String NULL_PASSWORD = null;
 
@@ -87,14 +94,14 @@ class PBKDSCryptServiceTest {
         IllegalArgumentException.class,
         () ->
             // When
-            pbkdKeyService.deriveKey(
+            pbkdKeyService.generateKey(
                 NULL_PASSWORD,
                 SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
                 KEY_LENGTH_128_BITS));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNullSalt() {
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullSalt() {
     // Given
     final byte[] NULL_SALT = null;
 
@@ -103,14 +110,14 @@ class PBKDSCryptServiceTest {
         IllegalArgumentException.class,
         () ->
             // When
-            pbkdKeyService.deriveKey(
+            pbkdKeyService.generateKey(
                 PASSWORD_1234567890_80_BITS,
                 NULL_SALT,
                 KEY_LENGTH_128_BITS));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDerivingKeyAndNegativeKeyLength() {
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNegativeKeyLength() {
     // Given
     final var KEY_LENGTH_MINUS_ONE = -1;
 
@@ -119,14 +126,14 @@ class PBKDSCryptServiceTest {
         IllegalArgumentException.class,
         () ->
             // When
-            pbkdKeyService.deriveKey(
+            pbkdKeyService.generateKey(
                 PASSWORD_1234567890_80_BITS,
                 SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
                 KEY_LENGTH_MINUS_ONE));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDerivingKeyAndZeroKeyLength() {
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndZeroKeyLength() {
     // Given
     final var KEY_LENGTH_ZERO = 0;
 
@@ -134,17 +141,17 @@ class PBKDSCryptServiceTest {
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            pbkdKeyService.deriveKey(
+            pbkdKeyService.generateKey(
                 PASSWORD_1234567890_80_BITS,
                 SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
                 KEY_LENGTH_ZERO));
   }
 
   @Test
-  void producesNotNullWhenDerivingKey() {
+  void producesNotNullWhenGeneratingKey() {
     // When
     final var generatedKey =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_128_BITS);
@@ -154,10 +161,10 @@ class PBKDSCryptServiceTest {
   }
 
   @Test
-  void producesKeyWithRightAlgorithmWhenDerivingKey() {
+  void producesKeyWithRightAlgorithmWhenGeneratingKey() {
     // When
     final var generatedKey =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_128_BITS);
@@ -167,10 +174,10 @@ class PBKDSCryptServiceTest {
   }
 
   @Test
-  void producesKeyWithRAWFormatWhenDerivingKey() {
+  void producesKeyWithRAWFormatWhenGeneratingKey() {
     // When
     final var generatedKey =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_128_BITS);
@@ -179,132 +186,106 @@ class PBKDSCryptServiceTest {
     assertThat(generatedKey.getFormat(), is(equalTo(RAW)));
   }
 
-  @Test
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith64Bit() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_64_BITS,
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS,
+      KEY_LENGTH_512_BITS,
+      KEY_LENGTH_1024_BITS})
+  void producesKeyWithTheRequestedLengthWhenGeneratingKey(Integer keyLength) {
     // When
     final var generatedKey =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_64_BITS);
+            keyLength);
 
     // Then
     final var generatedKeyLengthInBits = generatedKey.getEncoded().length * 8;
-    assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_64_BITS)));
+    assertThat(generatedKeyLengthInBits, is(equalTo(keyLength)));
   }
 
-  @Test
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith128Bit() {
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
-            PASSWORD_1234567890_80_BITS,
-            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
-
-    // Then
-    final var generatedKeyLengthInBits = generatedKey.getEncoded().length * 8;
-    assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_128_BITS)));
-  }
-
-  @Test
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith256Bit() {
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
-            PASSWORD_1234567890_80_BITS,
-            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_256_BITS);
-
-    // Then
-    final var generatedKeyLengthInBits = generatedKey.getEncoded().length * 8;
-    assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_256_BITS)));
-  }
-
-  @Test
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith512Bit() {
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
-            PASSWORD_1234567890_80_BITS,
-            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_512_BITS);
-
-    // Then
-    final var generatedKeyLengthInBits = generatedKey.getEncoded().length * 8;
-    assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_512_BITS)));
-  }
-
-  @Test
-  void producesKeyWithTheRequestLengthWhenDerivingKeyWith1024Bit() {
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
-            PASSWORD_1234567890_80_BITS,
-            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_1024_BITS);
-
-    // Then
-    final var generatedKeyLengthInBits = generatedKey.getEncoded().length * 8;
-    assertThat(generatedKeyLengthInBits, is(equalTo(KEY_LENGTH_1024_BITS)));
-  }
-
-  @Test
-  void producesTheSameKeyWhenDerivingTwoConsecutiveKeysWithTheSamePasswordSaltAndLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_64_BITS,
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS,
+      KEY_LENGTH_512_BITS,
+      KEY_LENGTH_1024_BITS})
+  void producesTheSameKeyWhenGeneratingTwoConsecutiveKeysWithTheSamePasswordSaltAndLength(Integer keyLength) {
     // When generating two consecutive keys with the same password, salt and length
     final var generatedKey_1 =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
+            keyLength);
     final var generatedKey_2 =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
+            keyLength);
 
     // Then the generated keys are the same
     assertThat(generatedKey_1.getEncoded(), is(equalTo(generatedKey_2.getEncoded())));
   }
 
-  @Test
-  void producesDifferentKeysWhenDerivingTwoConsecutiveKeysWithTheSameSaltAndLengthButDifferentPassword() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_64_BITS,
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS,
+      KEY_LENGTH_512_BITS,
+      KEY_LENGTH_1024_BITS})
+  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSameSaltAndLengthButDifferentPassword(Integer keyLength) {
     // When generating two consecutive keys with the same salt and length but different password
     final var generatedKey_1 =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
+            keyLength);
     final var generatedKey_2 =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_0123456789_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
+            keyLength);
 
     // Then the generated keys are different
     assertThat(generatedKey_1.getEncoded(), is(not(equalTo(generatedKey_2.getEncoded()))));
   }
 
-  @Test
-  void producesDifferentKeysWhenDerivingTwoConsecutiveKeysWithTheSamePasswordAndLengthButDifferentSalt() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_64_BITS,
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS,
+      KEY_LENGTH_512_BITS,
+      KEY_LENGTH_1024_BITS})
+  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSamePasswordAndLengthButDifferentSalt(Integer keyLength) {
     // When generating two consecutive keys with the same password and length but different salt
     final var generatedKey_1 =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
+            keyLength);
     final var generatedKey_2 =
-        pbkdKeyService.deriveKey(
+        pbkdKeyService.generateKey(
             PASSWORD_1234567890_80_BITS,
             SALT_ZYXWVUTSRQPONMLKJIHG_20_BYTES,
-            KEY_LENGTH_128_BITS);
+            keyLength);
 
     // Then the generated keys are different
     assertThat(generatedKey_1.getEncoded(), is(not(equalTo(generatedKey_2.getEncoded()))));
   }
 
-  @Test
-  void producesTheSameKeyWhenDerivingManyConsecutiveKeysWithTheSamePasswordSaltAndLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_64_BITS,
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS,
+      KEY_LENGTH_512_BITS,
+      KEY_LENGTH_1024_BITS})
+  void producesTheSameKeyWhenGeneratingManyConsecutiveKeysWithTheSamePasswordSaltAndLength(Integer keyLength) {
     // Given
     final var _100 = 100;
 
@@ -313,10 +294,10 @@ class PBKDSCryptServiceTest {
         IntStream
             .range(0, _100)
             .mapToObj(index ->
-                pbkdKeyService.deriveKey(
+                pbkdKeyService.generateKey(
                     PASSWORD_1234567890_80_BITS,
                     SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-                    KEY_LENGTH_256_BITS))
+                    keyLength))
             .map(Key::getEncoded)
             .map(BigInteger::new)
             .collect(Collectors.toUnmodifiableSet());
@@ -325,12 +306,18 @@ class PBKDSCryptServiceTest {
     assertThat(generatedKeys, hasSize(1));
   }
 
-  @Test
-  void producesTheSameKeyWhenDerivingConcurrentlyManyKeysWithTheSamePasswordSaltAndLength() throws Exception {
+  @ParameterizedTest
+  @ValueSource(ints = {
+      KEY_LENGTH_64_BITS,
+      KEY_LENGTH_128_BITS,
+      KEY_LENGTH_256_BITS,
+      KEY_LENGTH_512_BITS,
+      KEY_LENGTH_1024_BITS})
+  void producesTheSameKeyWhenGeneratingConcurrentlyManyKeysWithTheSamePasswordSaltAndLength(Integer keyLength) throws Exception {
     // Given
     final var _500 = 500;
 
-    // When generating concurrently at the same time random keys with the same password, salt and length
+    // When generating concurrently at the same time keys with the same password, salt and length
     final var countDownLatch = new CountDownLatch(_500);
     final var executorService = Executors.newFixedThreadPool(_500);
 
@@ -349,10 +336,10 @@ class PBKDSCryptServiceTest {
               }
 
               final var generatedKey =
-                  pbkdKeyService.deriveKey(
+                  pbkdKeyService.generateKey(
                       PASSWORD_1234567890_80_BITS,
                       SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-                      KEY_LENGTH_256_BITS);
+                      keyLength);
 
               generatedKeys.add(new BigInteger(generatedKey.getEncoded()));
             })
@@ -367,55 +354,47 @@ class PBKDSCryptServiceTest {
     assertThat(generatedKeys, hasSize(1));
   }
 
-  @Test
-  void producesTheRightKeyWhenDerivingKeyWith128Bit() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithSomeKeyLengthsAndExpectedGeneratedKey")
+  void producesTheRightKeyWhenGeneratingKey(
+      String password,
+      byte[] salt,
+      Integer keyLength,
+      byte[] expectedGeneratedKey) {
+
     // When
     final var generatedKey =
-        pbkdKeyService.deriveKey(
-            PASSWORD_1234567890_80_BITS,
-            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_128_BITS);
+        pbkdKeyService.generateKey(
+            password,
+            salt,
+            keyLength);
 
     // Then
-    assertThat(generatedKey.getEncoded(), is(equalTo(SCRYPT_HASH_128_BITS)));
+    assertThat(generatedKey.getEncoded(), is(equalTo(expectedGeneratedKey)));
   }
 
-  @Test
-  void producesTheRightKeyWhenDerivingKeyWith256Bit() {
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
+  static Stream<Arguments> argumentsWithSomeKeyLengthsAndExpectedGeneratedKey() {
+    return Stream.of(
+        Arguments.of(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_256_BITS);
-
-    // Then
-    assertThat(generatedKey.getEncoded(), is(equalTo(SCRYPT_HASH_256_BITS)));
-  }
-
-  @Test
-  void producesTheRightKeyWhenDerivingKeyWith512Bit() {
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
+            KEY_LENGTH_128_BITS,
+            SCRYPT_HASH_128_BITS),
+        Arguments.of(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_512_BITS);
-
-    // Then
-    assertThat(generatedKey.getEncoded(), is(equalTo(SCRYPT_HASH_512_BITS)));
-  }
-
-  @Test
-  void producesTheRightKeyWhenDerivingKeyWith1024Bit() {
-    // When
-    final var generatedKey =
-        pbkdKeyService.deriveKey(
+            KEY_LENGTH_256_BITS,
+            SCRYPT_HASH_256_BITS),
+        Arguments.of(
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-            KEY_LENGTH_1024_BITS);
-
-    // Then
-    assertThat(generatedKey.getEncoded(), is(equalTo(SCRYPT_HASH_1024_BITS)));
+            KEY_LENGTH_512_BITS,
+            SCRYPT_HASH_512_BITS),
+        Arguments.of(
+            PASSWORD_1234567890_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_1024_BITS,
+            SCRYPT_HASH_1024_BITS)
+    );
   }
 }

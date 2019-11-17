@@ -28,7 +28,7 @@ class CryptographyProviderUtilTest {
     assumeFalse(Arrays.asList(Security.getProviders()).contains(newCryptographyProvider));
 
     // When adding the new cryptography provider
-    int position = CryptographyProviderUtil.addCryptographyProvider(newCryptographyProvider);
+    var position = CryptographyProviderUtil.addCryptographyProvider(newCryptographyProvider);
 
     // Then the cryptography provider has been added to the JVM so position is >= 1
     assertThat(position, is(greaterThanOrEqualTo(1)));
@@ -36,21 +36,21 @@ class CryptographyProviderUtilTest {
 
   @Test
   void producesPositionEqualsToMinusOneWhenWhenAddingCryptographyProviderWhichDoesExist() {
-    // Given a cryptography provider not provided by JVM
+    // Given a cryptography provider provided by JVM
     final var newCryptographyProvider =
         new Provider(
             "test-provider-2",
             "1.0",
             "for testing purpose") {};
 
-    assumeFalse(Arrays.asList(Security.getProviders()).contains(newCryptographyProvider));
-
     CryptographyProviderUtil.addCryptographyProvider(newCryptographyProvider);
 
-    // When adding an existing cryptography provider
-    int position = CryptographyProviderUtil.addCryptographyProvider(newCryptographyProvider);
+    assumeTrue(Arrays.asList(Security.getProviders()).contains(newCryptographyProvider));
 
-    // Then the cryptography provider has been added to the JVM so position is >= 1
+    // When adding an existing cryptography provider
+    var position = CryptographyProviderUtil.addCryptographyProvider(newCryptographyProvider);
+
+    // Then the cryptography provider has NOT been added to the JVM so position is -1
     assertThat(position, is(equalTo(-1)));
   }
 
@@ -75,7 +75,7 @@ class CryptographyProviderUtilTest {
   }
 
   @Test
-  void addsBouncyCastleProperlyWhenAddingBouncyCastleCryptographyProvider() {
+  void addsBouncyCastleProperlyWhenAddingBouncyCastleCryptographyProviderAndItDoesNotExist() {
     // Given Bouncy Castle is not provided by JVM
     final var bouncyCastleProvider = new BouncyCastleProvider();
 

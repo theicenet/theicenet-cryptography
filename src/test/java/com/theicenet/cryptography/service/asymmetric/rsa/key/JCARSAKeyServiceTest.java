@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class JCARSAKeyServiceTest {
 
@@ -100,64 +102,57 @@ class JCARSAKeyServiceTest {
     assertThat(generatedKeyPair.getPrivate().getFormat(), is(equalTo(PKCS_8)));
   }
 
-  @Test
-  void producesPublicKeyWithTheRightModulusLengthWhenGeneratingKeyWith1024Bits() throws Exception {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesPublicKeyWithTheRightModulusLengthWhenGeneratingKey(int keyLength) throws Exception {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = rsaKeyService.generateKey(keyLength);
 
     // Then
     final var keyFactory = KeyFactory.getInstance(RSA);
     final var rsaPublicKey = keyFactory.getKeySpec(generatedKeyPair.getPublic(), RSAPublicKeySpec.class);
 
-    assertThat(rsaPublicKey.getModulus().bitLength(), is(equalTo(KEY_LENGTH_1024_BITS)));
+    assertThat(rsaPublicKey.getModulus().bitLength(), is(equalTo(keyLength)));
   }
 
-  @Test
-  void producesPrivateKeyWithTheRightModulusLengthWhenGeneratingKeyWith1024Bits() throws Exception {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesPrivateKeyWithTheRightModulusLengthWhenGeneratingKey(int keyLength) throws Exception {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = rsaKeyService.generateKey(keyLength);
 
     // Then
     final var keyFactory = KeyFactory.getInstance(RSA);
     final var rsaPrivateKey = keyFactory.getKeySpec(generatedKeyPair.getPrivate(), RSAPrivateKeySpec.class);
 
-    assertThat(rsaPrivateKey.getModulus().bitLength(), is(equalTo(KEY_LENGTH_1024_BITS)));
+    assertThat(rsaPrivateKey.getModulus().bitLength(), is(equalTo(keyLength)));
   }
 
-  @Test
-  void producesPrivateKeyWithTheRightModulusLengthWhenGeneratingKeyWith2048Bits() throws Exception {
-    // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_2048_BITS);
-
-    // Then
-    final var keyFactory = KeyFactory.getInstance(RSA);
-    final var rsaPrivateKey = keyFactory.getKeySpec(generatedKeyPair.getPrivate(), RSAPrivateKeySpec.class);
-
-    assertThat(rsaPrivateKey.getModulus().bitLength(), is(equalTo(KEY_LENGTH_2048_BITS)));
-  }
-
-  @Test
-  void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
     // When generating two consecutive key pairs with the same length
-    final var generatedKeyPair_1 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
-    final var generatedKeyPair_2 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair_1 = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_2 = rsaKeyService.generateKey(keyLength);
 
     // Then the generated public keys are different
     assertThat(generatedKeyPair_1.getPublic(), is(not(equalTo(generatedKeyPair_2.getPublic()))));
   }
 
-  @Test
-  void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
     // When generating two consecutive key pairs with the same length
-    final var generatedKeyPair_1 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
-    final var generatedKeyPair_2 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair_1 = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_2 = rsaKeyService.generateKey(keyLength);
 
     // Then the generated private keys are different
     assertThat(generatedKeyPair_1.getPrivate(), is(not(equalTo(generatedKeyPair_2.getPrivate()))));
   }
 
-  @Test
-  void producesDifferentPublicKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesDifferentPublicKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength(int keyLength) {
     // Given
     final var _100 = 100;
 
@@ -165,7 +160,7 @@ class JCARSAKeyServiceTest {
     final var generatePublicKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(KEY_LENGTH_1024_BITS))
+            .mapToObj(index -> rsaKeyService.generateKey(keyLength))
             .map(KeyPair::getPublic)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -173,8 +168,9 @@ class JCARSAKeyServiceTest {
     assertThat(generatePublicKeys, hasSize(_100));
   }
 
-  @Test
-  void producesDifferentPrivateKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesDifferentPrivateKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength(int keyLength) {
     // Given
     final var _100 = 100;
 
@@ -182,7 +178,7 @@ class JCARSAKeyServiceTest {
     final var generatePrivateKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(KEY_LENGTH_1024_BITS))
+            .mapToObj(index -> rsaKeyService.generateKey(keyLength))
             .map(KeyPair::getPrivate)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -190,8 +186,9 @@ class JCARSAKeyServiceTest {
     assertThat(generatePrivateKeys, hasSize(_100));
   }
 
-  @Test
-  void producesDifferentPublicKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesDifferentPublicKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength(int keyLength) throws Exception {
     // Given
     final var _500 = 500;
 
@@ -213,7 +210,7 @@ class JCARSAKeyServiceTest {
                 throw new RuntimeException(e);
               }
 
-              final var keyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+              final var keyPair = rsaKeyService.generateKey(keyLength);
               generatedPublicKeys.add(keyPair.getPublic());
             }));
 
@@ -226,8 +223,9 @@ class JCARSAKeyServiceTest {
     assertThat(generatedPublicKeys, hasSize(_500));
   }
 
-  @Test
-  void producesDifferentPrivateKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
+  @ParameterizedTest
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  void producesDifferentPrivateKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength(int keyLength) throws Exception {
     // Given
     final var _500 = 500;
 
@@ -249,7 +247,7 @@ class JCARSAKeyServiceTest {
                 throw new RuntimeException(e);
               }
 
-              final var keyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+              final var keyPair = rsaKeyService.generateKey(keyLength);
               generatedPrivateKeys.add(keyPair.getPrivate());
             }));
 

@@ -14,7 +14,7 @@ public class JCAIVService implements IVService {
 
   @Override
   public byte[] generateRandom(int ivLengthInBytes) {
-    final var iv = new byte[ivLengthInBytes];
+    final byte[] iv = new byte[ivLengthInBytes];
     secureRandom.nextBytes(iv);
 
     return iv;

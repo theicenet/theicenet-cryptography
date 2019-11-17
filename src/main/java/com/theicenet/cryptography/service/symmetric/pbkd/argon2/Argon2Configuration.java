@@ -1,8 +1,11 @@
 package com.theicenet.cryptography.service.symmetric.pbkd.argon2;
 
 import javax.annotation.concurrent.Immutable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Immutable
+@Component
 final class Argon2Configuration {
   private final Argon2Type type;
   private final Argon2Version version;
@@ -11,12 +14,12 @@ final class Argon2Configuration {
   private final Integer parallelism;
 
   Argon2Configuration(
-      Argon2Type type,
-      Argon2Version version,
-      Integer iterations,
-      Integer memoryPowOfTwo,
-      Integer parallelism) {
-
+      @Value("${cryptography.keyDerivationFunction.argon2.type}") Argon2Type type,
+      @Value("${cryptography.keyDerivationFunction.argon2.version}") Argon2Version version,
+      @Value("${cryptography.keyDerivationFunction.argon2.iterations}") Integer iterations,
+      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo}") Integer memoryPowOfTwo,
+      @Value("${cryptography.keyDerivationFunction.argon2.parallelism}") Integer parallelism) {
+    
     this.type = type;
     this.version = version;
     this.iterations = iterations;

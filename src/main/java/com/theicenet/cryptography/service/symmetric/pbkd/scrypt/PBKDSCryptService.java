@@ -6,7 +6,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang.Validate;
 import org.bouncycastle.crypto.generators.SCrypt;
-import org.springframework.beans.factory.annotation.Value;
 
 public class PBKDSCryptService implements PBKDKeyService {
 
@@ -14,38 +13,30 @@ public class PBKDSCryptService implements PBKDKeyService {
 
   private final SCryptConfiguration sCryptConfiguration;
 
-  public PBKDSCryptService(
-      @Value("${cryptography.keyDerivationFunction.scrypt.cpuMemoryCost}") Integer cpuMemoryCost,
-      @Value("${cryptography.keyDerivationFunction.scrypt.blockSize}") Integer blockSize,
-      @Value("${cryptography.keyDerivationFunction.scrypt.parallelization}") Integer parallelization) {
-
-    this.sCryptConfiguration =
-        new SCryptConfiguration(
-            cpuMemoryCost,
-            blockSize,
-            parallelization);
+  public PBKDSCryptService(SCryptConfiguration sCryptConfiguration) {
+    this.sCryptConfiguration = sCryptConfiguration;
   }
 
   @Override
-  public SecretKey deriveKey(String password, byte[] salt, int keyLengthInBits) {
+  public SecretKey generateKey(String password, byte[] salt, int keyLengthInBits) {
     Validate.notNull(password);
     Validate.notNull(salt);
     Validate.isTrue(keyLengthInBits > 0);
 
     return new SecretKeySpec(
         generateKey(
-            sCryptConfiguration,
             password,
             salt,
-            keyLengthInBits),
+            keyLengthInBits,
+            sCryptConfiguration),
         SCRYPT);
   }
 
   private byte[] generateKey(
-      SCryptConfiguration sCryptConfiguration,
       String password,
       byte[] salt,
-      int keyLengthInBits) {
+      int keyLengthInBits,
+      SCryptConfiguration sCryptConfiguration) {
 
     return SCrypt.generate(
         password.getBytes(StandardCharsets.UTF_8),
