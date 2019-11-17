@@ -1,5 +1,8 @@
 package com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 final class PBKDF2Configuration {
   private final String algorithm;
   private final Integer iterations;

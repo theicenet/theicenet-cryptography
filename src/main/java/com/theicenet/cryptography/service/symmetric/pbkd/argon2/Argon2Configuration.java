@@ -1,5 +1,8 @@
 package com.theicenet.cryptography.service.symmetric.pbkd.argon2;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 final class Argon2Configuration {
   private final Argon2Type type;
   private final Argon2Version version;

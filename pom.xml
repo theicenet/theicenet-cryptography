@@ -35,6 +35,11 @@
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
     </dependency>
+    <dependency>
+      <groupId>org.mutabilitydetector</groupId>
+      <artifactId>MutabilityDetector</artifactId>
+      <version>0.10.2</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
