@@ -1,10 +1,8 @@
 package com.theicenet.cryptography.service.symmetric.pbkd.scrypt;
 
-import javax.annotation.concurrent.Immutable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Immutable
 @Component
 final class SCryptConfiguration {
   private final Integer cpuMemoryCost;

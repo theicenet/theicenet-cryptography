@@ -1,10 +1,8 @@
 package com.theicenet.cryptography.service.symmetric.pbkd.argon2;
 
-import javax.annotation.concurrent.Immutable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Immutable
 @Component
 final class Argon2Configuration {
   private final Argon2Type type;

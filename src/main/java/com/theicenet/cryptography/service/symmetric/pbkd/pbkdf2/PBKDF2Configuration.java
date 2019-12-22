@@ -1,10 +1,8 @@
 package com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2;
 
-import javax.annotation.concurrent.Immutable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Immutable
 @Component
 final class PBKDF2Configuration {
   private final String PBKDF2_WITH_HMAC = "PBKDF2WithHmac";
