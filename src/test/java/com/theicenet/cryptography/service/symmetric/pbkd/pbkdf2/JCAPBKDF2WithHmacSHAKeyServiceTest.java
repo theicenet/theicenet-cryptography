@@ -8,7 +8,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2.exception.JCAPBKDF2WithHmacSHAKeyException;
+import com.theicenet.cryptography.service.symmetric.pbkd.exception.PBKDKeyServiceException;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -215,7 +215,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
     // Then
     assertThrows(
-        JCAPBKDF2WithHmacSHAKeyException.class,
+        PBKDKeyServiceException.class,
         () ->
             pbkdKeyService.generateKey(
                 PASSWORD_1234567890_80_BITS,

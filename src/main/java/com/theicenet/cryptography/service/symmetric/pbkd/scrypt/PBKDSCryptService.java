@@ -6,7 +6,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang.Validate;
 import org.bouncycastle.crypto.generators.SCrypt;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PBKDSCryptService implements PBKDKeyService {
 
   private static final String SCRYPT = "SCrypt";

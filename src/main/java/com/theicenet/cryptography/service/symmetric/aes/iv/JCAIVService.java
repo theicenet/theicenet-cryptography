@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JCAIVService implements IVService {
+
   private final SecureRandom secureRandom;
 
   public JCAIVService(SecureRandom secureRandom) {

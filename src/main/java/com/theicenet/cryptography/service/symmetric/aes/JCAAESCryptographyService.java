@@ -1,17 +1,7 @@
 package com.theicenet.cryptography.service.symmetric.aes;
 
-import com.theicenet.cryptography.service.symmetric.aes.exception.AESBadPaddingException;
-import com.theicenet.cryptography.service.symmetric.aes.exception.AESCipherNotFoundException;
-import com.theicenet.cryptography.service.symmetric.aes.exception.AESIllegalBlockSizeException;
-import com.theicenet.cryptography.service.symmetric.aes.exception.AESInvalidAlgorithmParameterException;
-import com.theicenet.cryptography.service.symmetric.aes.exception.AESInvalidKeyException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.BadPaddingException;
+import com.theicenet.cryptography.service.symmetric.aes.exception.AESCryptographyServiceException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.lang.Validate;
@@ -77,10 +67,8 @@ public class JCAAESCryptographyService implements AESCryptographyService {
 
     try {
       return cipher.doFinal(content);
-    } catch (IllegalBlockSizeException e) {
-      throw new AESIllegalBlockSizeException(e);
-    } catch (BadPaddingException e) {
-      throw new AESBadPaddingException(e);
+    } catch (Exception e) {
+      throw new AESCryptographyServiceException("Exception processing content", e);
     }
   }
 
@@ -95,12 +83,8 @@ public class JCAAESCryptographyService implements AESCryptographyService {
     try {
       cipher = Cipher.getInstance(String.format("AES/%s/%s", blockMode, padding));
       cipher.init(operationMode, secretKey, new IvParameterSpec(iv));
-    } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-      throw new AESCipherNotFoundException(blockMode, padding);
-    } catch (InvalidAlgorithmParameterException e) {
-      throw new AESInvalidAlgorithmParameterException(e);
-    } catch (InvalidKeyException e) {
-      throw new AESInvalidKeyException(e);
+    } catch (Exception e) {
+      throw new AESCryptographyServiceException("Exception creating cipher", e);
     }
 
     return cipher;

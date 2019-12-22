@@ -1,6 +1,6 @@
 package com.theicenet.cryptography.service.asymmetric.rsa.key;
 
-import com.theicenet.cryptography.service.asymmetric.rsa.key.exception.RSANoSuchAlgorithmException;
+import com.theicenet.cryptography.service.asymmetric.rsa.key.exception.RSAKeyServiceException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +24,7 @@ public class JCARSAKeyService implements RSAKeyService {
     try {
       generator = KeyPairGenerator.getInstance(RSA);
     } catch (NoSuchAlgorithmException e) {
-      throw new RSANoSuchAlgorithmException(e);
+      throw new RSAKeyServiceException("Exception generating RSA key", e);
     }
     generator.initialize(keyLengthInBits, secureRandom);
 

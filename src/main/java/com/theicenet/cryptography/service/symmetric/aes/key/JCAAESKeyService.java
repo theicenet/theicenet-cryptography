@@ -1,6 +1,6 @@
 package com.theicenet.cryptography.service.symmetric.aes.key;
 
-import com.theicenet.cryptography.service.symmetric.aes.key.exception.AESAlgorithmNotFoundException;
+import com.theicenet.cryptography.service.symmetric.aes.key.exception.AESKeyServiceException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import javax.crypto.KeyGenerator;
@@ -24,7 +24,7 @@ public class JCAAESKeyService implements AESKeyService {
     try {
       keyGenerator = KeyGenerator.getInstance(AES);
     } catch (NoSuchAlgorithmException e) {
-      throw new AESAlgorithmNotFoundException(AES, e);
+      throw new AESKeyServiceException("Key generation algorithm AES not found", e);
     }
     keyGenerator.init(keyLengthInBits, secureRandom);
 

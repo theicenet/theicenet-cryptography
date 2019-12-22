@@ -2,7 +2,7 @@ package com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2;
 
 import com.theicenet.cryptography.provider.CryptographyProviderUtil;
 import com.theicenet.cryptography.service.symmetric.pbkd.PBKDKeyService;
-import com.theicenet.cryptography.service.symmetric.pbkd.pbkdf2.exception.JCAPBKDF2WithHmacSHAKeyException;
+import com.theicenet.cryptography.service.symmetric.pbkd.exception.PBKDKeyServiceException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKey;
@@ -39,7 +39,7 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
 
       return generateKey(pbkdf2Configuration.getAlgorithm(), pbeKeySpec);
     } catch (Exception e) {
-      throw new JCAPBKDF2WithHmacSHAKeyException(e);
+      throw new PBKDKeyServiceException("Exception generating PBKDF2 key", e);
     }
   }
 

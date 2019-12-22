@@ -14,13 +14,13 @@ cryptography:
       shaAlgorithm: SHA512
       iterations: 131070
     scrypt:
-      cpuMemoryCost: 1048576
+      cpuMemoryCost: 32768
       blockSize: 8
       parallelization: 1
     argon2:
       type: ARGON2_ID
       version: ARGON2_VERSION_13
-      iterations: 3
-      memoryPowOfTwo: 27
-      parallelism: 4
+      iterations: 2
+      memoryPowOfTwo: 18
+      parallelism: 2
 

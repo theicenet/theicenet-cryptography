@@ -37,19 +37,19 @@ class JCASaltServiceTest {
   @Test
   void producesNotNullWhenGeneratingRandom() {
     // When
-    final var generatedKey = saltService.generateRandom(SALT_LENGTH_16_BYTES);
+    final var generatedSalt = saltService.generateRandom(SALT_LENGTH_16_BYTES);
 
     // Then
-    assertThat(generatedKey, is(notNullValue()));
+    assertThat(generatedSalt, is(notNullValue()));
   }
 
   @Test
   void producesNotEmptyWhenGeneratingRandom() {
     // When
-    final var generatedKey = saltService.generateRandom(SALT_LENGTH_16_BYTES);
+    final var generatedSalt = saltService.generateRandom(SALT_LENGTH_16_BYTES);
 
     // Then
-    assertThat(generatedKey.length, is(greaterThan(0)));
+    assertThat(generatedSalt.length, is(greaterThan(0)));
   }
 
   @ParameterizedTest
@@ -60,10 +60,10 @@ class JCASaltServiceTest {
       SALT_LENGTH_128_BYTES})
   void producesSaltWithTheRequestedLengthWhenGeneratingRandom(int saltLength) {
     // When
-    final var generatedKey = saltService.generateRandom(saltLength);
+    final var generatedSalt = saltService.generateRandom(saltLength);
 
     // Then
-    assertThat(generatedKey.length, is(equalTo(saltLength)));
+    assertThat(generatedSalt.length, is(equalTo(saltLength)));
   }
 
   @ParameterizedTest
@@ -74,11 +74,11 @@ class JCASaltServiceTest {
       SALT_LENGTH_128_BYTES})
   void producesDifferentSaltsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength(int saltLength) {
     // When generating two consecutive random Salts with the same length
-    final var generatedKey_1 = saltService.generateRandom(saltLength);
-    final var generatedKey_2 = saltService.generateRandom(saltLength);
+    final var generatedSalt_1 = saltService.generateRandom(saltLength);
+    final var generatedSalt_2 = saltService.generateRandom(saltLength);
 
     // Then the generated random Salts are different
-    assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
+    assertThat(generatedSalt_1, is(not(equalTo(generatedSalt_2))));
   }
 
   @ParameterizedTest
@@ -92,7 +92,7 @@ class JCASaltServiceTest {
     final var _100 = 100;
 
     // When generating consecutive random Salts with the same length
-    final var generatedKeys =
+    final var generatedSalts =
         IntStream
             .range(0, _100)
             .mapToObj(index -> saltService.generateRandom(saltLength))
@@ -100,7 +100,7 @@ class JCASaltServiceTest {
             .collect(Collectors.toUnmodifiableSet());
 
     // Then all Salts have been generated and all them are different
-    assertThat(generatedKeys, hasSize(_100));
+    assertThat(generatedSalts, hasSize(_100));
   }
 
   @ParameterizedTest
@@ -118,7 +118,7 @@ class JCASaltServiceTest {
     final var countDownLatch = new CountDownLatch(_500);
     final var executorService = Executors.newFixedThreadPool(_500);
 
-    final var generatedKeys = new CopyOnWriteArraySet<byte[]>();
+    final var generatedSalts = new CopyOnWriteArraySet<byte[]>();
 
     IntStream
         .range(0, _500)
@@ -132,7 +132,7 @@ class JCASaltServiceTest {
                 throw new RuntimeException(e);
               }
 
-              generatedKeys.add(saltService.generateRandom(saltLength));
+              generatedSalts.add(saltService.generateRandom(saltLength));
             }));
 
     executorService.shutdown();
@@ -142,7 +142,7 @@ class JCASaltServiceTest {
 
     // Then all Salts have been generated and all them are different
     assertThat(
-        generatedKeys.stream()
+        generatedSalts.stream()
             .map(String::new)
             .collect(Collectors.toUnmodifiableSet()),
         hasSize(_500));
