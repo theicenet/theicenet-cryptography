@@ -1,14 +1,13 @@
 package com.theicenet.cryptography.service.pbkd.scrypt;
 
 import com.theicenet.cryptography.service.pbkd.PBKDKeyService;
-import java.nio.charset.StandardCharsets;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang.Validate;
 import org.bouncycastle.crypto.generators.SCrypt;
-import org.springframework.stereotype.Service;
 
-@Service
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+
 public class PBKDSCryptService implements PBKDKeyService {
 
   private static final String SCRYPT = "SCrypt";

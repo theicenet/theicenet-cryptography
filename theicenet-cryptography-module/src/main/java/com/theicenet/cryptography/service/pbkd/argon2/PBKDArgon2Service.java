@@ -1,15 +1,14 @@
 package com.theicenet.cryptography.service.pbkd.argon2;
 
 import com.theicenet.cryptography.service.pbkd.PBKDKeyService;
-import java.nio.charset.StandardCharsets;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang.Validate;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
-import org.springframework.stereotype.Service;
 
-@Service
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+
 public class PBKDArgon2Service implements PBKDKeyService {
 
   private final Argon2Configuration argon2Configuration;

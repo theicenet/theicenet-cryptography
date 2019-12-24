@@ -3,15 +3,14 @@ package com.theicenet.cryptography.service.pbkd.pbkdf2;
 import com.theicenet.cryptography.provider.CryptographyProviderUtil;
 import com.theicenet.cryptography.service.pbkd.PBKDKeyService;
 import com.theicenet.cryptography.service.pbkd.exception.PBKDKeyServiceException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import org.apache.commons.lang.Validate;
+
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import org.apache.commons.lang.Validate;
-import org.springframework.stereotype.Service;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
-@Service
 public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
 
   private final PBKDF2Configuration pbkdf2Configuration;

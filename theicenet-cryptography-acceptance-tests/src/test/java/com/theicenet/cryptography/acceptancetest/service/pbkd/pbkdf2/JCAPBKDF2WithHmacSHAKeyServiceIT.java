@@ -27,7 +27,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceIT {
       HexUtil.decodeHex("828ecba1f92cf57631611736039ac9cc6cbe9c5f8fe28811c53909dbb5d06858");
 
   @Autowired
-  @Qualifier("JCAPBKDF2WithHmacSHAKeyService")
+  @Qualifier("PBKDF2")
   PBKDKeyService pbkdKeyService;
 
   @Test

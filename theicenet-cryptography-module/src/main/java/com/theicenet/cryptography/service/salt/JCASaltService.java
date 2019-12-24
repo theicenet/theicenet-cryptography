@@ -1,9 +1,7 @@
 package com.theicenet.cryptography.service.salt;
 
 import java.security.SecureRandom;
-import org.springframework.stereotype.Service;
 
-@Service
 public class JCASaltService implements SaltService {
 
   private final SecureRandom secureRandom;

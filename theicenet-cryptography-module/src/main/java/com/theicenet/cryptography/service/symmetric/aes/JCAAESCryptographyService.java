@@ -1,13 +1,12 @@
 package com.theicenet.cryptography.service.symmetric.aes;
 
 import com.theicenet.cryptography.service.symmetric.aes.exception.AESCryptographyServiceException;
+import org.apache.commons.lang.Validate;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import org.apache.commons.lang.Validate;
-import org.springframework.stereotype.Service;
 
-@Service
 public class JCAAESCryptographyService implements AESCryptographyService {
 
   private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;

@@ -26,7 +26,7 @@ class PBKDSCryptServiceIT {
       HexUtil.decodeHex("935a09dc069597dca05a6601588cda5a1918359eaf9260059e03f0f1e94bb251");
 
   @Autowired
-  @Qualifier("PBKDSCryptService")
+  @Qualifier("PBKDSCrypt")
   PBKDKeyService pbkdKeyService;
 
   @Test

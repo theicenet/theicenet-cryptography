@@ -26,7 +26,7 @@ class PBKDArgon2ServiceIT {
       HexUtil.decodeHex("6e9bb67c4531a6c8df76cca86ed5626ef8f0150d98aa3a2ec7eecf6576b17b5c");
 
   @Autowired
-  @Qualifier("PBKDArgon2Service")
+  @Qualifier("PBKDArgon2")
   PBKDKeyService pbkdKeyService;
 
   @Test

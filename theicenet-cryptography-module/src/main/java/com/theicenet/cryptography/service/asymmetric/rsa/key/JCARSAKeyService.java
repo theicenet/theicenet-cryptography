@@ -1,13 +1,12 @@
 package com.theicenet.cryptography.service.asymmetric.rsa.key;
 
 import com.theicenet.cryptography.service.asymmetric.rsa.key.exception.RSAKeyServiceException;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import org.springframework.stereotype.Service;
 
-@Service
 public class JCARSAKeyService implements RSAKeyService {
 
   private static final String RSA = "RSA";

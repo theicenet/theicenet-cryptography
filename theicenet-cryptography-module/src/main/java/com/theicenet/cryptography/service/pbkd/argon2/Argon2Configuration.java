@@ -1,22 +1,18 @@
 package com.theicenet.cryptography.service.pbkd.argon2;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-@Component
-final class Argon2Configuration {
+public final class Argon2Configuration {
   private final Argon2Type type;
   private final Argon2Version version;
   private final Integer iterations;
   private final Integer memoryPowOfTwo;
   private final Integer parallelism;
 
-  Argon2Configuration(
-      @Value("${cryptography.keyDerivationFunction.argon2.type:ARGON2_ID}") Argon2Type type,
-      @Value("${cryptography.keyDerivationFunction.argon2.version:ARGON2_VERSION_13}") Argon2Version version,
-      @Value("${cryptography.keyDerivationFunction.argon2.iterations:3}") Integer iterations,
-      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo:18}") Integer memoryPowOfTwo,
-      @Value("${cryptography.keyDerivationFunction.argon2.parallelism:4}") Integer parallelism) {
+  public Argon2Configuration(
+      Argon2Type type,
+      Argon2Version version,
+      Integer iterations,
+      Integer memoryPowOfTwo,
+      Integer parallelism) {
     
     this.type = type;
     this.version = version;

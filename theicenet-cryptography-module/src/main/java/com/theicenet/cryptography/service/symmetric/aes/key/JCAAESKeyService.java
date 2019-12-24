@@ -1,13 +1,12 @@
 package com.theicenet.cryptography.service.symmetric.aes.key;
 
 import com.theicenet.cryptography.service.symmetric.aes.key.exception.AESKeyServiceException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import org.springframework.stereotype.Service;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
-@Service
 public class JCAAESKeyService implements AESKeyService {
 
   private static final String AES = "AES";
