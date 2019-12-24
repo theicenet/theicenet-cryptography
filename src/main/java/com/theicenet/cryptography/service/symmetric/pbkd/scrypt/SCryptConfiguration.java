@@ -10,9 +10,9 @@ final class SCryptConfiguration {
   private final Integer parallelization;
 
   SCryptConfiguration(
-      @Value("${cryptography.keyDerivationFunction.scrypt.cpuMemoryCost}") Integer cpuMemoryCost,
-      @Value("${cryptography.keyDerivationFunction.scrypt.blockSize}") Integer blockSize,
-      @Value("${cryptography.keyDerivationFunction.scrypt.parallelization}") Integer parallelization) {
+      @Value("${cryptography.keyDerivationFunction.scrypt.cpuMemoryCost:1048576}") Integer cpuMemoryCost,
+      @Value("${cryptography.keyDerivationFunction.scrypt.blockSize:8}") Integer blockSize,
+      @Value("${cryptography.keyDerivationFunction.scrypt.parallelization:1}") Integer parallelization) {
 
     this.cpuMemoryCost = cpuMemoryCost;
     this.blockSize = blockSize;

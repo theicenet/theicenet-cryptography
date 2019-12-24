@@ -12,11 +12,11 @@ final class Argon2Configuration {
   private final Integer parallelism;
 
   Argon2Configuration(
-      @Value("${cryptography.keyDerivationFunction.argon2.type}") Argon2Type type,
-      @Value("${cryptography.keyDerivationFunction.argon2.version}") Argon2Version version,
-      @Value("${cryptography.keyDerivationFunction.argon2.iterations}") Integer iterations,
-      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo}") Integer memoryPowOfTwo,
-      @Value("${cryptography.keyDerivationFunction.argon2.parallelism}") Integer parallelism) {
+      @Value("${cryptography.keyDerivationFunction.argon2.type:ARGON2_ID}") Argon2Type type,
+      @Value("${cryptography.keyDerivationFunction.argon2.version:ARGON2_VERSION_13}") Argon2Version version,
+      @Value("${cryptography.keyDerivationFunction.argon2.iterations:3}") Integer iterations,
+      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo:18}") Integer memoryPowOfTwo,
+      @Value("${cryptography.keyDerivationFunction.argon2.parallelism:4}") Integer parallelism) {
     
     this.type = type;
     this.version = version;

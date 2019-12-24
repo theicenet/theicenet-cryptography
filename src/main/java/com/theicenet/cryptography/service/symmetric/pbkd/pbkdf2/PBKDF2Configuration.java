@@ -11,8 +11,8 @@ final class PBKDF2Configuration {
   private final Integer iterations;
 
   PBKDF2Configuration(
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm}") ShaAlgorithm shaAlgorithm,
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations}") Integer iterations) {
+      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm:SHA512}") ShaAlgorithm shaAlgorithm,
+      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations:131070}") Integer iterations) {
 
     this.algorithm = String.format("%s%s", PBKDF2_WITH_HMAC, shaAlgorithm.toString());
     this.iterations = iterations;
