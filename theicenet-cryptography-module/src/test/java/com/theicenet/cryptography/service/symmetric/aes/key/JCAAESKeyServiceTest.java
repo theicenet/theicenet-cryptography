@@ -6,6 +6,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.SecureRandom;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -31,6 +32,18 @@ class JCAAESKeyServiceTest {
   @BeforeEach
   void setUp() {
     aesKeyService = new JCAAESKeyService(new SecureRandom());
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndInvalidKeyLength() {
+    // Given
+    final var KEY_LENGTH_MINUS_ONE = -1;
+
+    // When generating key and invalid key length
+    // Then throws IllegalArgumentException
+    assertThrows(IllegalArgumentException.class, () -> {
+      aesKeyService.generateKey(KEY_LENGTH_MINUS_ONE);
+    });
   }
 
   @Test

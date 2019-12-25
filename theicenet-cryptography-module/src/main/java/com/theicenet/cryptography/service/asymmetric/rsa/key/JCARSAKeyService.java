@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.service.asymmetric.rsa.key;
 
 import com.theicenet.cryptography.service.asymmetric.rsa.key.exception.RSAKeyServiceException;
+import org.apache.commons.lang.Validate;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -19,6 +20,8 @@ public class JCARSAKeyService implements RSAKeyService {
 
   @Override
   public KeyPair generateKey(int keyLengthInBits) {
+    Validate.isTrue(keyLengthInBits > 0);
+
     KeyPairGenerator generator;
     try {
       generator = KeyPairGenerator.getInstance(RSA);

@@ -1,5 +1,7 @@
 package com.theicenet.cryptography.service.symmetric.aes.iv;
 
+import org.apache.commons.lang.Validate;
+
 import java.security.SecureRandom;
 
 public class JCAIVService implements IVService {
@@ -12,6 +14,8 @@ public class JCAIVService implements IVService {
 
   @Override
   public byte[] generateRandom(int ivLengthInBytes) {
+    Validate.isTrue(ivLengthInBytes > 0);
+
     final byte[] iv = new byte[ivLengthInBytes];
     secureRandom.nextBytes(iv);
 

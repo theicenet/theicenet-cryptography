@@ -7,6 +7,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.SecureRandom;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -29,6 +30,18 @@ class JCAIVServiceTest {
   @BeforeEach
   void setUp() {
     ivService = new JCAIVService(new SecureRandom());
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenGeneratingRandomAndInvalidIVLength() {
+    // Given
+    final var IV_LENGTH_MINUS_ONE = -1;
+
+    // When generating IV and invalid IV length
+    // Then throws IllegalArgumentException
+    assertThrows(IllegalArgumentException.class, () -> {
+      ivService.generateRandom(IV_LENGTH_MINUS_ONE);
+    });
   }
 
   @Test

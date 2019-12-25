@@ -1,5 +1,7 @@
 package com.theicenet.cryptography.service.salt;
 
+import org.apache.commons.lang.Validate;
+
 import java.security.SecureRandom;
 
 public class JCASaltService implements SaltService {
@@ -12,6 +14,8 @@ public class JCASaltService implements SaltService {
 
   @Override
   public byte[] generateRandom(int saltLengthInBytes) {
+    Validate.isTrue(saltLengthInBytes > 0);
+
     final byte[] salt = new byte[saltLengthInBytes];
     secureRandom.nextBytes(salt);
 

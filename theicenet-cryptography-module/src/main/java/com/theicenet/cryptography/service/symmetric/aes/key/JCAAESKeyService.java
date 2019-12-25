@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.service.symmetric.aes.key;
 
 import com.theicenet.cryptography.service.symmetric.aes.key.exception.AESKeyServiceException;
+import org.apache.commons.lang.Validate;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -19,6 +20,8 @@ public class JCAAESKeyService implements AESKeyService {
 
   @Override
   public SecretKey generateKey(int keyLengthInBits) {
+    Validate.isTrue(keyLengthInBits > 0);
+
     KeyGenerator keyGenerator;
     try {
       keyGenerator = KeyGenerator.getInstance(AES);

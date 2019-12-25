@@ -7,6 +7,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.SecureRandom;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -30,6 +31,18 @@ class JCASaltServiceTest {
   @BeforeEach
   void setUp() {
     saltService = new JCASaltService(new SecureRandom());
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenGeneratingRandomAndInvalidSaltLength() {
+    // Given
+    final var SALT_LENGTH_MINUS_ONE = -1;
+
+    // When generating salt and invalid salt length
+    // Then throws IllegalArgumentException
+    assertThrows(IllegalArgumentException.class, () -> {
+      saltService.generateRandom(SALT_LENGTH_MINUS_ONE);
+    });
   }
 
   @Test
