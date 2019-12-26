@@ -44,13 +44,12 @@ public class JCAAESCryptographyService implements AESCryptographyService {
   }
 
   private byte[] process(
-      Integer operationMode,
+      int operationMode,
       BlockCipherModeOfOperation blockMode,
       SecretKey secretKey,
       byte[] iv,
       byte[] content) {
 
-    Validate.notNull(operationMode);
     Validate.notNull(blockMode);
     Validate.notNull(secretKey);
     Validate.notNull(iv);

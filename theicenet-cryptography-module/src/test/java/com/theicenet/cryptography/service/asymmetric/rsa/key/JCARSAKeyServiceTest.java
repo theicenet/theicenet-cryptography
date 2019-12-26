@@ -6,6 +6,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.security.KeyFactory;
@@ -113,6 +114,42 @@ class JCARSAKeyServiceTest {
 
     // Then
     assertThat(generatedKeyPair.getPrivate().getFormat(), is(equalTo(PKCS_8)));
+  }
+
+  @Test
+  void producesPublicKeyWithContentWhenGeneratingKey() {
+    // When
+    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+
+    // Then
+    assertThat(generatedKeyPair.getPublic().getEncoded(), is(notNullValue()));
+  }
+
+  @Test
+  void producesPrivateKeyWithContentWhenGeneratingKey() {
+    // When
+    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+
+    // Then
+    assertThat(generatedKeyPair.getPrivate().getEncoded(), is(notNullValue()));
+  }
+
+  @Test
+  void producesPublicKeyWithNonEmptyContentWhenGeneratingKey() {
+    // When
+    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+
+    // Then
+    assertThat(generatedKeyPair.getPublic().getEncoded().length, is(greaterThan(0)));
+  }
+
+  @Test
+  void producesPrivateKeyWithNonEmptyContentWhenGeneratingKey() {
+    // When
+    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+
+    // Then
+    assertThat(generatedKeyPair.getPrivate().getEncoded().length, is(greaterThan(0)));
   }
 
   @ParameterizedTest

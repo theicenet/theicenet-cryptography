@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JCASaltServiceIT {
+class SaltServiceIT {
 
   final int SALT_LENGTH_128_BYTES = 128;
 

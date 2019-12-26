@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JCAIVServiceIT {
+class IVServiceIT {
 
   final int IV_LENGTH_32_BYTES = 32;
 

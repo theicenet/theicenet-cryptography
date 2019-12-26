@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JCARSAKeyServiceIT {
+class RSAKeyServiceIT {
 
   final int KEY_LENGTH_1024_BITS = 1024;
 

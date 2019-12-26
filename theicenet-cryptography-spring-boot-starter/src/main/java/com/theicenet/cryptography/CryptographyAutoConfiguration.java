@@ -1,5 +1,7 @@
 package com.theicenet.cryptography;
 
+import com.theicenet.cryptography.service.asymmetric.rsa.JCARSACryptographyService;
+import com.theicenet.cryptography.service.asymmetric.rsa.RSACryptographyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.JCARSAKeyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.RSAKeyService;
 import com.theicenet.cryptography.service.pbkd.PBKDKeyService;
@@ -36,10 +38,30 @@ public class CryptographyAutoConfiguration {
   }
 
   @Bean
+  public AESCryptographyService aesCryptographyService() {
+    return new JCAAESCryptographyService();
+  }
+
+  @Bean
+  public AESKeyService aesKeyService(SecureRandom secureRandom) {
+    return new JCAAESKeyService(secureRandom);
+  }
+
+  @Bean
+  public IVService ivService(SecureRandom secureRandom) {
+    return new JCAIVService(secureRandom);
+  }
+
+  @Bean
   public RSAKeyService rsaKeyService(SecureRandom secureRandom) {
     return new JCARSAKeyService(secureRandom);
   }
 
+  @Bean
+  public RSACryptographyService rsaCryptographyService() {
+    return new JCARSACryptographyService();
+  }
+  
   @Bean("PBKDArgon2")
   public PBKDKeyService pbkdKeyArgon2Service(
           @Value("${cryptography.keyDerivationFunction.argon2.type:ARGON2_ID}") Argon2Type type,
@@ -71,20 +93,5 @@ public class CryptographyAutoConfiguration {
   @Bean
   public SaltService saltService(SecureRandom secureRandom) {
     return new JCASaltService(secureRandom);
-  }
-
-  @Bean
-  public AESCryptographyService aesCryptographyService() {
-    return new JCAAESCryptographyService();
-  }
-
-  @Bean
-  public IVService ivService(SecureRandom secureRandom) {
-    return new JCAIVService(secureRandom);
-  }
-
-  @Bean
-  public AESKeyService aesKeyService(SecureRandom secureRandom) {
-    return new JCAAESKeyService(secureRandom);
   }
 }

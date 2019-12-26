@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JCAPBKDF2WithHmacSHAKeyServiceIT {
+class PBKDF2ServiceIT {
 
   final int KEY_LENGTH_256_BITS = 256;
 
