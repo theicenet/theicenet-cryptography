@@ -17,84 +17,172 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 class JCARSACryptographyServiceTest {
 
-    final int KEY_LENGTH_2048_BITS = 2048;
+  final int KEY_LENGTH_2048_BITS = 2048;
 
-    final byte[] CLEAR_CONTENT_512_BITS =
-            HexUtil.decodeHex(
-                    "dbb3ed4ebdea702402d592eb2d2289ec6f8a1eb92057d16a0da36c60bb5f2877739ac5996a" +
-                            "2d2f7d4283d3d6fd89360701c6019c9928b47d33583c001271f382");
+  final byte[] CONTENT_256_BITS =
+      HexUtil.decodeHex("32aa8dc140ba5165c3ad1d17a1e91bfd234d4ec7a2673b161467551ff1b2410f");
 
-    final KeyPair RSA_KEY_PAIR_2048_BITS;
+  final byte[] DIFFERENT_CONTENT_256_BITS =
+      HexUtil.decodeHex(
+          "a6f9553e1ff2d0430acf5542a6b83eacc32db589b7494643c1fd66a664b9d1e3");
 
-    RSACryptographyService rsaCryptographyService;
+  final KeyPair RSA_KEY_PAIR_2048_BITS;
 
-    public JCARSACryptographyServiceTest() {
-        RSAKeyService rsaKeyService = new JCARSAKeyService(new SecureRandom());
-        RSA_KEY_PAIR_2048_BITS = rsaKeyService.generateKey(KEY_LENGTH_2048_BITS);
+  RSACryptographyService rsaCryptographyService;
 
-        rsaCryptographyService = new JCARSACryptographyService();
-    }
+  public JCARSACryptographyServiceTest() {
+    RSAKeyService rsaKeyService = new JCARSAKeyService(new SecureRandom());
+    RSA_KEY_PAIR_2048_BITS = rsaKeyService.generateKey(KEY_LENGTH_2048_BITS);
 
-    @ParameterizedTest
-    @EnumSource(Padding.class)
-    void producesNotNullWhenEncrypting(Padding padding) {
-        // When
-        final var encrypted =
-                rsaCryptographyService.encrypt(
-                        padding,
-                        RSA_KEY_PAIR_2048_BITS.getPublic(),
-                        CLEAR_CONTENT_512_BITS);
+    rsaCryptographyService = new JCARSACryptographyService();
+  }
 
-        // Then
-        assertThat(encrypted, is(notNullValue()));
-    }
+  @ParameterizedTest
+  @EnumSource(RSAPadding.class)
+  void producesNotNullWhenEncrypting(RSAPadding padding) {
+    // When
+    final var encrypted =
+        rsaCryptographyService.encrypt(
+            padding,
+            RSA_KEY_PAIR_2048_BITS.getPublic(),
+            CONTENT_256_BITS);
 
-    @ParameterizedTest
-    @EnumSource(Padding.class)
-    void producesSizeOfEncryptedEqualsToKeyLengthWhenEncrypting(Padding padding) {
-        // When
-        final var encrypted =
-                rsaCryptographyService.encrypt(
-                        padding,
-                        RSA_KEY_PAIR_2048_BITS.getPublic(),
-                        CLEAR_CONTENT_512_BITS);
+    // Then
+    assertThat(encrypted, is(notNullValue()));
+  }
 
-        // Then
-        assertThat(encrypted.length, is(equalTo(KEY_LENGTH_2048_BITS / 8)));
-    }
+  @ParameterizedTest
+  @EnumSource(RSAPadding.class)
+  void producesSizeOfEncryptedEqualsToKeyLengthWhenEncrypting(RSAPadding padding) {
+    // When
+    final var encrypted =
+        rsaCryptographyService.encrypt(
+            padding,
+            RSA_KEY_PAIR_2048_BITS.getPublic(),
+            CONTENT_256_BITS);
 
-    @ParameterizedTest
-    @EnumSource(Padding.class)
-    void producesEncryptedDifferentToClearContentWhenEncrypting(Padding padding) {
-        // When
-        final var encrypted =
-                rsaCryptographyService.encrypt(
-                        padding,
-                        RSA_KEY_PAIR_2048_BITS.getPublic(),
-                        CLEAR_CONTENT_512_BITS);
+    // Then
+    assertThat(encrypted.length, is(equalTo(KEY_LENGTH_2048_BITS / 8)));
+  }
 
-        // Then
-        assertThat(encrypted, is(not(equalTo(CLEAR_CONTENT_512_BITS))));
-    }
+  @ParameterizedTest
+  @EnumSource(RSAPadding.class)
+  void producesEncryptedDifferentToClearContentWhenEncrypting(RSAPadding padding) {
+    // When
+    final var encrypted =
+        rsaCryptographyService.encrypt(
+            padding,
+            RSA_KEY_PAIR_2048_BITS.getPublic(),
+            CONTENT_256_BITS);
 
-    @ParameterizedTest
-    @EnumSource(Padding.class)
-    void producesTheClearContentWhenDecrypting(Padding padding) {
-        // Given
-        final var encrypted =
-                rsaCryptographyService.encrypt(
-                        padding,
-                        RSA_KEY_PAIR_2048_BITS.getPublic(),
-                        CLEAR_CONTENT_512_BITS);
+    // Then
+    assertThat(encrypted, is(not(equalTo(CONTENT_256_BITS))));
+  }
 
-        // When
-        final var decrypted =
-                rsaCryptographyService.decrypt(
-                        padding,
-                        RSA_KEY_PAIR_2048_BITS.getPrivate(),
-                        encrypted);
+  @ParameterizedTest
+  @EnumSource(RSAPadding.class)
+  void producesTheClearContentWhenDecrypting(RSAPadding padding) {
+    // Given
+    final var encrypted =
+        rsaCryptographyService.encrypt(
+            padding,
+            RSA_KEY_PAIR_2048_BITS.getPublic(),
+            CONTENT_256_BITS);
 
-        // Then
-        assertThat(decrypted, is(equalTo(CLEAR_CONTENT_512_BITS)));
-    }
+    // When
+    final var decrypted =
+        rsaCryptographyService.decrypt(
+            padding,
+            RSA_KEY_PAIR_2048_BITS.getPrivate(),
+            encrypted);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CONTENT_256_BITS)));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void producesNotNullWhenSigning(RSASignatureAlgorithm algorithm) {
+    // When
+    final var signature =
+        rsaCryptographyService.sign(
+            algorithm,
+            RSA_KEY_PAIR_2048_BITS.getPrivate(),
+            CONTENT_256_BITS);
+
+    // Then
+    assertThat(signature, is(notNullValue()));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void producesSizeOfSignatureEqualsToKeyLengthWhenSigning(RSASignatureAlgorithm algorithm) {
+    // When
+    final var signature =
+        rsaCryptographyService.sign(
+            algorithm,
+            RSA_KEY_PAIR_2048_BITS.getPrivate(),
+            CONTENT_256_BITS);
+
+    // Then
+    assertThat(signature.length, is(equalTo(KEY_LENGTH_2048_BITS / 8)));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void producesSignatureDifferentToClearContentWhenSigning(RSASignatureAlgorithm algorithm) {
+    // When
+    final var signature =
+        rsaCryptographyService.sign(
+            algorithm,
+            RSA_KEY_PAIR_2048_BITS.getPrivate(),
+            CONTENT_256_BITS);
+
+    // Then
+    assertThat(signature, is(not(equalTo(CONTENT_256_BITS))));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void verifiesSignatureTrueWhenVerifyingTheRightSignature(RSASignatureAlgorithm algorithm) {
+    // Given
+    final var signature =
+        rsaCryptographyService.sign(
+            algorithm,
+            RSA_KEY_PAIR_2048_BITS.getPrivate(),
+            CONTENT_256_BITS);
+
+    // When
+    final var verifyingResult =
+        rsaCryptographyService.verify(
+            algorithm,
+            RSA_KEY_PAIR_2048_BITS.getPublic(),
+            CONTENT_256_BITS,
+            signature);
+
+    // Then
+    assertThat(verifyingResult, is(equalTo(true)));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void verifiesSignatureFalseWhenVerifyingTheWrongSignature(RSASignatureAlgorithm algorithm) {
+    // Given
+    final var signature =
+        rsaCryptographyService.sign(
+            algorithm,
+            RSA_KEY_PAIR_2048_BITS.getPrivate(),
+            DIFFERENT_CONTENT_256_BITS);
+
+    // When
+    final var verifyingResult =
+        rsaCryptographyService.verify(
+            algorithm,
+            RSA_KEY_PAIR_2048_BITS.getPublic(),
+            CONTENT_256_BITS,
+            signature);
+
+    // Then
+    assertThat(verifyingResult, is(equalTo(false)));
+  }
 }

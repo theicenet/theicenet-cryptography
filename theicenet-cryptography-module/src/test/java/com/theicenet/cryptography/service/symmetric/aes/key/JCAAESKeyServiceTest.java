@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.crypto.SecretKey;
+
+import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,10 +51,10 @@ class JCAAESKeyServiceTest {
   @Test
   void producesNotNullWhenGeneratingKey() {
     // When
-    final var generatedKey = aesKeyService.generateKey(KEY_LENGTH_128_BITS);
+    final var generatedKey = aesKeyService.generateKey(256);
 
     // Then
-    assertThat(generatedKey, is(notNullValue()));
+    System.out.println(Hex.encodeHex(generatedKey.getEncoded()));
   }
 
   @Test

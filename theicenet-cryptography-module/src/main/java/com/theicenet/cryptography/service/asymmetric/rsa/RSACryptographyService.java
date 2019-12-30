@@ -5,7 +5,11 @@ import java.security.PublicKey;
 
 public interface RSACryptographyService {
 
-    byte[] encrypt(Padding padding, PublicKey publicKey, byte[] clearContent);
+  byte[] encrypt(RSAPadding padding, PublicKey publicKey, byte[] clearContent);
 
-    byte[] decrypt(Padding padding, PrivateKey privateKey, byte[] encryptedContent);
+  byte[] decrypt(RSAPadding padding, PrivateKey privateKey, byte[] encryptedContent);
+
+  byte[] sign(RSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content);
+
+  boolean verify(RSASignatureAlgorithm algorithm, PublicKey publicKey, byte[] content, byte[] signature);
 }
