@@ -5,15 +5,15 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.service.asymmetric.rsa.RSACryptographyService;
-import com.theicenet.cryptography.service.asymmetric.rsa.RSAPadding;
+import com.theicenet.cryptography.service.asymmetric.rsa.RSASignatureAlgorithm;
+import com.theicenet.cryptography.service.asymmetric.rsa.RSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.RSAKeyService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class RSACryptographyServiceIT {
+public class RSASignatureServiceIT {
 
   final int KEY_LENGTH_2048_BITS = 2048;
 
@@ -24,29 +24,30 @@ public class RSACryptographyServiceIT {
   RSAKeyService rsaKeyService;
 
   @Autowired
-  RSACryptographyService rsaCryptographyService;
+  RSASignatureService rsaSignatureService;
 
   @Test
-  void encryptAndDecryptProperly() {
+  void signAndVerifyProperly() {
     // Given
-    final var PADDING_OAEP_WITH_SHA1_AND_MGF1 = RSAPadding.OAEPWithSHA1AndMGF1Padding;
+    final var SHA1_WITH_RSA = RSASignatureAlgorithm.SHA1withRSA;
 
     final var rsaKeyPair2048Bits = rsaKeyService.generateKey(KEY_LENGTH_2048_BITS);
 
-    final var encrypted =
-        rsaCryptographyService.encrypt(
-            PADDING_OAEP_WITH_SHA1_AND_MGF1,
-            rsaKeyPair2048Bits.getPublic(),
+    final var signature =
+        rsaSignatureService.sign(
+            SHA1_WITH_RSA,
+            rsaKeyPair2048Bits.getPrivate(),
             CONTENT_256_BITS);
 
     // When
-    final var decrypted =
-        rsaCryptographyService.decrypt(
-            PADDING_OAEP_WITH_SHA1_AND_MGF1,
-            rsaKeyPair2048Bits.getPrivate(),
-            encrypted);
+    final var verifyingResult =
+        rsaSignatureService.verify(
+            SHA1_WITH_RSA,
+            rsaKeyPair2048Bits.getPublic(),
+            CONTENT_256_BITS,
+            signature);
 
     // Then
-    assertThat(decrypted, is(equalTo(CONTENT_256_BITS)));
+    assertThat(verifyingResult, is(equalTo(true)));
   }
 }

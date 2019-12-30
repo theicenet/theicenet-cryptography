@@ -8,8 +8,4 @@ public interface RSACryptographyService {
   byte[] encrypt(RSAPadding padding, PublicKey publicKey, byte[] clearContent);
 
   byte[] decrypt(RSAPadding padding, PrivateKey privateKey, byte[] encryptedContent);
-
-  byte[] sign(RSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content);
-
-  boolean verify(RSASignatureAlgorithm algorithm, PublicKey publicKey, byte[] content, byte[] signature);
 }

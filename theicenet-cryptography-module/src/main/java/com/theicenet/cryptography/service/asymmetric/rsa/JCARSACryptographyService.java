@@ -5,14 +5,13 @@ import com.theicenet.cryptography.service.asymmetric.rsa.exception.RSACryptograp
 import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import javax.crypto.Cipher;
 import org.apache.commons.lang.Validate;
 
 public class JCARSACryptographyService implements RSACryptographyService {
 
   public JCARSACryptographyService() {
-    // For RSA/NONE/OAEP* & some sign algorithm it's required Bouncy Castle
+    // For RSA/NONE/OAEP* it's required Bouncy Castle
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
@@ -38,46 +37,6 @@ public class JCARSACryptographyService implements RSACryptographyService {
       return cipher.doFinal(content);
     } catch (Exception e) {
       throw new RSACryptographyServiceException("Exception encrypting/decrypting content", e);
-    }
-  }
-
-  @Override
-  public byte[] sign(RSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content) {
-    Validate.notNull(algorithm);
-    Validate.notNull(privateKey);
-    Validate.notNull(content);
-
-    try {
-      final var signer = Signature.getInstance(algorithm.toString());
-      signer.initSign(privateKey);
-      signer.update(content);
-
-      return signer.sign();
-    } catch (Exception e) {
-      throw new RSACryptographyServiceException("Exception signing content", e);
-    }
-  }
-
-  @Override
-  public boolean verify(
-      RSASignatureAlgorithm algorithm,
-      PublicKey publicKey,
-      byte[] content,
-      byte[] signature) {
-
-    Validate.notNull(algorithm);
-    Validate.notNull(publicKey);
-    Validate.notNull(content);
-    Validate.notNull(signature);
-
-    try {
-      final var verifier = Signature.getInstance(algorithm.toString());
-      verifier.initVerify(publicKey);
-      verifier.update(content);
-
-      return verifier.verify(signature);
-    } catch (Exception e) {
-      throw new RSACryptographyServiceException("Exception verifying signature", e);
     }
   }
 }
