@@ -7,6 +7,5 @@ public interface RSASignatureService {
 
   byte[] sign(RSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content);
 
-  boolean verify(RSASignatureAlgorithm algorithm, PublicKey publicKey, byte[] content,
-      byte[] signature);
+  boolean verify(RSASignatureAlgorithm algorithm, PublicKey publicKey, byte[] content, byte[] signature);
 }

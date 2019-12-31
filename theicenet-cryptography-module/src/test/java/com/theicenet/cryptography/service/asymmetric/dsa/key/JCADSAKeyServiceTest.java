@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.service.asymmetric.rsa.key;
+package com.theicenet.cryptography.service.asymmetric.dsa.key;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -14,8 +14,8 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.DSAPrivateKeySpec;
+import java.security.spec.DSAPublicKeySpec;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -26,19 +26,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class JCARSAKeyServiceTest {
+class JCADSAKeyServiceTest {
 
-  final String RSA = "RSA";
+  final String DSA = "DSA";
   final String X_509 = "X.509";
   final String PKCS_8 = "PKCS#8";
   final int KEY_LENGTH_1024_BITS = 1024;
   final int KEY_LENGTH_2048_BITS = 2048;
+  final int KEY_LENGTH_3072_BITS = 3072;
 
-  RSAKeyService rsaKeyService;
+  DSAKeyService dsaKeyService;
 
   @BeforeEach
   void setUp() {
-    rsaKeyService = new JCARSAKeyService(new SecureRandom());
+    dsaKeyService = new JCADSAKeyService(new SecureRandom());
   }
 
   @Test
@@ -49,14 +50,14 @@ class JCARSAKeyServiceTest {
     // When generating key and invalid key length
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
-      rsaKeyService.generateKey(KEY_LENGTH_MINUS_ONE);
+      dsaKeyService.generateKey(KEY_LENGTH_MINUS_ONE);
     });
   }
 
   @Test
   void producesNotNullKeyPairWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair, is(notNullValue()));
@@ -65,7 +66,7 @@ class JCARSAKeyServiceTest {
   @Test
   void producesNotNullPublicKeyWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPublic(), is(notNullValue()));
@@ -74,34 +75,34 @@ class JCARSAKeyServiceTest {
   @Test
   void producesNotNullPrivateKeyWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPrivate(), is(notNullValue()));
   }
 
   @Test
-  void producesPublicKeyWithRSAAlgorithmWhenGeneratingKey() {
+  void producesPublicKeyWithDSAAlgorithmWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
-    assertThat(generatedKeyPair.getPublic().getAlgorithm(), is(equalTo(RSA)));
+    assertThat(generatedKeyPair.getPublic().getAlgorithm(), is(equalTo(DSA)));
   }
 
   @Test
-  void producesPrivateKeyWithRSAAlgorithmWhenGeneratingKey() {
+  void producesPrivateKeyWithDSAAlgorithmWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
-    assertThat(generatedKeyPair.getPrivate().getAlgorithm(), is(equalTo(RSA)));
+    assertThat(generatedKeyPair.getPrivate().getAlgorithm(), is(equalTo(DSA)));
   }
 
   @Test
   void producesPublicKeyWithX509FormatWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPublic().getFormat(), is(equalTo(X_509)));
@@ -110,7 +111,7 @@ class JCARSAKeyServiceTest {
   @Test
   void producesPrivateKeyWithPKCS8FormatWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPrivate().getFormat(), is(equalTo(PKCS_8)));
@@ -119,7 +120,7 @@ class JCARSAKeyServiceTest {
   @Test
   void producesPublicKeyWithContentWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPublic().getEncoded(), is(notNullValue()));
@@ -128,7 +129,7 @@ class JCARSAKeyServiceTest {
   @Test
   void producesPrivateKeyWithContentWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPrivate().getEncoded(), is(notNullValue()));
@@ -137,7 +138,7 @@ class JCARSAKeyServiceTest {
   @Test
   void producesPublicKeyWithNonEmptyContentWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPublic().getEncoded().length, is(greaterThan(0)));
@@ -146,44 +147,44 @@ class JCARSAKeyServiceTest {
   @Test
   void producesPrivateKeyWithNonEmptyContentWhenGeneratingKey() {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then
     assertThat(generatedKeyPair.getPrivate().getEncoded().length, is(greaterThan(0)));
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS, KEY_LENGTH_3072_BITS})
   void producesPublicKeyWithTheRightModulusLengthWhenGeneratingKey(int keyLength) throws Exception {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair = dsaKeyService.generateKey(keyLength);
 
     // Then
-    final var keyFactory = KeyFactory.getInstance(RSA);
-    final var rsaPublicKeySpec = keyFactory.getKeySpec(generatedKeyPair.getPublic(), RSAPublicKeySpec.class);
+    final var keyFactory = KeyFactory.getInstance(DSA);
+    final var dsaPublicKeySpec = keyFactory.getKeySpec(generatedKeyPair.getPublic(), DSAPublicKeySpec.class);
 
-    assertThat(rsaPublicKeySpec.getModulus().bitLength(), is(equalTo(keyLength)));
+    assertThat(dsaPublicKeySpec.getP().bitLength(), is(equalTo(keyLength)));
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
+  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS, KEY_LENGTH_3072_BITS})
   void producesPrivateKeyWithTheRightModulusLengthWhenGeneratingKey(int keyLength) throws Exception {
     // When
-    final var generatedKeyPair = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair = dsaKeyService.generateKey(keyLength);
 
     // Then
-    final var keyFactory = KeyFactory.getInstance(RSA);
-    final var rsaPrivateKeySpec = keyFactory.getKeySpec(generatedKeyPair.getPrivate(), RSAPrivateKeySpec.class);
+    final var keyFactory = KeyFactory.getInstance(DSA);
+    final var dsaPrivateKeySpec = keyFactory.getKeySpec(generatedKeyPair.getPrivate(), DSAPrivateKeySpec.class);
 
-    assertThat(rsaPrivateKeySpec.getModulus().bitLength(), is(equalTo(keyLength)));
+    assertThat(dsaPrivateKeySpec.getP().bitLength(), is(equalTo(keyLength)));
   }
 
   @ParameterizedTest
   @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
   void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
     // When generating two consecutive key pairs with the same length
-    final var generatedKeyPair_1 = rsaKeyService.generateKey(keyLength);
-    final var generatedKeyPair_2 = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_1 = dsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_2 = dsaKeyService.generateKey(keyLength);
 
     // Then the generated public keys are different
     assertThat(generatedKeyPair_1.getPublic(), is(not(equalTo(generatedKeyPair_2.getPublic()))));
@@ -193,8 +194,8 @@ class JCARSAKeyServiceTest {
   @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
   void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
     // When generating two consecutive key pairs with the same length
-    final var generatedKeyPair_1 = rsaKeyService.generateKey(keyLength);
-    final var generatedKeyPair_2 = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_1 = dsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_2 = dsaKeyService.generateKey(keyLength);
 
     // Then the generated private keys are different
     assertThat(generatedKeyPair_1.getPrivate(), is(not(equalTo(generatedKeyPair_2.getPrivate()))));
@@ -210,7 +211,7 @@ class JCARSAKeyServiceTest {
     final var generatePublicKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(keyLength))
+            .mapToObj(index -> dsaKeyService.generateKey(keyLength))
             .map(KeyPair::getPublic)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -228,7 +229,7 @@ class JCARSAKeyServiceTest {
     final var generatePrivateKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(keyLength))
+            .mapToObj(index -> dsaKeyService.generateKey(keyLength))
             .map(KeyPair::getPrivate)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -260,7 +261,7 @@ class JCARSAKeyServiceTest {
                 throw new RuntimeException(e);
               }
 
-              final var keyPair = rsaKeyService.generateKey(keyLength);
+              final var keyPair = dsaKeyService.generateKey(keyLength);
               generatedPublicKeys.add(keyPair.getPublic());
             }));
 
@@ -297,7 +298,7 @@ class JCARSAKeyServiceTest {
                 throw new RuntimeException(e);
               }
 
-              final var keyPair = rsaKeyService.generateKey(keyLength);
+              final var keyPair = dsaKeyService.generateKey(keyLength);
               generatedPrivateKeys.add(keyPair.getPrivate());
             }));
 

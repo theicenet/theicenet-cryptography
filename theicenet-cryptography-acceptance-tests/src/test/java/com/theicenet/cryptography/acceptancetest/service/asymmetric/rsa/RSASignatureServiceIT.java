@@ -8,6 +8,7 @@ import com.theicenet.cryptography.acceptancetest.util.HexUtil;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSASignatureAlgorithm;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.RSAKeyService;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,8 +18,9 @@ public class RSASignatureServiceIT {
 
   final int KEY_LENGTH_2048_BITS = 2048;
 
-  final byte[] CONTENT_256_BITS =
-      HexUtil.decodeHex("32aa8dc140ba5165c3ad1d17a1e91bfd234d4ec7a2673b161467551ff1b2410f");
+  final byte[] CONTENT =
+      "Content to be signed to test correctness of the RSA sign implementation."
+          .getBytes(StandardCharsets.UTF_8);
 
   @Autowired
   RSAKeyService rsaKeyService;
@@ -27,7 +29,7 @@ public class RSASignatureServiceIT {
   RSASignatureService rsaSignatureService;
 
   @Test
-  void signAndVerifyProperly() {
+  void signsAndVerifiesProperly() {
     // Given
     final var SHA1_WITH_RSA = RSASignatureAlgorithm.SHA1withRSA;
 
@@ -37,14 +39,14 @@ public class RSASignatureServiceIT {
         rsaSignatureService.sign(
             SHA1_WITH_RSA,
             rsaKeyPair2048Bits.getPrivate(),
-            CONTENT_256_BITS);
+            CONTENT);
 
     // When
     final var verifyingResult =
         rsaSignatureService.verify(
             SHA1_WITH_RSA,
             rsaKeyPair2048Bits.getPublic(),
-            CONTENT_256_BITS,
+            CONTENT,
             signature);
 
     // Then

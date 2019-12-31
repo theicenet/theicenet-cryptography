@@ -1,21 +1,21 @@
-package com.theicenet.cryptography.service.asymmetric.rsa;
+package com.theicenet.cryptography.service.asymmetric.dsa;
 
 import com.theicenet.cryptography.provider.CryptographyProviderUtil;
-import com.theicenet.cryptography.service.asymmetric.rsa.exception.RSASignatureServiceException;
+import com.theicenet.cryptography.service.asymmetric.dsa.exception.DSASignatureServiceException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import org.apache.commons.lang.Validate;
 
-public class JCARSASignatureService implements RSASignatureService {
+public class JCADSASignatureService implements DSASignatureService {
 
-  public JCARSASignatureService() {
+  public JCADSASignatureService() {
     // For some sign/verify algorithms it's required Bouncy Castle
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
   @Override
-  public byte[] sign(RSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content) {
+  public byte[] sign(DSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content) {
     Validate.notNull(algorithm);
     Validate.notNull(privateKey);
     Validate.notNull(content);
@@ -27,13 +27,13 @@ public class JCARSASignatureService implements RSASignatureService {
 
       return signer.sign();
     } catch (Exception e) {
-      throw new RSASignatureServiceException("Exception signing content", e);
+      throw new DSASignatureServiceException("Exception signing content", e);
     }
   }
 
   @Override
   public boolean verify(
-      RSASignatureAlgorithm algorithm,
+      DSASignatureAlgorithm algorithm,
       PublicKey publicKey,
       byte[] content,
       byte[] signature) {
@@ -50,7 +50,7 @@ public class JCARSASignatureService implements RSASignatureService {
 
       return verifier.verify(signature);
     } catch (Exception e) {
-      throw new RSASignatureServiceException("Exception verifying signature", e);
+      throw new DSASignatureServiceException("Exception verifying signature", e);
     }
   }
 }

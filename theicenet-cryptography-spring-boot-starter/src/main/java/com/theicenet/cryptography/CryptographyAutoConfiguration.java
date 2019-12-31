@@ -1,5 +1,9 @@
 package com.theicenet.cryptography;
 
+import com.theicenet.cryptography.service.asymmetric.dsa.DSASignatureService;
+import com.theicenet.cryptography.service.asymmetric.dsa.JCADSASignatureService;
+import com.theicenet.cryptography.service.asymmetric.dsa.key.DSAKeyService;
+import com.theicenet.cryptography.service.asymmetric.dsa.key.JCADSAKeyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.JCARSACryptographyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.JCARSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSACryptographyService;
@@ -68,6 +72,16 @@ public class CryptographyAutoConfiguration {
   @Bean
   public RSASignatureService rsaSignatureService() {
     return new JCARSASignatureService();
+  }
+
+  @Bean
+  public DSAKeyService dsaKeyService(SecureRandom secureRandom) {
+    return new JCADSAKeyService(secureRandom);
+  }
+
+  @Bean
+  public DSASignatureService dsaSignatureService() {
+    return new JCADSASignatureService();
   }
 
   @Bean("PBKDArgon2")
