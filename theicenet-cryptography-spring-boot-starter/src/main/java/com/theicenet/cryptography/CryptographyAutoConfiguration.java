@@ -8,6 +8,7 @@ import com.theicenet.cryptography.service.asymmetric.rsa.JCARSACryptographyServi
 import com.theicenet.cryptography.service.asymmetric.rsa.JCARSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSACryptographyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSAPadding;
+import com.theicenet.cryptography.service.asymmetric.rsa.RSASignatureAlgorithm;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.JCARSAKeyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.RSAKeyService;
@@ -76,8 +77,10 @@ public class CryptographyAutoConfiguration {
   }
 
   @Bean
-  public RSASignatureService rsaSignatureService() {
-    return new JCARSASignatureService();
+  public RSASignatureService rsaSignatureService(
+      @Value("${signature.asymmetric.rsa.algorithm:SHA256withRSA_PSS}") RSASignatureAlgorithm algorithm) {
+
+    return new JCARSASignatureService(algorithm);
   }
 
   @Bean
@@ -92,11 +95,11 @@ public class CryptographyAutoConfiguration {
 
   @Bean("PBKDArgon2")
   public PBKDKeyService pbkdKeyArgon2Service(
-      @Value("${cryptography.keyDerivationFunction.argon2.type:ARGON2_ID}") Argon2Type type,
-      @Value("${cryptography.keyDerivationFunction.argon2.version:ARGON2_VERSION_13}") Argon2Version version,
-      @Value("${cryptography.keyDerivationFunction.argon2.iterations:3}") Integer iterations,
-      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo:18}") Integer memoryPowOfTwo,
-      @Value("${cryptography.keyDerivationFunction.argon2.parallelism:4}") Integer parallelism) {
+      @Value("${keyDerivationFunction.argon2.type:ARGON2_ID}") Argon2Type type,
+      @Value("${keyDerivationFunction.argon2.version:ARGON2_VERSION_13}") Argon2Version version,
+      @Value("${keyDerivationFunction.argon2.iterations:3}") Integer iterations,
+      @Value("${keyDerivationFunction.argon2.memoryPowOfTwo:18}") Integer memoryPowOfTwo,
+      @Value("${keyDerivationFunction.argon2.parallelism:4}") Integer parallelism) {
 
     return new PBKDArgon2Service(
         new Argon2Configuration(type, version, iterations, memoryPowOfTwo, parallelism));
@@ -104,17 +107,17 @@ public class CryptographyAutoConfiguration {
 
   @Bean("PBKDF2")
   public PBKDKeyService pbkdKeyPBKDF2Service(
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm:SHA512}") ShaAlgorithm shaAlgorithm,
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations:131070}") Integer iterations) {
+      @Value("${keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm:SHA512}") ShaAlgorithm shaAlgorithm,
+      @Value("${keyDerivationFunction.pbkdF2WithHmacSHA.iterations:131070}") Integer iterations) {
 
     return new JCAPBKDF2WithHmacSHAKeyService(new PBKDF2Configuration(shaAlgorithm, iterations));
   }
 
   @Bean("PBKDSCrypt")
   public PBKDKeyService pbkdKeySCryptService(
-      @Value("${cryptography.keyDerivationFunction.scrypt.cpuMemoryCost:1048576}") Integer cpuMemoryCost,
-      @Value("${cryptography.keyDerivationFunction.scrypt.blockSize:8}") Integer blockSize,
-      @Value("${cryptography.keyDerivationFunction.scrypt.parallelization:1}") Integer parallelization) {
+      @Value("${keyDerivationFunction.scrypt.cpuMemoryCost:1048576}") Integer cpuMemoryCost,
+      @Value("${keyDerivationFunction.scrypt.blockSize:8}") Integer blockSize,
+      @Value("${keyDerivationFunction.scrypt.parallelization:1}") Integer parallelization) {
 
     return new PBKDSCryptService(
         new SCryptConfiguration(cpuMemoryCost, blockSize, parallelization));

@@ -9,14 +9,18 @@ import org.apache.commons.lang.Validate;
 
 public class JCARSASignatureService implements RSASignatureService {
 
-  public JCARSASignatureService() {
+  private final RSASignatureAlgorithm algorithm;
+
+  public JCARSASignatureService(RSASignatureAlgorithm algorithm) {
+    Validate.notNull(algorithm);
+    this.algorithm = algorithm;
+
     // For some sign/verify algorithms it's required Bouncy Castle
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
   @Override
-  public byte[] sign(RSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content) {
-    Validate.notNull(algorithm);
+  public byte[] sign(PrivateKey privateKey, byte[] content) {
     Validate.notNull(privateKey);
     Validate.notNull(content);
 
@@ -33,12 +37,10 @@ public class JCARSASignatureService implements RSASignatureService {
 
   @Override
   public boolean verify(
-      RSASignatureAlgorithm algorithm,
       PublicKey publicKey,
       byte[] content,
       byte[] signature) {
 
-    Validate.notNull(algorithm);
     Validate.notNull(publicKey);
     Validate.notNull(content);
     Validate.notNull(signature);

@@ -14,6 +14,8 @@ import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import org.apache.commons.codec.binary.Hex;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -82,7 +84,18 @@ class JCARSACryptographyServiceTest {
   final PublicKey RSA_PUBLIC_KEY_2048_BITS;
   final PrivateKey RSA_PRIVATE_KEY_2048_BITS;
 
-  public JCARSACryptographyServiceTest() throws Exception {
+  final byte[] RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING =
+      HexUtil.decodeHex(
+          "1c4514470fa422bb28f233e691f6b00c2a3ae4935b0436a12a8ac045aded8f6e5c99197e20b91"
+              + "572e40a465bbb7512fe5552bca690baca673aea21b1b39a43cdf89011e01f6d6e43827d"
+              + "05bfb5bcfadb0ef65e70425f3e3d624b21868ca946d9370e1b9559af7cba15246a4b7fb"
+              + "65767cc53dd8ec3ba742aeea335b93c1cfb7d0f23ab8845993b7f9680f96c9e015ac35c"
+              + "a2d0e17b1b41561fb28e5a72d509e5b6da59b760ba74a9efe751c574c4cf89bd305321b"
+              + "aba310fe72bbc5ff15ed7f848490a3b9a0877152697abf4b1754f4f6a7f09d96f729d6d"
+              + "a5ade53bc297e6e6c218c379d6d99ab5278c68137d83006f3f7b2921672de3670f1055d"
+              + "8e7400222");
+
+  JCARSACryptographyServiceTest() throws Exception {
     final var keyFactory = KeyFactory.getInstance(RSA);
 
     final var x509EncodedKeySpec = new X509EncodedKeySpec(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY);
@@ -159,6 +172,22 @@ class JCARSACryptographyServiceTest {
         rsaCryptographyService.decrypt(
             RSA_PRIVATE_KEY_2048_BITS,
             encrypted);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void decryptsProperlyWhenDecryptingWithOAEPWithSHA1AndMGF1Padding() {
+    // Given
+    RSACryptographyService rsaCryptographyService =
+        new JCARSACryptographyService(RSAPadding.OAEPWithSHA1AndMGF1Padding);
+
+    // When
+    final var decrypted =
+        rsaCryptographyService.decrypt(
+          RSA_PRIVATE_KEY_2048_BITS,
+          RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING);
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
