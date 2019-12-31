@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.cipher.symmetric.aes.iv;
+package com.theicenet.cryptography.cipher.symmetric.randomise.iv;
 
 public interface IVService {
 

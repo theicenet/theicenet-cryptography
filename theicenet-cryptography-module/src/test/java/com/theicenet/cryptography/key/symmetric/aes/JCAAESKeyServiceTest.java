@@ -8,6 +8,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import java.security.SecureRandom;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
@@ -29,7 +30,7 @@ class JCAAESKeyServiceTest {
   final String AES = "AES";
   final String RAW = "RAW";
 
-  AESKeyService aesKeyService;
+  SymmetricKeyService aesKeyService;
 
   @BeforeEach
   void setUp() {

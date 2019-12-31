@@ -9,6 +9,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -35,7 +36,7 @@ class JCADSAKeyServiceTest {
   final int KEY_LENGTH_2048_BITS = 2048;
   final int KEY_LENGTH_3072_BITS = 3072;
 
-  DSAKeyService dsaKeyService;
+  AsymmetricKeyService dsaKeyService;
 
   @BeforeEach
   void setUp() {

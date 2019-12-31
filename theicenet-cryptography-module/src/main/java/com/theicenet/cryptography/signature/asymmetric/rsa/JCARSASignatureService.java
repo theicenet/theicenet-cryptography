@@ -1,12 +1,13 @@
 package com.theicenet.cryptography.signature.asymmetric.rsa;
 
+import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import org.apache.commons.lang.Validate;
 
-public class JCARSASignatureService implements RSASignatureService {
+public class JCARSASignatureService implements SignatureService {
 
   private final RSASignatureAlgorithm algorithm;
 

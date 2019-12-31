@@ -6,6 +6,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 
+import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -134,7 +135,7 @@ class JCARSASignatureServiceTest {
   @EnumSource(RSASignatureAlgorithm.class)
   void producesNotNullWhenSigning(RSASignatureAlgorithm algorithm) {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -150,7 +151,7 @@ class JCARSASignatureServiceTest {
   @EnumSource(RSASignatureAlgorithm.class)
   void producesSizeOfSignatureEqualsToKeyLengthWhenSigning(RSASignatureAlgorithm algorithm) throws Exception {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -169,7 +170,7 @@ class JCARSASignatureServiceTest {
   @EnumSource(RSASignatureAlgorithm.class)
   void producesSignatureDifferentToClearContentWhenSigning(RSASignatureAlgorithm algorithm) {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -185,7 +186,7 @@ class JCARSASignatureServiceTest {
   @EnumSource(RSASignatureAlgorithm.class)
   void producedSignatureVerifiesToTrueWhenVerifyingAndSignatureCorrespondsWithContent(RSASignatureAlgorithm algorithm) {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
     final var signature =
         rsaSignatureService.sign(
@@ -207,7 +208,7 @@ class JCARSASignatureServiceTest {
   @EnumSource(RSASignatureAlgorithm.class)
   void signatureVerifiesToFalseWhenVerifyingAndSignatureDoesNotCorrespondsWithContent(RSASignatureAlgorithm algorithm) {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
     final var signature =
         rsaSignatureService.sign(
@@ -228,7 +229,7 @@ class JCARSASignatureServiceTest {
   @Test
   void producesTheRightRSASignatureWhenSigningWithSha1WithRSA() {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
 
     // When
     final var signature =
@@ -243,7 +244,7 @@ class JCARSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingWithSha1WithRSA() {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
 
     // When
     final var verifyingResult =
@@ -259,7 +260,7 @@ class JCARSASignatureServiceTest {
   @Test
   void producesTheRightRSASignatureWhenSigningWithSha256WithRSA() {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
 
     // When
     final var signature =
@@ -274,7 +275,7 @@ class JCARSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingWithSha256WithRSA() {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
 
     // When
     final var verifyingResult =
@@ -290,7 +291,7 @@ class JCARSASignatureServiceTest {
   @Test
   void producesTheRightRSASignatureWhenSigningWithSha512WithRSA() {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
 
     // When
     final var signature =
@@ -305,7 +306,7 @@ class JCARSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingWithSha512WithRSA() {
     // Given
-    RSASignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
 
     // When
     final var verifyingResult =

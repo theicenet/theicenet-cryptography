@@ -1,5 +1,6 @@
 package com.theicenet.cryptography.key.asymmetric.rsa;
 
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import org.apache.commons.lang.Validate;
 
 import java.security.KeyPair;
@@ -7,7 +8,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-public class JCARSAKeyService implements RSAKeyService {
+public class JCARSAKeyService implements AsymmetricKeyService {
 
   private static final String RSA = "RSA";
 

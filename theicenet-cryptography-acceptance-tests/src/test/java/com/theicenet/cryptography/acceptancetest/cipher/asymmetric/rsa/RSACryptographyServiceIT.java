@@ -5,7 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.cipher.asymmetric.rsa.RSACryptographyService;
+import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCryptographyService;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -14,6 +14,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -94,7 +95,8 @@ public class RSACryptographyServiceIT {
               + "8e7400222");
 
   @Autowired
-  RSACryptographyService rsaCryptographyService;
+  @Qualifier("RSACryptography")
+  AsymmetricCryptographyService rsaCryptographyService;
 
   RSACryptographyServiceIT() throws Exception {
     final var keyFactory = KeyFactory.getInstance(RSA);

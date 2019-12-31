@@ -9,6 +9,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
+import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -115,7 +116,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesNotNullWhenSigning(DSASignatureAlgorithm algorithm) {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -131,7 +132,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesRightSizeWhenSigning(DSASignatureAlgorithm algorithm) {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -140,16 +141,16 @@ class JCADSASignatureServiceTest {
             CONTENT);
 
     // Then
-    assertThat( // For a 2048 bit modulus key the signature size should be between 70 and 72 bytes
+    assertThat( // For a 2048 bit modulus key the signature size should be between 68 and 72 bytes
         signature.length,
-        is(both(greaterThanOrEqualTo(70)).and(lessThanOrEqualTo(72))));
+        is(both(greaterThanOrEqualTo(68)).and(lessThanOrEqualTo(72))));
   }
 
   @ParameterizedTest
   @EnumSource(DSASignatureAlgorithm.class)
   void producesSignatureDifferentToClearContentWhenSigning(DSASignatureAlgorithm algorithm) {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -165,7 +166,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producedSignatureVerifiesToTrueWhenVerifyingAndSignatureCorrespondsWithContent(DSASignatureAlgorithm algorithm) {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
 
     final var signature =
         dsaSignatureService.sign(
@@ -187,7 +188,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void signatureVerifiesToFalseWhenVerifyingAndSignatureDoesNotCorrespondsWithContent(DSASignatureAlgorithm algorithm) {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
 
     final var signature =
         dsaSignatureService.sign(
@@ -208,7 +209,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingWithSha1WithDSA() {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
+    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
 
     // When
     final var verifyingResult =
@@ -224,7 +225,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingWithSha224WithDSA() {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
+    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
 
     // When
     final var verifyingResult =
@@ -240,7 +241,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingWithSha256WithDSA() {
     // Given
-    DSASignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
 
     // When
     final var verifyingResult =

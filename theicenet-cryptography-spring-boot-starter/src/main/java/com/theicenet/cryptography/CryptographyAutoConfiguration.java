@@ -1,18 +1,18 @@
 package com.theicenet.cryptography;
 
-import com.theicenet.cryptography.signature.asymmetric.dsa.DSASignatureAlgorithm;
-import com.theicenet.cryptography.signature.asymmetric.dsa.DSASignatureService;
-import com.theicenet.cryptography.signature.asymmetric.dsa.JCADSASignatureService;
-import com.theicenet.cryptography.key.asymmetric.dsa.DSAKeyService;
-import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
+import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCryptographyService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACryptographyService;
-import com.theicenet.cryptography.signature.asymmetric.rsa.JCARSASignatureService;
-import com.theicenet.cryptography.cipher.asymmetric.rsa.RSACryptographyService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
-import com.theicenet.cryptography.signature.asymmetric.rsa.RSASignatureAlgorithm;
-import com.theicenet.cryptography.signature.asymmetric.rsa.RSASignatureService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCryptographyIVBasedService;
+import com.theicenet.cryptography.cipher.symmetric.aes.BlockCipherModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESCryptographyService;
+import com.theicenet.cryptography.cipher.symmetric.randomise.iv.IVService;
+import com.theicenet.cryptography.cipher.symmetric.randomise.iv.JCAIVService;
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
+import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
-import com.theicenet.cryptography.key.asymmetric.rsa.RSAKeyService;
+import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
+import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Configuration;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Type;
@@ -21,23 +21,20 @@ import com.theicenet.cryptography.pbkd.argon2.PBKDArgon2Service;
 import com.theicenet.cryptography.pbkd.pbkdf2.JCAPBKDF2WithHmacSHAKeyService;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
 import com.theicenet.cryptography.pbkd.pbkdf2.ShaAlgorithm;
-import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptService;
-import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
 import com.theicenet.cryptography.pbkd.salt.JCASaltService;
 import com.theicenet.cryptography.pbkd.salt.SaltService;
-import com.theicenet.cryptography.cipher.symmetric.aes.AESCryptographyService;
-import com.theicenet.cryptography.cipher.symmetric.aes.BlockCipherModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESCryptographyService;
-import com.theicenet.cryptography.cipher.symmetric.aes.iv.IVService;
-import com.theicenet.cryptography.cipher.symmetric.aes.iv.JCAIVService;
-import com.theicenet.cryptography.key.symmetric.aes.AESKeyService;
-import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
+import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptService;
+import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
+import com.theicenet.cryptography.signature.SignatureService;
+import com.theicenet.cryptography.signature.asymmetric.dsa.DSASignatureAlgorithm;
+import com.theicenet.cryptography.signature.asymmetric.dsa.JCADSASignatureService;
+import com.theicenet.cryptography.signature.asymmetric.rsa.JCARSASignatureService;
+import com.theicenet.cryptography.signature.asymmetric.rsa.RSASignatureAlgorithm;
+import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.security.SecureRandom;
 
 @Configuration
 public class CryptographyAutoConfiguration {
@@ -48,15 +45,15 @@ public class CryptographyAutoConfiguration {
     return new SecureRandom();
   }
 
-  @Bean
-  public AESCryptographyService aesCryptographyService(
+  @Bean("AESCryptography")
+  public SymmetricCryptographyIVBasedService aesCryptographyService(
       @Value("${cryptography.symmetric.aes.blockMode:CTR}") BlockCipherModeOfOperation blockMode) {
 
     return new JCAAESCryptographyService(blockMode);
   }
 
-  @Bean
-  public AESKeyService aesKeyService(SecureRandom secureRandom) {
+  @Bean("AESKey")
+  public SymmetricKeyService aesKeyService(SecureRandom secureRandom) {
     return new JCAAESKeyService(secureRandom);
   }
 
@@ -65,32 +62,32 @@ public class CryptographyAutoConfiguration {
     return new JCAIVService(secureRandom);
   }
 
-  @Bean
-  public RSAKeyService rsaKeyService(SecureRandom secureRandom) {
+  @Bean("RSAKey")
+  public AsymmetricKeyService rsaKeyService(SecureRandom secureRandom) {
     return new JCARSAKeyService(secureRandom);
   }
 
-  @Bean
-  public RSACryptographyService rsaCryptographyService(
+  @Bean("RSACryptography")
+  public AsymmetricCryptographyService rsaCryptographyService(
       @Value("${cryptography.asymmetric.rsa.padding:OAEPWithSHA256AndMGF1Padding}") RSAPadding padding) {
 
     return new JCARSACryptographyService(padding);
   }
 
-  @Bean
-  public RSASignatureService rsaSignatureService(
+  @Bean("RSASignature")
+  public SignatureService rsaSignatureService(
       @Value("${signature.asymmetric.rsa.algorithm:SHA256withRSA_PSS}") RSASignatureAlgorithm algorithm) {
 
     return new JCARSASignatureService(algorithm);
   }
 
-  @Bean
-  public DSAKeyService dsaKeyService(SecureRandom secureRandom) {
+  @Bean("DSAKey")
+  public AsymmetricKeyService dsaKeyService(SecureRandom secureRandom) {
     return new JCADSAKeyService(secureRandom);
   }
 
-  @Bean
-  public DSASignatureService dsaSignatureService(
+  @Bean("DSASignature")
+  public SignatureService dsaSignatureService(
       @Value("${signature.asymmetric.dsa.algorithm:SHA256withDSA}") DSASignatureAlgorithm algorithm) {
 
     return new JCADSASignatureService(algorithm);

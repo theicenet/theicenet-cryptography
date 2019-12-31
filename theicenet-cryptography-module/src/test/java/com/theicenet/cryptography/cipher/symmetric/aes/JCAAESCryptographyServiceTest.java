@@ -7,6 +7,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCryptographyIVBasedService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
@@ -71,7 +72,7 @@ class JCAAESCryptographyServiceTest {
               + "20e0ea5e2e60ec70b0f31255a4dc6cf304edb41"
               + "92d28c725751474");
 
-  AESCryptographyService aesCryptographyService;
+  SymmetricCryptographyIVBasedService aesCryptographyService;
 
   @BeforeEach
   void setUp() {

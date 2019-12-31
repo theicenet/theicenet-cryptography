@@ -5,12 +5,13 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.cipher.symmetric.aes.AESCryptographyService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCryptographyIVBasedService;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -39,7 +40,8 @@ class AESCryptographyServiceIT {
               + "2ed8");
 
   @Autowired
-  AESCryptographyService aesCryptographyService;
+  @Qualifier("AESCryptography")
+  SymmetricCryptographyIVBasedService aesCryptographyService;
 
   @Test
   void producesTheRightEncryptedResultWhenEncrypting() {

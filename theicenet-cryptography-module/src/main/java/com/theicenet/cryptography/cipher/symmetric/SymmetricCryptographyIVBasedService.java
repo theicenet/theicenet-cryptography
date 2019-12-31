@@ -1,8 +1,8 @@
-package com.theicenet.cryptography.cipher.symmetric.aes;
+package com.theicenet.cryptography.cipher.symmetric;
 
 import javax.crypto.SecretKey;
 
-public interface AESCryptographyService {
+public interface SymmetricCryptographyIVBasedService {
 
   byte[] encrypt(SecretKey secretKey, byte[] iv, byte[] clearContent);
 

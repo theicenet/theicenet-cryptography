@@ -5,8 +5,8 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.signature.asymmetric.dsa.DSASignatureService;
-import com.theicenet.cryptography.key.asymmetric.dsa.DSAKeyService;
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
+import com.theicenet.cryptography.signature.SignatureService;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -15,6 +15,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -86,10 +87,12 @@ public class DSASignatureServiceIT {
               + "618985ca7197a804faaae60fee712e5c3a29af942dad60611b90efc2ca965a8c");
 
   @Autowired
-  DSAKeyService dsaKeyService;
+  @Qualifier("DSAKey")
+  AsymmetricKeyService dsaKeyService;
 
   @Autowired
-  DSASignatureService dsaSignatureService;
+  @Qualifier("DSASignature")
+  SignatureService dsaSignatureService;
 
   DSASignatureServiceIT() throws Exception {
     final var keyFactory = KeyFactory.getInstance(DSA);

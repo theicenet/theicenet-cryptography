@@ -1,12 +1,13 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCryptographyIVBasedService;
 import org.apache.commons.lang.Validate;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-public class JCAAESCryptographyService implements AESCryptographyService {
+public class JCAAESCryptographyService implements SymmetricCryptographyIVBasedService {
 
   private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =

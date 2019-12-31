@@ -1,9 +1,9 @@
-package com.theicenet.cryptography.signature.asymmetric.dsa;
+package com.theicenet.cryptography.signature;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-public interface DSASignatureService {
+public interface SignatureService {
 
   byte[] sign(PrivateKey privateKey, byte[] content);
 

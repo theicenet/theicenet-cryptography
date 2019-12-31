@@ -6,6 +6,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 
+import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCryptographyService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -108,7 +109,7 @@ class JCARSACryptographyServiceTest {
   @EnumSource(RSAPadding.class)
   void producesNotNullWhenEncrypting(RSAPadding padding) {
     // Given
-    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
 
     // When
     final var encrypted =
@@ -124,7 +125,7 @@ class JCARSACryptographyServiceTest {
   @EnumSource(RSAPadding.class)
   void producesSizeOfEncryptedEqualsToKeyLengthWhenEncrypting(RSAPadding padding) throws Exception {
     // Given
-    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
 
     // When
     final var encrypted =
@@ -143,7 +144,7 @@ class JCARSACryptographyServiceTest {
   @EnumSource(RSAPadding.class)
   void producesEncryptedDifferentToClearContentWhenEncrypting(RSAPadding padding) {
     // Given
-    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
 
     // When
     final var encrypted =
@@ -159,7 +160,7 @@ class JCARSACryptographyServiceTest {
   @EnumSource(RSAPadding.class)
   void producesTheClearContentWhenDecrypting(RSAPadding padding) {
     // Given
-    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
 
     final var encrypted =
         rsaCryptographyService.encrypt(
@@ -179,7 +180,7 @@ class JCARSACryptographyServiceTest {
   @Test
   void decryptsProperlyWhenDecryptingWithOAEPWithSHA1AndMGF1Padding() {
     // Given
-    RSACryptographyService rsaCryptographyService =
+    AsymmetricCryptographyService rsaCryptographyService =
         new JCARSACryptographyService(RSAPadding.OAEPWithSHA1AndMGF1Padding);
 
     // When

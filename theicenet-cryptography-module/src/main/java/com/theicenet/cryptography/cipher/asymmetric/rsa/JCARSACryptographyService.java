@@ -1,5 +1,6 @@
 package com.theicenet.cryptography.cipher.asymmetric.rsa;
 
+import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCryptographyService;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.Key;
 import java.security.PrivateKey;
@@ -7,7 +8,7 @@ import java.security.PublicKey;
 import javax.crypto.Cipher;
 import org.apache.commons.lang.Validate;
 
-public class JCARSACryptographyService implements RSACryptographyService {
+public class JCARSACryptographyService implements AsymmetricCryptographyService {
 
   private final RSAPadding padding;
 

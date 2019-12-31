@@ -1,5 +1,6 @@
 package com.theicenet.cryptography.key.symmetric.aes;
 
+import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import org.apache.commons.lang.Validate;
 
 import javax.crypto.KeyGenerator;
@@ -7,7 +8,7 @@ import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-public class JCAAESKeyService implements AESKeyService {
+public class JCAAESKeyService implements SymmetricKeyService {
 
   private static final String AES = "AES";
 
