@@ -23,6 +23,7 @@ import com.theicenet.cryptography.service.pbkd.scrypt.SCryptConfiguration;
 import com.theicenet.cryptography.service.salt.JCASaltService;
 import com.theicenet.cryptography.service.salt.SaltService;
 import com.theicenet.cryptography.service.symmetric.aes.AESCryptographyService;
+import com.theicenet.cryptography.service.symmetric.aes.BlockCipherModeOfOperation;
 import com.theicenet.cryptography.service.symmetric.aes.JCAAESCryptographyService;
 import com.theicenet.cryptography.service.symmetric.aes.iv.IVService;
 import com.theicenet.cryptography.service.symmetric.aes.iv.JCAIVService;
@@ -45,8 +46,10 @@ public class CryptographyAutoConfiguration {
   }
 
   @Bean
-  public AESCryptographyService aesCryptographyService() {
-    return new JCAAESCryptographyService();
+  public AESCryptographyService aesCryptographyService(
+      @Value("${cryptography.symmetric.aes.blockMode:CTR}") BlockCipherModeOfOperation blockMode) {
+
+    return new JCAAESCryptographyService(blockMode);
   }
 
   @Bean

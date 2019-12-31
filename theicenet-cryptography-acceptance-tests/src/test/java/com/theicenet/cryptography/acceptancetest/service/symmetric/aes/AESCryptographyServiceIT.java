@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class AESCryptographyServiceIT {
 
   final String AES = "AES";
-  final BlockCipherModeOfOperation CTR = BlockCipherModeOfOperation.CTR;
 
   final byte[] CLEAR_CONTENT =
       "Content to encrypt with AES and different options for block cipher mode of operation"
@@ -32,13 +31,13 @@ class AESCryptographyServiceIT {
   final byte[] INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS =
       "KLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
 
-  final byte[] ENCRYPTED_CONTENT_AES_CTR =
+  static final byte[] ENCRYPTED_CONTENT_AES_CFB =
       HexUtil.decodeHex(
-          "813d91455835f9650de0506a0cbc9126da73e6"
-              + "e016a787a39e6f0bd8914874f6af0f2fca3094"
-              + "65217d86aa55d9a1689666ce4189cb6194e1ac"
-              + "20e0ea5e2e60ec70b0f31255a4dc6cf304edb41"
-              + "92d28c725751474");
+          "813d91455835f9650de0506a0cbc9126d4c171c5e"
+              + "fc1c3c7137e9d2fb2f711897b3261d0f760243583"
+              + "5a693ab44f52b0e51c889504655b6a88c64c446b6"
+              + "669dfc61c082e932ec53767b3de363beb10fa3ceb"
+              + "2ed8");
 
   @Autowired
   AESCryptographyService aesCryptographyService;
@@ -48,13 +47,12 @@ class AESCryptographyServiceIT {
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
 
     // Then
-    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CTR)));
+    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_CFB)));
   }
 
   @Test
@@ -62,10 +60,9 @@ class AESCryptographyServiceIT {
     // When
     final var decrypted =
         aesCryptographyService.decrypt(
-            CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CTR);
+            ENCRYPTED_CONTENT_AES_CFB);
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));

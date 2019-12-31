@@ -1,4 +1,7 @@
 cryptography:
+  symmetric:
+    aes:
+      blockMode: CFB
   keyDerivationFunction:
     pbkdF2WithHmacSHA:
       shaAlgorithm: SHA512

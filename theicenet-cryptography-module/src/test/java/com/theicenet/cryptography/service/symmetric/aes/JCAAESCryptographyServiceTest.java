@@ -75,7 +75,7 @@ class JCAAESCryptographyServiceTest {
 
   @BeforeEach
   void setUp() {
-    aesCryptographyService = new JCAAESCryptographyService();
+    aesCryptographyService = new JCAAESCryptographyService(CTR);
   }
 
   @Test
@@ -83,7 +83,6 @@ class JCAAESCryptographyServiceTest {
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -97,7 +96,6 @@ class JCAAESCryptographyServiceTest {
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -116,7 +114,6 @@ class JCAAESCryptographyServiceTest {
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
       aesCryptographyService.encrypt(
-          CTR,
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
           CLEAR_CONTENT);
@@ -129,10 +126,12 @@ class JCAAESCryptographyServiceTest {
       names = {"CBC"},
       mode = EnumSource.Mode.EXCLUDE)
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncrypting(BlockCipherModeOfOperation blockMode) {
+    // Given
+    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            blockMode,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -143,10 +142,12 @@ class JCAAESCryptographyServiceTest {
 
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingWithBlockModeCBC() {
+    // Given
+    aesCryptographyService = new JCAAESCryptographyService(BlockCipherModeOfOperation.CBC);
+
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            CBC,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -166,10 +167,12 @@ class JCAAESCryptographyServiceTest {
       BlockCipherModeOfOperation blockMode,
       byte[] expectedEncryptedResult) {
 
+    // Given
+    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+
     // When
     final var encrypted =
         aesCryptographyService.encrypt(
-            blockMode,
             secretKey,
             iv,
             clearContent);
@@ -212,7 +215,6 @@ class JCAAESCryptographyServiceTest {
     // When
     final var decrypted =
         aesCryptographyService.decrypt(
-            CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             ENCRYPTED_CONTENT_AES_CTR);
@@ -226,7 +228,6 @@ class JCAAESCryptographyServiceTest {
     // When
     final var decrypted =
         aesCryptographyService.decrypt(
-            CTR,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             ENCRYPTED_CONTENT_AES_CTR);
@@ -245,7 +246,6 @@ class JCAAESCryptographyServiceTest {
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
       aesCryptographyService.decrypt(
-          CTR,
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
           ENCRYPTED_CONTENT_AES_CTR);
@@ -261,10 +261,12 @@ class JCAAESCryptographyServiceTest {
       BlockCipherModeOfOperation blockMode,
       Integer expectedDecryptedSize) {
 
+    // Given
+    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+
     // When
     final var decrypted =
         aesCryptographyService.decrypt(
-            blockMode,
             secretKey,
             iv,
             encryptedContent);
@@ -311,10 +313,12 @@ class JCAAESCryptographyServiceTest {
       BlockCipherModeOfOperation blockMode,
       byte[] expectedDecryptedResult) {
 
+    // Given
+    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+
     // When
     final var decrypted =
         aesCryptographyService.decrypt(
-            blockMode,
             secretKey,
             iv,
             encryptedContent);

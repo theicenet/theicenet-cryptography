@@ -4,15 +4,7 @@ import javax.crypto.SecretKey;
 
 public interface AESCryptographyService {
 
-  byte[] encrypt(
-      BlockCipherModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      byte[] clearContent);
+  byte[] encrypt(SecretKey secretKey, byte[] iv, byte[] clearContent);
 
-  byte[] decrypt(
-      BlockCipherModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      byte[] encryptedContent);
+  byte[] decrypt(SecretKey secretKey, byte[] iv, byte[] encryptedContent);
 }

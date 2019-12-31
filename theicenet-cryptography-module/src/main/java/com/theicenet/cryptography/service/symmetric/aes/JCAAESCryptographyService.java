@@ -13,12 +13,14 @@ public class JCAAESCryptographyService implements AESCryptographyService {
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
       "IV's size must be equals to AES cipher block size = %s bytes";
 
+  private final BlockCipherModeOfOperation blockMode;
+
+  public JCAAESCryptographyService(BlockCipherModeOfOperation blockMode) {
+    this.blockMode = blockMode;
+  }
+
   @Override
-  public byte[] encrypt(
-      BlockCipherModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      byte[] clearContent) {
+  public byte[] encrypt(SecretKey secretKey, byte[] iv, byte[] clearContent) {
 
     return process(
         Cipher.ENCRYPT_MODE,
@@ -29,11 +31,7 @@ public class JCAAESCryptographyService implements AESCryptographyService {
   }
 
   @Override
-  public byte[] decrypt(
-      BlockCipherModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      byte[] encryptedContent) {
+  public byte[] decrypt(SecretKey secretKey, byte[] iv, byte[] encryptedContent) {
 
     return process(
         Cipher.DECRYPT_MODE,
