@@ -25,7 +25,7 @@ import com.theicenet.cryptography.pbkd.salt.JCASaltService;
 import com.theicenet.cryptography.pbkd.salt.SaltService;
 import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
-import com.theicenet.cryptography.signature.SignatureService;
+import com.theicenet.cryptography.signature.asymmetric.SignatureService;
 import com.theicenet.cryptography.signature.asymmetric.dsa.DSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.asymmetric.dsa.JCADSASignatureService;
 import com.theicenet.cryptography.signature.asymmetric.rsa.JCARSASignatureService;

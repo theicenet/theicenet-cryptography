@@ -6,7 +6,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
-import com.theicenet.cryptography.signature.SignatureService;
+import com.theicenet.cryptography.signature.asymmetric.SignatureService;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;

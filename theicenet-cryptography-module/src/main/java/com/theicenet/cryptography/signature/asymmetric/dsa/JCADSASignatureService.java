@@ -1,6 +1,6 @@
 package com.theicenet.cryptography.signature.asymmetric.dsa;
 
-import com.theicenet.cryptography.signature.SignatureService;
+import com.theicenet.cryptography.signature.asymmetric.SignatureService;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.PrivateKey;
 import java.security.PublicKey;

@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.signature;
+package com.theicenet.cryptography.signature.asymmetric;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;

@@ -9,7 +9,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
-import com.theicenet.cryptography.signature.SignatureService;
+import com.theicenet.cryptography.signature.asymmetric.SignatureService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
