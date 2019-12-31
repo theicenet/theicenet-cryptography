@@ -2,6 +2,9 @@ cryptography:
   symmetric:
     aes:
       blockMode: CFB
+  asymmetric:
+    rsa:
+      padding: OAEPWithSHA1AndMGF1Padding
   keyDerivationFunction:
     pbkdF2WithHmacSHA:
       shaAlgorithm: SHA512

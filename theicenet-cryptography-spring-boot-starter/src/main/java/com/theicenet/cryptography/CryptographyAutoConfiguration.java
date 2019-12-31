@@ -7,6 +7,7 @@ import com.theicenet.cryptography.service.asymmetric.dsa.key.JCADSAKeyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.JCARSACryptographyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.JCARSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSACryptographyService;
+import com.theicenet.cryptography.service.asymmetric.rsa.RSAPadding;
 import com.theicenet.cryptography.service.asymmetric.rsa.RSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.JCARSAKeyService;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.RSAKeyService;
@@ -68,8 +69,10 @@ public class CryptographyAutoConfiguration {
   }
 
   @Bean
-  public RSACryptographyService rsaCryptographyService() {
-    return new JCARSACryptographyService();
+  public RSACryptographyService rsaCryptographyService(
+      @Value("${cryptography.asymmetric.rsa.padding:OAEPWithSHA256AndMGF1Padding}") RSAPadding padding) {
+
+    return new JCARSACryptographyService(padding);
   }
 
   @Bean

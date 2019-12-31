@@ -10,18 +10,22 @@ import org.apache.commons.lang.Validate;
 
 public class JCARSACryptographyService implements RSACryptographyService {
 
-  public JCARSACryptographyService() {
+  private final RSAPadding padding;
+
+  public JCARSACryptographyService(RSAPadding padding) {
+    this.padding = padding;
+
     // For RSA/NONE/OAEP* it's required Bouncy Castle
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
   @Override
-  public byte[] encrypt(RSAPadding padding, PublicKey publicKey, byte[] clearContent) {
+  public byte[] encrypt(PublicKey publicKey, byte[] clearContent) {
     return process(Cipher.ENCRYPT_MODE, padding, publicKey, clearContent);
   }
 
   @Override
-  public byte[] decrypt(RSAPadding padding, PrivateKey privateKey, byte[] encryptedContent) {
+  public byte[] decrypt(PrivateKey privateKey, byte[] encryptedContent) {
     return process(Cipher.DECRYPT_MODE, padding, privateKey, encryptedContent);
   }
 

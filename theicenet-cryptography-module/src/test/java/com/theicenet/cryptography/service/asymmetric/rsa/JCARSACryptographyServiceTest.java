@@ -82,8 +82,6 @@ class JCARSACryptographyServiceTest {
   final PublicKey RSA_PUBLIC_KEY_2048_BITS;
   final PrivateKey RSA_PRIVATE_KEY_2048_BITS;
 
-  RSACryptographyService rsaCryptographyService;
-
   public JCARSACryptographyServiceTest() throws Exception {
     final var keyFactory = KeyFactory.getInstance(RSA);
 
@@ -92,17 +90,17 @@ class JCARSACryptographyServiceTest {
 
     final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY);
     RSA_PRIVATE_KEY_2048_BITS = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-
-    rsaCryptographyService = new JCARSACryptographyService();
   }
 
   @ParameterizedTest
   @EnumSource(RSAPadding.class)
   void producesNotNullWhenEncrypting(RSAPadding padding) {
+    // Given
+    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+
     // When
     final var encrypted =
         rsaCryptographyService.encrypt(
-            padding,
             RSA_PUBLIC_KEY_2048_BITS,
             CLEAR_CONTENT);
 
@@ -113,10 +111,12 @@ class JCARSACryptographyServiceTest {
   @ParameterizedTest
   @EnumSource(RSAPadding.class)
   void producesSizeOfEncryptedEqualsToKeyLengthWhenEncrypting(RSAPadding padding) throws Exception {
+    // Given
+    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+
     // When
     final var encrypted =
         rsaCryptographyService.encrypt(
-            padding,
             RSA_PUBLIC_KEY_2048_BITS,
             CLEAR_CONTENT);
 
@@ -130,10 +130,12 @@ class JCARSACryptographyServiceTest {
   @ParameterizedTest
   @EnumSource(RSAPadding.class)
   void producesEncryptedDifferentToClearContentWhenEncrypting(RSAPadding padding) {
+    // Given
+    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+
     // When
     final var encrypted =
         rsaCryptographyService.encrypt(
-            padding,
             RSA_PUBLIC_KEY_2048_BITS,
             CLEAR_CONTENT);
 
@@ -145,16 +147,16 @@ class JCARSACryptographyServiceTest {
   @EnumSource(RSAPadding.class)
   void producesTheClearContentWhenDecrypting(RSAPadding padding) {
     // Given
+    RSACryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
+
     final var encrypted =
         rsaCryptographyService.encrypt(
-            padding,
             RSA_PUBLIC_KEY_2048_BITS,
             CLEAR_CONTENT);
 
     // When
     final var decrypted =
         rsaCryptographyService.decrypt(
-            padding,
             RSA_PRIVATE_KEY_2048_BITS,
             encrypted);
 

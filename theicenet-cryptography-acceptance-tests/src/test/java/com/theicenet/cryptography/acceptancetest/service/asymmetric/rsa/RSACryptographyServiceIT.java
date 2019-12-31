@@ -5,7 +5,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.service.asymmetric.rsa.RSACryptographyService;
-import com.theicenet.cryptography.service.asymmetric.rsa.RSAPadding;
 import com.theicenet.cryptography.service.asymmetric.rsa.key.RSAKeyService;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
@@ -30,20 +29,16 @@ public class RSACryptographyServiceIT {
   @Test
   void encryptsAndDecryptsProperly() {
     // Given
-    final var PADDING_OAEP_WITH_SHA1_AND_MGF1 = RSAPadding.OAEPWithSHA1AndMGF1Padding;
-
     final var rsaKeyPair2048Bits = rsaKeyService.generateKey(KEY_LENGTH_2048_BITS);
 
     final var encrypted =
         rsaCryptographyService.encrypt(
-            PADDING_OAEP_WITH_SHA1_AND_MGF1,
             rsaKeyPair2048Bits.getPublic(),
             CLEAR_CONTENT);
 
     // When
     final var decrypted =
         rsaCryptographyService.decrypt(
-            PADDING_OAEP_WITH_SHA1_AND_MGF1,
             rsaKeyPair2048Bits.getPrivate(),
             encrypted);
 
