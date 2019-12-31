@@ -9,14 +9,18 @@ import org.apache.commons.lang.Validate;
 
 public class JCADSASignatureService implements DSASignatureService {
 
-  public JCADSASignatureService() {
+  private final DSASignatureAlgorithm algorithm;
+
+  public JCADSASignatureService(DSASignatureAlgorithm algorithm) {
+    Validate.notNull(algorithm);
+    this.algorithm = algorithm;
+
     // For some sign/verify algorithms it's required Bouncy Castle
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
   @Override
-  public byte[] sign(DSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content) {
-    Validate.notNull(algorithm);
+  public byte[] sign(PrivateKey privateKey, byte[] content) {
     Validate.notNull(privateKey);
     Validate.notNull(content);
 
@@ -32,13 +36,7 @@ public class JCADSASignatureService implements DSASignatureService {
   }
 
   @Override
-  public boolean verify(
-      DSASignatureAlgorithm algorithm,
-      PublicKey publicKey,
-      byte[] content,
-      byte[] signature) {
-
-    Validate.notNull(algorithm);
+  public boolean verify(PublicKey publicKey, byte[] content, byte[] signature) {
     Validate.notNull(publicKey);
     Validate.notNull(content);
     Validate.notNull(signature);

@@ -1,5 +1,6 @@
 package com.theicenet.cryptography;
 
+import com.theicenet.cryptography.service.asymmetric.dsa.DSASignatureAlgorithm;
 import com.theicenet.cryptography.service.asymmetric.dsa.DSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.dsa.JCADSASignatureService;
 import com.theicenet.cryptography.service.asymmetric.dsa.key.DSAKeyService;
@@ -89,8 +90,10 @@ public class CryptographyAutoConfiguration {
   }
 
   @Bean
-  public DSASignatureService dsaSignatureService() {
-    return new JCADSASignatureService();
+  public DSASignatureService dsaSignatureService(
+      @Value("${signature.asymmetric.dsa.algorithm:SHA256withDSA}") DSASignatureAlgorithm algorithm) {
+
+    return new JCADSASignatureService(algorithm);
   }
 
   @Bean("PBKDArgon2")

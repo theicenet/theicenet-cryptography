@@ -10,6 +10,8 @@ signature:
   asymmetric:
     rsa:
       algorithm: SHA1withRSA
+    dsa:
+      algorithm: SHA1withDSA
 
 keyDerivationFunction:
   pbkdF2WithHmacSHA:

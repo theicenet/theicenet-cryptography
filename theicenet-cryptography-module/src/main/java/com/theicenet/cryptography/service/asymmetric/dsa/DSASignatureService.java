@@ -5,7 +5,7 @@ import java.security.PublicKey;
 
 public interface DSASignatureService {
 
-  byte[] sign(DSASignatureAlgorithm algorithm, PrivateKey privateKey, byte[] content);
+  byte[] sign(PrivateKey privateKey, byte[] content);
 
-  boolean verify(DSASignatureAlgorithm algorithm, PublicKey publicKey, byte[] content, byte[] signature);
+  boolean verify(PublicKey publicKey, byte[] content, byte[] signature);
 }

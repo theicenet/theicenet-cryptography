@@ -36,11 +36,7 @@ public class JCARSASignatureService implements RSASignatureService {
   }
 
   @Override
-  public boolean verify(
-      PublicKey publicKey,
-      byte[] content,
-      byte[] signature) {
-
+  public boolean verify(PublicKey publicKey, byte[] content, byte[] signature) {
     Validate.notNull(publicKey);
     Validate.notNull(content);
     Validate.notNull(signature);
