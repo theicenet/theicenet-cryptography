@@ -5,7 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCryptographyIVBasedService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricRandomisedCipherService;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AESCryptographyServiceIT {
+class AESRandomisedCipherServiceIT {
 
   final String AES = "AES";
 
@@ -40,14 +40,14 @@ class AESCryptographyServiceIT {
               + "2ed8");
 
   @Autowired
-  @Qualifier("AESCryptography")
-  SymmetricCryptographyIVBasedService aesCryptographyService;
+  @Qualifier("AESCipher")
+  SymmetricRandomisedCipherService aesCipherService;
 
   @Test
   void producesTheRightEncryptedResultWhenEncrypting() {
     // When
     final var encrypted =
-        aesCryptographyService.encrypt(
+        aesCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -60,7 +60,7 @@ class AESCryptographyServiceIT {
   void producesTheRightDecryptedResultWhenDecrypting() {
     // When
     final var decrypted =
-        aesCryptographyService.decrypt(
+        aesCipherService.decrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             ENCRYPTED_CONTENT_AES_CFB);

@@ -7,7 +7,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCryptographyIVBasedService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricRandomisedCipherService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class JCAAESCryptographyServiceTest {
+class JCAAESRandomisedServiceTest {
 
   // Given
   static final String AES = "AES";
@@ -72,18 +72,18 @@ class JCAAESCryptographyServiceTest {
               + "20e0ea5e2e60ec70b0f31255a4dc6cf304edb41"
               + "92d28c725751474");
 
-  SymmetricCryptographyIVBasedService aesCryptographyService;
+  SymmetricRandomisedCipherService aesCipherService;
 
   @BeforeEach
   void setUp() {
-    aesCryptographyService = new JCAAESCryptographyService(CTR);
+    aesCipherService = new JCAAESRandomisedService(CTR);
   }
 
   @Test
   void producesNotNullWhenEncrypting() {
     // When
     final var encrypted =
-        aesCryptographyService.encrypt(
+        aesCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -96,7 +96,7 @@ class JCAAESCryptographyServiceTest {
   void producesNotEmptyWhenEncrypting() {
     // When
     final var encrypted =
-        aesCryptographyService.encrypt(
+        aesCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -114,7 +114,7 @@ class JCAAESCryptographyServiceTest {
     // When encrypting AES with invalid IV size
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
-      aesCryptographyService.encrypt(
+      aesCipherService.encrypt(
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
           CLEAR_CONTENT);
@@ -128,11 +128,11 @@ class JCAAESCryptographyServiceTest {
       mode = EnumSource.Mode.EXCLUDE)
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncrypting(BlockCipherModeOfOperation blockMode) {
     // Given
-    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+    aesCipherService = new JCAAESRandomisedService(blockMode);
 
     // When
     final var encrypted =
-        aesCryptographyService.encrypt(
+        aesCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -144,11 +144,11 @@ class JCAAESCryptographyServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingWithBlockModeCBC() {
     // Given
-    aesCryptographyService = new JCAAESCryptographyService(BlockCipherModeOfOperation.CBC);
+    aesCipherService = new JCAAESRandomisedService(BlockCipherModeOfOperation.CBC);
 
     // When
     final var encrypted =
-        aesCryptographyService.encrypt(
+        aesCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -169,11 +169,11 @@ class JCAAESCryptographyServiceTest {
       byte[] expectedEncryptedResult) {
 
     // Given
-    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+    aesCipherService = new JCAAESRandomisedService(blockMode);
 
     // When
     final var encrypted =
-        aesCryptographyService.encrypt(
+        aesCipherService.encrypt(
             secretKey,
             iv,
             clearContent);
@@ -215,7 +215,7 @@ class JCAAESCryptographyServiceTest {
   void producesNotNullWhenDecrypting() {
     // When
     final var decrypted =
-        aesCryptographyService.decrypt(
+        aesCipherService.decrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             ENCRYPTED_CONTENT_AES_CTR);
@@ -228,7 +228,7 @@ class JCAAESCryptographyServiceTest {
   void producesNotEmptyWhenDecrypting() {
     // When
     final var decrypted =
-        aesCryptographyService.decrypt(
+        aesCipherService.decrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             ENCRYPTED_CONTENT_AES_CTR);
@@ -246,7 +246,7 @@ class JCAAESCryptographyServiceTest {
     // When decrypting AES with invalid IV size
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
-      aesCryptographyService.decrypt(
+      aesCipherService.decrypt(
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
           ENCRYPTED_CONTENT_AES_CTR);
@@ -263,11 +263,11 @@ class JCAAESCryptographyServiceTest {
       Integer expectedDecryptedSize) {
 
     // Given
-    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+    aesCipherService = new JCAAESRandomisedService(blockMode);
 
     // When
     final var decrypted =
-        aesCryptographyService.decrypt(
+        aesCipherService.decrypt(
             secretKey,
             iv,
             encryptedContent);
@@ -315,11 +315,11 @@ class JCAAESCryptographyServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCryptographyService = new JCAAESCryptographyService(blockMode);
+    aesCipherService = new JCAAESRandomisedService(blockMode);
 
     // When
     final var decrypted =
-        aesCryptographyService.decrypt(
+        aesCipherService.decrypt(
             secretKey,
             iv,
             encryptedContent);

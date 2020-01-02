@@ -1,25 +1,24 @@
-package com.theicenet.cryptography.cipher.asymmetric.rsa;
+package com.theicenet.cryptography.acceptancetest.cipher.asymmetric.rsa;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
 
-import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCryptographyService;
-import com.theicenet.cryptography.test.util.HexUtil;
+import com.theicenet.cryptography.acceptancetest.util.HexUtil;
+import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 
-class JCARSACryptographyServiceTest {
+@SpringBootTest
+public class RSACipherServiceIT {
 
   final String RSA = "RSA";
 
@@ -95,7 +94,11 @@ class JCARSACryptographyServiceTest {
               + "a5ade53bc297e6e6c218c379d6d99ab5278c68137d83006f3f7b2921672de3670f1055d"
               + "8e7400222");
 
-  JCARSACryptographyServiceTest() throws Exception {
+  @Autowired
+  @Qualifier("RSACipher")
+  AsymmetricCipherService rsaCipherService;
+
+  RSACipherServiceIT() throws Exception {
     final var keyFactory = KeyFactory.getInstance(RSA);
 
     final var x509EncodedKeySpec = new X509EncodedKeySpec(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY);
@@ -105,91 +108,32 @@ class JCARSACryptographyServiceTest {
     RSA_PRIVATE_KEY_2048_BITS = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
   }
 
-  @ParameterizedTest
-  @EnumSource(RSAPadding.class)
-  void producesNotNullWhenEncrypting(RSAPadding padding) {
-    // Given
-    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
-
-    // When
-    final var encrypted =
-        rsaCryptographyService.encrypt(
-            RSA_PUBLIC_KEY_2048_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    assertThat(encrypted, is(notNullValue()));
-  }
-
-  @ParameterizedTest
-  @EnumSource(RSAPadding.class)
-  void producesSizeOfEncryptedEqualsToKeyLengthWhenEncrypting(RSAPadding padding) throws Exception {
-    // Given
-    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
-
-    // When
-    final var encrypted =
-        rsaCryptographyService.encrypt(
-            RSA_PUBLIC_KEY_2048_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    final var keyFactory = KeyFactory.getInstance(RSA);
-    final var rsaPrivateKeySpec = keyFactory.getKeySpec(RSA_PRIVATE_KEY_2048_BITS, RSAPrivateKeySpec.class);
-
-    assertThat(encrypted.length, is(equalTo(rsaPrivateKeySpec.getModulus().bitLength() / 8)));
-  }
-
-  @ParameterizedTest
-  @EnumSource(RSAPadding.class)
-  void producesEncryptedDifferentToClearContentWhenEncrypting(RSAPadding padding) {
-    // Given
-    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
-
-    // When
-    final var encrypted =
-        rsaCryptographyService.encrypt(
-            RSA_PUBLIC_KEY_2048_BITS,
-            CLEAR_CONTENT);
-
-    // Then
-    assertThat(encrypted, is(not(equalTo(CLEAR_CONTENT))));
-  }
-
-  @ParameterizedTest
-  @EnumSource(RSAPadding.class)
-  void producesTheClearContentWhenDecrypting(RSAPadding padding) {
-    // Given
-    AsymmetricCryptographyService rsaCryptographyService = new JCARSACryptographyService(padding);
-
-    final var encrypted =
-        rsaCryptographyService.encrypt(
-            RSA_PUBLIC_KEY_2048_BITS,
-            CLEAR_CONTENT);
-
+  @Test
+  void decryptsProperly() {
     // When
     final var decrypted =
-        rsaCryptographyService.decrypt(
+        rsaCipherService.decrypt(
             RSA_PRIVATE_KEY_2048_BITS,
-            encrypted);
+            RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING);
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
   }
 
   @Test
-  void decryptsProperlyWhenDecryptingWithOAEPWithSHA1AndMGF1Padding() {
-    // Given
-    AsymmetricCryptographyService rsaCryptographyService =
-        new JCARSACryptographyService(RSAPadding.OAEPWithSHA1AndMGF1Padding);
-
+  void encryptsProperly() {
     // When
-    final var decrypted =
-        rsaCryptographyService.decrypt(
-          RSA_PRIVATE_KEY_2048_BITS,
-          RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING);
+    final var encrypted =
+        rsaCipherService.encrypt(
+            RSA_PUBLIC_KEY_2048_BITS,
+            CLEAR_CONTENT);
 
     // Then
+    final var decrypted =
+        rsaCipherService.decrypt(
+            RSA_PRIVATE_KEY_2048_BITS,
+            encrypted);
+
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
   }
 }

@@ -1,6 +1,6 @@
 package com.theicenet.cryptography.cipher.asymmetric.rsa;
 
-import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCryptographyService;
+import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.Key;
 import java.security.PrivateKey;
@@ -8,11 +8,11 @@ import java.security.PublicKey;
 import javax.crypto.Cipher;
 import org.apache.commons.lang.Validate;
 
-public class JCARSACryptographyService implements AsymmetricCryptographyService {
+public class JCARSACipherService implements AsymmetricCipherService {
 
   private final RSAPadding padding;
 
-  public JCARSACryptographyService(RSAPadding padding) {
+  public JCARSACipherService(RSAPadding padding) {
     this.padding = padding;
 
     // For RSA/NONE/OAEP* it's required Bouncy Castle
@@ -40,7 +40,7 @@ public class JCARSACryptographyService implements AsymmetricCryptographyService 
 
       return cipher.doFinal(content);
     } catch (Exception e) {
-      throw new RSACryptographyServiceException("Exception encrypting/decrypting content", e);
+      throw new RSACipherServiceException("Exception encrypting/decrypting content", e);
     }
   }
 }

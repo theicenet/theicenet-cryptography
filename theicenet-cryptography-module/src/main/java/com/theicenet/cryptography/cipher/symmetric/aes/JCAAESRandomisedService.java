@@ -1,13 +1,13 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCryptographyIVBasedService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricRandomisedCipherService;
 import org.apache.commons.lang.Validate;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-public class JCAAESCryptographyService implements SymmetricCryptographyIVBasedService {
+public class JCAAESRandomisedService implements SymmetricRandomisedCipherService {
 
   private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
@@ -15,7 +15,7 @@ public class JCAAESCryptographyService implements SymmetricCryptographyIVBasedSe
 
   private final BlockCipherModeOfOperation blockMode;
 
-  public JCAAESCryptographyService(BlockCipherModeOfOperation blockMode) {
+  public JCAAESRandomisedService(BlockCipherModeOfOperation blockMode) {
     this.blockMode = blockMode;
   }
 
@@ -64,7 +64,7 @@ public class JCAAESCryptographyService implements SymmetricCryptographyIVBasedSe
     try {
       return cipher.doFinal(content);
     } catch (Exception e) {
-      throw new AESCryptographyServiceException("Exception processing content", e);
+      throw new AESCipherServiceException("Exception processing content", e);
     }
   }
 
@@ -80,7 +80,7 @@ public class JCAAESCryptographyService implements SymmetricCryptographyIVBasedSe
       cipher = Cipher.getInstance(String.format("AES/%s/%s", blockMode, padding));
       cipher.init(operationMode, secretKey, new IvParameterSpec(iv));
     } catch (Exception e) {
-      throw new AESCryptographyServiceException("Exception creating cipher", e);
+      throw new AESCipherServiceException("Exception creating cipher", e);
     }
 
     return cipher;

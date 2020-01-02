@@ -1,30 +1,31 @@
 cryptography:
-  symmetric:
-    aes:
-      blockMode: CFB
-  asymmetric:
-    rsa:
-      padding: OAEPWithSHA1AndMGF1Padding
+  cipher:
+    symmetric:
+      aes:
+        blockMode: CFB
+    asymmetric:
+      rsa:
+        padding: OAEPWithSHA1AndMGF1Padding
 
-signature:
-  asymmetric:
-    rsa:
-      algorithm: SHA1withRSA
-    dsa:
-      algorithm: SHA1withDSA
+  signature:
+    asymmetric:
+      rsa:
+        algorithm: SHA1withRSA
+      dsa:
+        algorithm: SHA1withDSA
 
-keyDerivationFunction:
-  pbkdF2WithHmacSHA:
-    shaAlgorithm: SHA512
-    iterations: 65535
-  scrypt:
-    cpuMemoryCost: 32768
-    blockSize: 8
-    parallelization: 1
-  argon2:
-    type: ARGON2_ID
-    version: ARGON2_VERSION_13
-    iterations: 2
-    memoryPowOfTwo: 18
-    parallelism: 2
+  keyDerivationFunction:
+    pbkdF2WithHmacSHA:
+      shaAlgorithm: SHA512
+      iterations: 65535
+    scrypt:
+      cpuMemoryCost: 32768
+      blockSize: 8
+      parallelization: 1
+    argon2:
+      type: ARGON2_ID
+      version: ARGON2_VERSION_13
+      iterations: 2
+      memoryPowOfTwo: 18
+      parallelism: 2
 
