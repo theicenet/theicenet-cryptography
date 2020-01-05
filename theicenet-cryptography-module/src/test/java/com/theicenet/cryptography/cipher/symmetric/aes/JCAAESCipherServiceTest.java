@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import com.theicenet.cryptography.test.util.HexUtil;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
@@ -80,7 +83,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void producesNotNullWhenEncrypting() {
+  void producesNotNullWhenEncryptingByteArray() {
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -93,7 +96,24 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void producesNotEmptyWhenEncrypting() {
+  void producesNotNullWhenEncryptingStream() throws IOException {
+    // Given
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+      // When
+      aesCipherService.encrypt(
+          SECRET_KEY_1234567890123456_128_BITS,
+          INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+          clearInputStream,
+          encryptedOutputStream);
+
+      // Then
+      assertThat(encryptedOutputStream.toByteArray(), is(notNullValue()));
+  }
+
+  @Test
+  void producesNotEmptyWhenEncryptingByteArray() {
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -106,7 +126,24 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingWithInvalidIVSize() {
+  void producesNotEmptyWhenEncryptingByteStream() throws IOException {
+    // Given
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+      // When
+      aesCipherService.encrypt(
+          SECRET_KEY_1234567890123456_128_BITS,
+          INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+          clearInputStream,
+          encryptedOutputStream);
+
+      // Then
+      assertThat(encryptedOutputStream.toByteArray().length, is(greaterThan(0)));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -121,12 +158,32 @@ class JCAAESCipherServiceTest {
     });
   }
 
+  @Test
+  void throwsIllegalArgumentExceptionWhenEncryptingStreamWithInvalidIVSize() {
+    // Given initialization vector of invalid size (= 64 bits)
+    final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
+        "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
+
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    // When encrypting AES with invalid IV size
+    // Then throws IllegalArgumentException
+    assertThrows(IllegalArgumentException.class, () -> {
+      aesCipherService.encrypt(
+          SECRET_KEY_1234567890123456_128_BITS,
+          INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
+          clearInputStream,
+          encryptedOutputStream);
+    });
+  }
+
   @ParameterizedTest
   @EnumSource(
       value = BlockCipherModeOfOperation.class,
       names = {"CBC"},
       mode = EnumSource.Mode.EXCLUDE)
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncrypting(BlockCipherModeOfOperation blockMode) {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingByteArray(BlockCipherModeOfOperation blockMode) {
     // Given
     aesCipherService = new JCAAESCipherService(blockMode);
 
@@ -142,7 +199,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingWithBlockModeCBC() {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingByteArrayWithBlockModeCBC() {
     // Given
     aesCipherService = new JCAAESCipherService(BlockCipherModeOfOperation.CBC);
 
@@ -160,8 +217,52 @@ class JCAAESCipherServiceTest {
   }
 
   @ParameterizedTest
+  @EnumSource(
+      value = BlockCipherModeOfOperation.class,
+      names = {"CBC"},
+      mode = EnumSource.Mode.EXCLUDE)
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingStream(BlockCipherModeOfOperation blockMode) throws IOException {
+    // Given
+    aesCipherService = new JCAAESCipherService(blockMode);
+
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
+
+    // Then
+    assertThat(encryptedOutputStream.toByteArray().length, is(is(equalTo(CLEAR_CONTENT.length))));
+  }
+
+  @Test
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingStreamWithBlockModeCBC() {
+    // Given
+    aesCipherService = new JCAAESCipherService(BlockCipherModeOfOperation.CBC);
+
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
+
+    // Then
+    assertThat(
+        encryptedOutputStream.toByteArray().length,
+        is(equalTo(CLEAR_CONTENT.length + (16 - CLEAR_CONTENT.length % 16))));
+  }
+
+  @ParameterizedTest
   @MethodSource("argumentsWithClearContentAndSecretKeyAndIVAndBlockModeAndExpectedEncryptedResult")
-  void producesTheRightEncryptedResultWhenEncryptingWithBlockModeCBC(
+  void producesTheRightEncryptedResultWhenEncryptingByteArray(
       byte[] clearContent,
       SecretKey secretKey,
       byte[] iv,
@@ -180,6 +281,32 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThat(encrypted, is(equalTo(expectedEncryptedResult)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("argumentsWithClearContentAndSecretKeyAndIVAndBlockModeAndExpectedEncryptedResult")
+  void producesTheRightEncryptedResultWhenEncryptingStream(
+      byte[] clearContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherModeOfOperation blockMode,
+      byte[] expectedEncryptedResult) {
+
+    // Given
+    aesCipherService = new JCAAESCipherService(blockMode);
+
+    final var clearInputStream = new ByteArrayInputStream(clearContent);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.encrypt(
+        secretKey,
+        iv,
+        clearInputStream,
+        encryptedOutputStream);
+
+    // Then
+    assertThat(encryptedOutputStream.toByteArray(), is(equalTo(expectedEncryptedResult)));
   }
 
   static Stream<Arguments> argumentsWithClearContentAndSecretKeyAndIVAndBlockModeAndExpectedEncryptedResult() {
@@ -212,7 +339,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void producesNotNullWhenDecrypting() {
+  void producesNotNullWhenDecryptingByteArray() {
     // When
     final var decrypted =
         aesCipherService.decrypt(
@@ -225,7 +352,24 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void producesNotEmptyWhenDecrypting() {
+  void producesNotNullWhenDecryptingStream() {
+    // Given
+    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray(), is(notNullValue()));
+  }
+
+  @Test
+  void producesNotEmptyWhenDecryptingByteArray() {
     // When
     final var decrypted =
         aesCipherService.decrypt(
@@ -238,7 +382,24 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingWithInvalidIVSize() {
+  void producesNotEmptyWhenDecryptingStream() {
+    // Given
+    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray().length, is(greaterThan(0)));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenDecryptingByteArrayWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -253,9 +414,29 @@ class JCAAESCipherServiceTest {
     });
   }
 
+  @Test
+  void throwsIllegalArgumentExceptionWhenDecryptingStreamWithInvalidIVSize() {
+    // Given initialization vector of invalid size (= 64 bits)
+    final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
+        "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
+
+    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When decrypting AES with invalid IV size
+    // Then throws IllegalArgumentException
+    assertThrows(IllegalArgumentException.class, () -> {
+      aesCipherService.decrypt(
+          SECRET_KEY_1234567890123456_128_BITS,
+          INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
+          encryptedInputStream,
+          clearOutputStream);
+    });
+  }
+
   @ParameterizedTest
   @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize")
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecrypting(
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingByteArray(
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
@@ -274,6 +455,32 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThat(decrypted.length, is(equalTo(expectedDecryptedSize)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize")
+  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingStream(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherModeOfOperation blockMode,
+      Integer expectedDecryptedSize) {
+
+    // Given
+    aesCipherService = new JCAAESCipherService(blockMode);
+
+    final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        secretKey,
+        iv,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray().length, is(equalTo(expectedDecryptedSize)));
   }
 
   static Stream<Arguments> argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize() {
@@ -307,7 +514,7 @@ class JCAAESCipherServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
-  void producesTheRightDecryptedResultWhenDecryptingWithBlockCBC(
+  void producesTheRightDecryptedResultWhenDecryptingByteArray(
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
@@ -326,6 +533,32 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThat(decrypted, is(equalTo(expectedDecryptedResult)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesTheRightDecryptedResultWhenDecryptingStream(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherModeOfOperation blockMode,
+      byte[] expectedDecryptedResult) {
+
+    // Given
+    aesCipherService = new JCAAESCipherService(blockMode);
+
+    final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        secretKey,
+        iv,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray(), is(equalTo(expectedDecryptedResult)));
   }
 
   static Stream<Arguments> argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult() {

@@ -6,6 +6,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -44,7 +46,7 @@ class AESCipherServiceIT {
   SymmetricIVBasedCipherService aesCipherService;
 
   @Test
-  void producesTheRightEncryptedResultWhenEncrypting() {
+  void producesTheRightEncryptedResultWhenEncryptingByteArray() {
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -57,7 +59,24 @@ class AESCipherServiceIT {
   }
 
   @Test
-  void producesTheRightDecryptedResultWhenDecrypting() {
+  void producesTheRightEncryptedResultWhenEncryptingStream() {
+    // Given
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
+
+    // Then
+    assertThat(encryptedOutputStream.toByteArray(), is(equalTo(ENCRYPTED_CONTENT_AES_CFB)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingByteArray() {
     // When
     final var decrypted =
         aesCipherService.decrypt(
@@ -67,5 +86,22 @@ class AESCipherServiceIT {
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingStream() {
+    // Given
+    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CFB);
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray(), is(equalTo(CLEAR_CONTENT)));
   }
 }
