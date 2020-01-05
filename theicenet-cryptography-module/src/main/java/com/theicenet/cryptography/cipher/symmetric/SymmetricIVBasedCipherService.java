@@ -8,8 +8,6 @@ public interface SymmetricIVBasedCipherService {
 
   byte[] encrypt(SecretKey secretKey, byte[] iv, byte[] clearContent);
 
-  byte[] decrypt(SecretKey secretKey, byte[] iv, byte[] encryptedContent);
-
   /**
    * Encrypts and closes the passed streams.
    * Once this method returns the input and output streams have been closed so they can't be mutated.
@@ -19,6 +17,8 @@ public interface SymmetricIVBasedCipherService {
       byte[] iv,
       InputStream clearContentInputStream,
       OutputStream encryptedContentOutputStream);
+
+  byte[] decrypt(SecretKey secretKey, byte[] iv, byte[] encryptedContent);
 
   /**
    * Encrypts and closes the passed streams.
