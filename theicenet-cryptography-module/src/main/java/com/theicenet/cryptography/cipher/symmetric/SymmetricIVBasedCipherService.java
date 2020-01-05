@@ -2,7 +2,7 @@ package com.theicenet.cryptography.cipher.symmetric;
 
 import javax.crypto.SecretKey;
 
-public interface SymmetricRandomisedCipherService {
+public interface SymmetricIVBasedCipherService {
 
   byte[] encrypt(SecretKey secretKey, byte[] iv, byte[] clearContent);
 

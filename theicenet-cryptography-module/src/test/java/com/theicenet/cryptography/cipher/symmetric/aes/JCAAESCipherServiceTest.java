@@ -7,7 +7,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.cipher.symmetric.SymmetricRandomisedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class JCAAESRandomisedServiceTest {
+class JCAAESCipherServiceTest {
 
   // Given
   static final String AES = "AES";
@@ -72,11 +72,11 @@ class JCAAESRandomisedServiceTest {
               + "20e0ea5e2e60ec70b0f31255a4dc6cf304edb41"
               + "92d28c725751474");
 
-  SymmetricRandomisedCipherService aesCipherService;
+  SymmetricIVBasedCipherService aesCipherService;
 
   @BeforeEach
   void setUp() {
-    aesCipherService = new JCAAESRandomisedService(CTR);
+    aesCipherService = new JCAAESCipherService(CTR);
   }
 
   @Test
@@ -128,7 +128,7 @@ class JCAAESRandomisedServiceTest {
       mode = EnumSource.Mode.EXCLUDE)
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncrypting(BlockCipherModeOfOperation blockMode) {
     // Given
-    aesCipherService = new JCAAESRandomisedService(blockMode);
+    aesCipherService = new JCAAESCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -144,7 +144,7 @@ class JCAAESRandomisedServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingWithBlockModeCBC() {
     // Given
-    aesCipherService = new JCAAESRandomisedService(BlockCipherModeOfOperation.CBC);
+    aesCipherService = new JCAAESCipherService(BlockCipherModeOfOperation.CBC);
 
     // When
     final var encrypted =
@@ -169,7 +169,7 @@ class JCAAESRandomisedServiceTest {
       byte[] expectedEncryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESRandomisedService(blockMode);
+    aesCipherService = new JCAAESCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -263,7 +263,7 @@ class JCAAESRandomisedServiceTest {
       Integer expectedDecryptedSize) {
 
     // Given
-    aesCipherService = new JCAAESRandomisedService(blockMode);
+    aesCipherService = new JCAAESCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -315,7 +315,7 @@ class JCAAESRandomisedServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESRandomisedService(blockMode);
+    aesCipherService = new JCAAESCipherService(blockMode);
 
     // When
     final var decrypted =

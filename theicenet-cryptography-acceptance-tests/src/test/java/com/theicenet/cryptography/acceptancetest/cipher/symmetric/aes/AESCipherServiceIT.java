@@ -5,7 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricRandomisedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AESRandomisedCipherServiceIT {
+class AESCipherServiceIT {
 
   final String AES = "AES";
 
@@ -41,7 +41,7 @@ class AESRandomisedCipherServiceIT {
 
   @Autowired
   @Qualifier("AESCipher")
-  SymmetricRandomisedCipherService aesCipherService;
+  SymmetricIVBasedCipherService aesCipherService;
 
   @Test
   void producesTheRightEncryptedResultWhenEncrypting() {

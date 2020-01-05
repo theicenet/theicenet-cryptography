@@ -1,13 +1,13 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
-import com.theicenet.cryptography.cipher.symmetric.SymmetricRandomisedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import org.apache.commons.lang.Validate;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-public class JCAAESRandomisedService implements SymmetricRandomisedCipherService {
+public class JCAAESCipherService implements SymmetricIVBasedCipherService {
 
   private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
@@ -15,7 +15,7 @@ public class JCAAESRandomisedService implements SymmetricRandomisedCipherService
 
   private final BlockCipherModeOfOperation blockMode;
 
-  public JCAAESRandomisedService(BlockCipherModeOfOperation blockMode) {
+  public JCAAESCipherService(BlockCipherModeOfOperation blockMode) {
     this.blockMode = blockMode;
   }
 
