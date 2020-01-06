@@ -6,8 +6,8 @@ import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.BlockCipherModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESCipherService;
-import com.theicenet.cryptography.cipher.symmetric.randomise.iv.IVService;
-import com.theicenet.cryptography.cipher.symmetric.randomise.iv.JCAIVService;
+import com.theicenet.cryptography.randomise.RandomiseService;
+import com.theicenet.cryptography.randomise.iv.JCAIVService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
@@ -21,15 +21,14 @@ import com.theicenet.cryptography.pbkd.argon2.PBKDArgon2Service;
 import com.theicenet.cryptography.pbkd.pbkdf2.JCAPBKDF2WithHmacSHAKeyService;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
 import com.theicenet.cryptography.pbkd.pbkdf2.ShaAlgorithm;
-import com.theicenet.cryptography.pbkd.salt.JCASaltService;
-import com.theicenet.cryptography.pbkd.salt.SaltService;
+import com.theicenet.cryptography.randomise.salt.JCASaltService;
 import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
-import com.theicenet.cryptography.signature.asymmetric.SignatureService;
-import com.theicenet.cryptography.signature.asymmetric.dsa.DSASignatureAlgorithm;
-import com.theicenet.cryptography.signature.asymmetric.dsa.JCADSASignatureService;
-import com.theicenet.cryptography.signature.asymmetric.rsa.JCARSASignatureService;
-import com.theicenet.cryptography.signature.asymmetric.rsa.RSASignatureAlgorithm;
+import com.theicenet.cryptography.signature.SignatureService;
+import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
+import com.theicenet.cryptography.signature.dsa.JCADSASignatureService;
+import com.theicenet.cryptography.signature.rsa.JCARSASignatureService;
+import com.theicenet.cryptography.signature.rsa.RSASignatureAlgorithm;
 import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -57,8 +56,8 @@ public class CryptographyAutoConfiguration {
     return new JCAAESKeyService(secureRandom);
   }
 
-  @Bean
-  public IVService ivService(SecureRandom secureRandom) {
+  @Bean("IV")
+  public RandomiseService ivService(SecureRandom secureRandom) {
     return new JCAIVService(secureRandom);
   }
 
@@ -123,8 +122,8 @@ public class CryptographyAutoConfiguration {
         new SCryptConfiguration(cpuMemoryCost, blockSize, parallelization));
   }
 
-  @Bean
-  public SaltService saltService(SecureRandom secureRandom) {
+  @Bean("Salt")
+  public RandomiseService saltService(SecureRandom secureRandom) {
     return new JCASaltService(secureRandom);
   }
 }
