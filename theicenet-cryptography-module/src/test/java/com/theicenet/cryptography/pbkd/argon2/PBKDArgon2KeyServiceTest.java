@@ -174,7 +174,7 @@ class PBKDArgon2KeyServiceTest {
   void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullPassword(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 ARGON2_VERSION_13,
@@ -200,7 +200,7 @@ class PBKDArgon2KeyServiceTest {
   void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullSalt(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 ARGON2_VERSION_13,
@@ -226,7 +226,7 @@ class PBKDArgon2KeyServiceTest {
   void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNegativeKeyLength(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 ARGON2_VERSION_13,
@@ -252,7 +252,7 @@ class PBKDArgon2KeyServiceTest {
   void throwsIllegalArgumentExceptionWhenGeneratingKeyAndZeroKeyLength(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 ARGON2_VERSION_13,
@@ -277,7 +277,7 @@ class PBKDArgon2KeyServiceTest {
   void producesNotNullWhenGeneratingKey(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 ARGON2_VERSION_13,
@@ -301,7 +301,7 @@ class PBKDArgon2KeyServiceTest {
   void producesKeyWithRightAlgorithmWhenGeneratingKeyAndSha1And2(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 ARGON2_VERSION_13,
@@ -325,7 +325,7 @@ class PBKDArgon2KeyServiceTest {
   void producesKeyWithRAWFormatWhenGeneratingKey(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 ARGON2_VERSION_13,
@@ -353,7 +353,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 argon2Version,
@@ -382,7 +382,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 argon2Version,
@@ -415,7 +415,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 argon2Version,
@@ -448,7 +448,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 argon2Version,
@@ -482,7 +482,7 @@ class PBKDArgon2KeyServiceTest {
     // Given
     final var _100 = 100;
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 argon2Version,
@@ -517,7 +517,7 @@ class PBKDArgon2KeyServiceTest {
     // Given
     final var _500 = 500;
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 argon2Version,
@@ -594,7 +594,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Given
     final var pbkdKeyService =
-        new PBKDArgon2Service(
+        new PBKDArgon2KeyService(
             new Argon2Configuration(
                 argon2Type,
                 argon2Version,

@@ -26,7 +26,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class PBKDSCryptServiceTest {
+class PBKDSCryptKeyServiceTest {
 
   static final int KEY_LENGTH_64_BITS = 64;
   static final int KEY_LENGTH_128_BITS = 128;
@@ -77,7 +77,7 @@ class PBKDSCryptServiceTest {
   @BeforeEach
   void setUp() {
     pbkdKeyService =
-        new PBKDSCryptService(
+        new PBKDSCryptKeyService(
             new SCryptConfiguration(
                 CPU_MEMORY_COST_1024,
                 BLOCK_SIZE_8,

@@ -8,13 +8,13 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class PBKDSCryptService implements PBKDKeyService {
+public class PBKDSCryptKeyService implements PBKDKeyService {
 
   private static final String SCRYPT = "SCrypt";
 
   private final SCryptConfiguration sCryptConfiguration;
 
-  public PBKDSCryptService(SCryptConfiguration sCryptConfiguration) {
+  public PBKDSCryptKeyService(SCryptConfiguration sCryptConfiguration) {
     this.sCryptConfiguration = sCryptConfiguration;
   }
 

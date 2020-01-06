@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.acceptancetest.pbkd.argon2;
+package com.theicenet.cryptography.acceptancetest.pbkd.scrypt;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PBKDArgon2ServiceIT {
+class PBKDSCryptKeyServiceIT {
 
   final int KEY_LENGTH_256_BITS = 256;
 
@@ -22,11 +22,11 @@ class PBKDArgon2ServiceIT {
   final byte[] SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES =
       "GHIJKLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
 
-  final byte[] ARGON2_ID_113_HASH_256_BITS =
-      HexUtil.decodeHex("6e9bb67c4531a6c8df76cca86ed5626ef8f0150d98aa3a2ec7eecf6576b17b5c");
+  static final byte[] SCRYPT_HASH_256_BITS =
+      HexUtil.decodeHex("935a09dc069597dca05a6601588cda5a1918359eaf9260059e03f0f1e94bb251");
 
   @Autowired
-  @Qualifier("PBKDArgon2")
+  @Qualifier("PBKDSCrypt")
   PBKDKeyService pbkdKeyService;
 
   @Test
@@ -39,6 +39,6 @@ class PBKDArgon2ServiceIT {
             KEY_LENGTH_256_BITS);
 
     // Then
-    assertThat(generatedKey.getEncoded(), is(equalTo(ARGON2_ID_113_HASH_256_BITS)));
+    assertThat(generatedKey.getEncoded(), is(equalTo(SCRYPT_HASH_256_BITS)));
   }
 }

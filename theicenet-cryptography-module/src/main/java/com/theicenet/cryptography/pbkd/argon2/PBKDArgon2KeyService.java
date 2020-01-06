@@ -9,11 +9,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class PBKDArgon2Service implements PBKDKeyService {
+public class PBKDArgon2KeyService implements PBKDKeyService {
 
   private final Argon2Configuration argon2Configuration;
 
-  public PBKDArgon2Service(Argon2Configuration argon2Configuration) {
+  public PBKDArgon2KeyService(Argon2Configuration argon2Configuration) {
     this.argon2Configuration = argon2Configuration;
   }
 
