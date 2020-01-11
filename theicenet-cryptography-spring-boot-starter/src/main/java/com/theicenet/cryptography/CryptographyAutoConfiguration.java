@@ -4,8 +4,11 @@ import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
-import com.theicenet.cryptography.cipher.symmetric.aes.BlockCipherModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.aes.BlockCipherIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESCipherService;
+import com.theicenet.cryptography.digest.DigestAlgorithm;
+import com.theicenet.cryptography.digest.DigestService;
+import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.randomise.RandomiseService;
 import com.theicenet.cryptography.randomise.iv.JCAIVService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
@@ -44,21 +47,16 @@ public class CryptographyAutoConfiguration {
     return new SecureRandom();
   }
 
-  @Bean("AESCipher")
-  public SymmetricIVBasedCipherService aesCipherService(
-      @Value("${cryptography.cipher.symmetric.aes.blockMode:CTR}") BlockCipherModeOfOperation blockMode) {
-
-    return new JCAAESCipherService(blockMode);
-  }
-
   @Bean("AESKey")
   public SymmetricKeyService aesKeyService(SecureRandom secureRandom) {
     return new JCAAESKeyService(secureRandom);
   }
 
-  @Bean("IV")
-  public RandomiseService ivService(SecureRandom secureRandom) {
-    return new JCAIVService(secureRandom);
+  @Bean("AESCipher")
+  public SymmetricIVBasedCipherService aesCipherService(
+      @Value("${cryptography.cipher.symmetric.aes.blockMode:CTR}") BlockCipherIVBasedModeOfOperation blockMode) {
+
+    return new JCAAESCipherService(blockMode);
   }
 
   @Bean("RSAKey")
@@ -122,8 +120,20 @@ public class CryptographyAutoConfiguration {
         new SCryptConfiguration(cpuMemoryCost, blockSize, parallelization));
   }
 
+  @Bean("IV")
+  public RandomiseService ivService(SecureRandom secureRandom) {
+    return new JCAIVService(secureRandom);
+  }
+
   @Bean("Salt")
   public RandomiseService saltService(SecureRandom secureRandom) {
     return new JCASaltService(secureRandom);
+  }
+
+  @Bean("Digest")
+  public DigestService digestService(
+      @Value("${cryptography.digest.algorithm:SHA-256}") DigestAlgorithm algorithm) {
+
+    return new JCADigestService(algorithm);
   }
 }

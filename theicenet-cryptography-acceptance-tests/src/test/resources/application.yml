@@ -29,3 +29,6 @@ cryptography:
       memoryPowOfTwo: 18
       parallelism: 2
 
+  digest:
+    algorithm: SHA-1
+

@@ -1,10 +1,8 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import org.apache.commons.lang.Validate;
 
@@ -18,9 +16,9 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
       "IV's size must be equals to AES cipher block size = %s bytes";
 
-  private final BlockCipherModeOfOperation blockMode;
+  private final BlockCipherIVBasedModeOfOperation blockMode;
 
-  public JCAAESCipherService(BlockCipherModeOfOperation blockMode) {
+  public JCAAESCipherService(BlockCipherIVBasedModeOfOperation blockMode) {
     this.blockMode = blockMode;
   }
 
@@ -78,7 +76,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
 
   private byte[] process(
       int operationMode,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       SecretKey secretKey,
       byte[] iv,
       byte[] content) {
@@ -98,7 +96,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
 
   private void process(
       int operationMode,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       SecretKey secretKey,
       byte[] iv,
       InputStream inputStream,
@@ -120,7 +118,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
   }
 
   private void validateCipherParameters(
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       SecretKey secretKey,
       byte[] iv) {
 
@@ -136,7 +134,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
 
   private Cipher createCipher(
       Integer operationMode,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       SecretKey secretKey,
       byte[] iv,
       Padding padding) {
@@ -152,7 +150,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
     return cipher;
   }
 
-  private Padding paddingForBlockMode(BlockCipherModeOfOperation mode) {
+  private Padding paddingForBlockMode(BlockCipherIVBasedModeOfOperation mode) {
 
     final Padding padding;
     switch (mode) {

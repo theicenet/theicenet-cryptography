@@ -11,7 +11,6 @@ import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
@@ -27,10 +26,10 @@ class JCAAESCipherServiceTest {
 
   // Given
   static final String AES = "AES";
-  static final BlockCipherModeOfOperation CBC = BlockCipherModeOfOperation.CBC;
-  static final BlockCipherModeOfOperation CFB = BlockCipherModeOfOperation.CFB;
-  static final BlockCipherModeOfOperation OFB = BlockCipherModeOfOperation.OFB;
-  static final BlockCipherModeOfOperation CTR = BlockCipherModeOfOperation.CTR;
+  static final BlockCipherIVBasedModeOfOperation CBC = BlockCipherIVBasedModeOfOperation.CBC;
+  static final BlockCipherIVBasedModeOfOperation CFB = BlockCipherIVBasedModeOfOperation.CFB;
+  static final BlockCipherIVBasedModeOfOperation OFB = BlockCipherIVBasedModeOfOperation.OFB;
+  static final BlockCipherIVBasedModeOfOperation CTR = BlockCipherIVBasedModeOfOperation.CTR;
 
   static final byte[] CLEAR_CONTENT =
       "Content to encrypt with AES and different options for block cipher mode of operation"
@@ -96,20 +95,20 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void producesNotNullWhenEncryptingStream() throws IOException {
+  void producesNotNullWhenEncryptingStream() {
     // Given
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
-      // When
-      aesCipherService.encrypt(
-          SECRET_KEY_1234567890123456_128_BITS,
-          INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-          clearInputStream,
-          encryptedOutputStream);
+    // When
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
 
-      // Then
-      assertThat(encryptedOutputStream.toByteArray(), is(notNullValue()));
+    // Then
+    assertThat(encryptedOutputStream.toByteArray(), is(notNullValue()));
   }
 
   @Test
@@ -126,20 +125,20 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void producesNotEmptyWhenEncryptingByteStream() throws IOException {
+  void producesNotEmptyWhenEncryptingByteStream() {
     // Given
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
-      // When
-      aesCipherService.encrypt(
-          SECRET_KEY_1234567890123456_128_BITS,
-          INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-          clearInputStream,
-          encryptedOutputStream);
+    // When
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
 
-      // Then
-      assertThat(encryptedOutputStream.toByteArray().length, is(greaterThan(0)));
+    // Then
+    assertThat(encryptedOutputStream.toByteArray().length, is(greaterThan(0)));
   }
 
   @Test
@@ -180,10 +179,11 @@ class JCAAESCipherServiceTest {
 
   @ParameterizedTest
   @EnumSource(
-      value = BlockCipherModeOfOperation.class,
+      value = BlockCipherIVBasedModeOfOperation.class,
       names = {"CBC"},
       mode = EnumSource.Mode.EXCLUDE)
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingByteArray(BlockCipherModeOfOperation blockMode) {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingByteArray(
+      BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
     aesCipherService = new JCAAESCipherService(blockMode);
 
@@ -201,7 +201,7 @@ class JCAAESCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingByteArrayWithBlockModeCBC() {
     // Given
-    aesCipherService = new JCAAESCipherService(BlockCipherModeOfOperation.CBC);
+    aesCipherService = new JCAAESCipherService(BlockCipherIVBasedModeOfOperation.CBC);
 
     // When
     final var encrypted =
@@ -218,10 +218,11 @@ class JCAAESCipherServiceTest {
 
   @ParameterizedTest
   @EnumSource(
-      value = BlockCipherModeOfOperation.class,
+      value = BlockCipherIVBasedModeOfOperation.class,
       names = {"CBC"},
       mode = EnumSource.Mode.EXCLUDE)
-  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingStream(BlockCipherModeOfOperation blockMode) throws IOException {
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingStream(
+      BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
     aesCipherService = new JCAAESCipherService(blockMode);
 
@@ -242,7 +243,7 @@ class JCAAESCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingStreamWithBlockModeCBC() {
     // Given
-    aesCipherService = new JCAAESCipherService(BlockCipherModeOfOperation.CBC);
+    aesCipherService = new JCAAESCipherService(BlockCipherIVBasedModeOfOperation.CBC);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -266,7 +267,7 @@ class JCAAESCipherServiceTest {
       byte[] clearContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       byte[] expectedEncryptedResult) {
 
     // Given
@@ -289,7 +290,7 @@ class JCAAESCipherServiceTest {
       byte[] clearContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       byte[] expectedEncryptedResult) {
 
     // Given
@@ -440,7 +441,7 @@ class JCAAESCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       Integer expectedDecryptedSize) {
 
     // Given
@@ -463,7 +464,7 @@ class JCAAESCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       Integer expectedDecryptedSize) {
 
     // Given
@@ -518,7 +519,7 @@ class JCAAESCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       byte[] expectedDecryptedResult) {
 
     // Given
@@ -541,7 +542,7 @@ class JCAAESCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherModeOfOperation blockMode,
+      BlockCipherIVBasedModeOfOperation blockMode,
       byte[] expectedDecryptedResult) {
 
     // Given
