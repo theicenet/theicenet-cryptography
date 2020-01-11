@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +34,7 @@ class AESCipherServiceIT {
   final byte[] INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS =
       "KLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
 
-  static final byte[] ENCRYPTED_CONTENT_AES_CFB =
+  final byte[] ENCRYPTED_CONTENT_AES_CFB =
       HexUtil.decodeHex(
           "813d91455835f9650de0506a0cbc9126d4c171c5e"
               + "fc1c3c7137e9d2fb2f711897b3261d0f760243583"
@@ -41,15 +42,26 @@ class AESCipherServiceIT {
               + "669dfc61c082e932ec53767b3de363beb10fa3ceb"
               + "2ed8");
 
+  final byte[] ENCRYPTED_CONTENT_AES_ECB =
+      HexUtil.decodeHex(
+          "1f28432db0cb9a41a18068300e9731fc816b36e9b78d803e8ad1d7828ab8c"
+              + "eef25722793b8c8e0b3a4c72f12ded24ea264d2c988f17d8d44c249"
+              + "b3f8e588b41a7ab826fc440227e99ae6e1df2d50b4b00fce059bc32"
+              + "c93e9fd7c5938327e38ab");
+
+  @Autowired
+  @Qualifier("AESIVBasedCipher")
+  SymmetricIVBasedCipherService aesIVBasedCipherService;
+
   @Autowired
   @Qualifier("AESCipher")
-  SymmetricIVBasedCipherService aesCipherService;
+  SymmetricCipherService aesCipherService;
 
   @Test
-  void producesTheRightEncryptedResultWhenEncryptingByteArray() {
+  void producesTheRightEncryptedResultWhenEncryptingWithCFBAndByteArray() {
     // When
     final var encrypted =
-        aesCipherService.encrypt(
+        aesIVBasedCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -59,13 +71,13 @@ class AESCipherServiceIT {
   }
 
   @Test
-  void producesTheRightEncryptedResultWhenEncryptingStream() {
+  void producesTheRightEncryptedResultWhenEncryptingWithCFBAndStream() {
     // Given
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
     // When
-    aesCipherService.encrypt(
+    aesIVBasedCipherService.encrypt(
         SECRET_KEY_1234567890123456_128_BITS,
         INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
         clearInputStream,
@@ -76,10 +88,38 @@ class AESCipherServiceIT {
   }
 
   @Test
-  void producesTheRightDecryptedResultWhenDecryptingByteArray() {
+  void producesTheRightEncryptedResultWhenEncryptingWithECBAndByteArray() {
+    // When
+    final var encrypted =
+        aesCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(encrypted, is(equalTo(ENCRYPTED_CONTENT_AES_ECB)));
+  }
+
+  @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithECBAndStream() {
+    // Given
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
+
+    // Then
+    assertThat(encryptedOutputStream.toByteArray(), is(equalTo(ENCRYPTED_CONTENT_AES_ECB)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithCFBAndByteArray() {
     // When
     final var decrypted =
-        aesCipherService.decrypt(
+        aesIVBasedCipherService.decrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             ENCRYPTED_CONTENT_AES_CFB);
@@ -89,15 +129,43 @@ class AESCipherServiceIT {
   }
 
   @Test
-  void producesTheRightDecryptedResultWhenDecryptingStream() {
+  void producesTheRightDecryptedResultWhenDecryptingWithCFBAndStream() {
     // Given
     final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CFB);
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When
-    aesCipherService.decrypt(
+    aesIVBasedCipherService.decrypt(
         SECRET_KEY_1234567890123456_128_BITS,
         INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray(), is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithECBAndByteArray() {
+    // When
+    final var decrypted =
+        aesCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            ENCRYPTED_CONTENT_AES_ECB);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithECBAndStream() {
+    // Given
+    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_ECB);
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
         encryptedInputStream,
         clearOutputStream);
 

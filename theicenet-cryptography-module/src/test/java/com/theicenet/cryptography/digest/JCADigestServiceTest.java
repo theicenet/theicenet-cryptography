@@ -22,11 +22,13 @@ class JCADigestServiceTest {
       "Content to digest with different algorithm to check the digesting implementation is correct"
           .getBytes(StandardCharsets.UTF_8);
 
+  DigestService digestService;
+
   @ParameterizedTest
   @EnumSource(DigestAlgorithm.class)
   void producesNotNullWhenDigestingByteArray(DigestAlgorithm algorithm) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
 
     // When
     final var hash = digestService.digest(CONTENT);
@@ -39,7 +41,7 @@ class JCADigestServiceTest {
   @EnumSource(DigestAlgorithm.class)
   void producesNotNullWhenDigestingStream(DigestAlgorithm algorithm) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
     final var clearInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
@@ -53,7 +55,7 @@ class JCADigestServiceTest {
   @MethodSource("argumentsWithDigestAlgorithmAndItsHashSizeInBits")
   void producesTheRightHashSizeWhenDigestingByteArray(DigestAlgorithm algorithm, Integer hashSizeInBits) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
 
     // When
     final var hash = digestService.digest(CONTENT);
@@ -66,7 +68,7 @@ class JCADigestServiceTest {
   @MethodSource("argumentsWithDigestAlgorithmAndItsHashSizeInBits")
   void producesTheRightHashSizeWhenDigestingStream(DigestAlgorithm algorithm, Integer hashSizeInBits) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
     final var clearInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
@@ -104,7 +106,7 @@ class JCADigestServiceTest {
   @EnumSource(DigestAlgorithm.class)
   void producesDigestDifferentToContentWhenDigestingByteArray(DigestAlgorithm algorithm) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
 
     // When
     final var hash = digestService.digest(CONTENT);
@@ -117,7 +119,7 @@ class JCADigestServiceTest {
   @EnumSource(DigestAlgorithm.class)
   void producesDigestDifferentToContentWhenDigestingStream(DigestAlgorithm algorithm) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
     final var clearInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
@@ -131,7 +133,7 @@ class JCADigestServiceTest {
   @MethodSource("argumentsWithDigestAlgorithmAndExpectedHash")
   void producesTheRightHashWhenDigestingByteArray(DigestAlgorithm algorithm, byte[] expectedHash) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
 
     // When
     final var hash = digestService.digest(CONTENT);
@@ -144,7 +146,7 @@ class JCADigestServiceTest {
   @MethodSource("argumentsWithDigestAlgorithmAndExpectedHash")
   void producesTheRightHashWhenDigestingStream(DigestAlgorithm algorithm, byte[] expectedHash) {
     // Given
-    final var digestService = new JCADigestService(algorithm);
+    digestService = new JCADigestService(algorithm);
     final var clearInputStream = new ByteArrayInputStream(CONTENT);
 
     // When

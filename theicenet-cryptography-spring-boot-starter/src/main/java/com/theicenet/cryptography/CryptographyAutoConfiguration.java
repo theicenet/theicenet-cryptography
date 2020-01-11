@@ -3,9 +3,11 @@ package com.theicenet.cryptography;
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.BlockCipherIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESCipherService;
+import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESECBCipherService;
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
@@ -52,11 +54,16 @@ public class CryptographyAutoConfiguration {
     return new JCAAESKeyService(secureRandom);
   }
 
-  @Bean("AESCipher")
-  public SymmetricIVBasedCipherService aesCipherService(
+  @Bean("AESIVBasedCipher")
+  public SymmetricIVBasedCipherService aesIVBasedCipherService(
       @Value("${cryptography.cipher.symmetric.aes.blockMode:CTR}") BlockCipherIVBasedModeOfOperation blockMode) {
 
     return new JCAAESCipherService(blockMode);
+  }
+
+  @Bean("AESCipher")
+  public SymmetricCipherService aesCipherService() {
+    return new JCAAESECBCipherService();
   }
 
   @Bean("RSAKey")

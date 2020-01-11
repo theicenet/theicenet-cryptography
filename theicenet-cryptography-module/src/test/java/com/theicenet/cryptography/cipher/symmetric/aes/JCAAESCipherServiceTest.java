@@ -436,13 +436,13 @@ class JCAAESCipherServiceTest {
   }
 
   @ParameterizedTest
-  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize")
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingByteArray(
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesSizeOfDecryptedEqualsToSizeOfClearContentWhenDecryptingByteArray(
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
       BlockCipherIVBasedModeOfOperation blockMode,
-      Integer expectedDecryptedSize) {
+      byte[] expectedDecryptedResult) {
 
     // Given
     aesCipherService = new JCAAESCipherService(blockMode);
@@ -455,17 +455,17 @@ class JCAAESCipherServiceTest {
             encryptedContent);
 
     // Then
-    assertThat(decrypted.length, is(equalTo(expectedDecryptedSize)));
+    assertThat(decrypted.length, is(equalTo(expectedDecryptedResult.length)));
   }
 
   @ParameterizedTest
-  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize")
-  void producesSizeOfDecryptedEqualsToSizeOfEncryptedContentWhenDecryptingStream(
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesSizeOfDecryptedEqualsToSizeOfClearContentWhenDecryptingStream(
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
       BlockCipherIVBasedModeOfOperation blockMode,
-      Integer expectedDecryptedSize) {
+      byte[] expectedDecryptedResult) {
 
     // Given
     aesCipherService = new JCAAESCipherService(blockMode);
@@ -481,36 +481,7 @@ class JCAAESCipherServiceTest {
         clearOutputStream);
 
     // Then
-    assertThat(clearOutputStream.toByteArray().length, is(equalTo(expectedDecryptedSize)));
-  }
-
-  static Stream<Arguments> argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedSize() {
-    return Stream.of(
-        Arguments.of(
-            ENCRYPTED_CONTENT_AES_CFB,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CFB,
-            ENCRYPTED_CONTENT_AES_CFB.length),
-        Arguments.of(
-            ENCRYPTED_CONTENT_AES_CBC,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CBC,
-            ENCRYPTED_CONTENT_AES_CBC.length - (16 - CLEAR_CONTENT.length % 16)),
-        Arguments.of(
-            ENCRYPTED_CONTENT_AES_OFB,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            OFB,
-            ENCRYPTED_CONTENT_AES_OFB.length),
-        Arguments.of(
-            ENCRYPTED_CONTENT_AES_CTR,
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            CTR,
-            ENCRYPTED_CONTENT_AES_CTR.length)
-    );
+    assertThat(clearOutputStream.toByteArray().length, is(equalTo(expectedDecryptedResult.length)));
   }
 
   @ParameterizedTest
