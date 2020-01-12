@@ -8,6 +8,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.test.util.HexUtil;
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -133,7 +134,7 @@ class JCARSASignatureServiceTest {
 
   @ParameterizedTest
   @EnumSource(RSASignatureAlgorithm.class)
-  void producesNotNullWhenSigning(RSASignatureAlgorithm algorithm) {
+  void producesNotNullWhenSigningByteArray(RSASignatureAlgorithm algorithm) {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
@@ -149,7 +150,24 @@ class JCARSASignatureServiceTest {
 
   @ParameterizedTest
   @EnumSource(RSASignatureAlgorithm.class)
-  void producesSizeOfSignatureEqualsToKeyLengthWhenSigning(RSASignatureAlgorithm algorithm) throws Exception {
+  void producesNotNullWhenSigningStream(RSASignatureAlgorithm algorithm) {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            contentInputStream);
+
+    // Then
+    assertThat(signature, is(notNullValue()));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void producesSizeOfSignatureEqualsToKeyLengthWhenSigningByteArray(RSASignatureAlgorithm algorithm) throws Exception {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
@@ -168,7 +186,27 @@ class JCARSASignatureServiceTest {
 
   @ParameterizedTest
   @EnumSource(RSASignatureAlgorithm.class)
-  void producesSignatureDifferentToClearContentWhenSigning(RSASignatureAlgorithm algorithm) {
+  void producesSizeOfSignatureEqualsToKeyLengthWhenSigningStream(RSASignatureAlgorithm algorithm) throws Exception {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            contentInputStream);
+
+    // Then
+    final var keyFactory = KeyFactory.getInstance(RSA);
+    final var rsaPrivateKeySpec = keyFactory.getKeySpec(RSA_PRIVATE_KEY_2048_BITS, RSAPrivateKeySpec.class);
+
+    assertThat(signature.length, is(equalTo(rsaPrivateKeySpec.getModulus().bitLength() / 8)));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void producesSignatureDifferentToClearContentWhenSigningByteArray(RSASignatureAlgorithm algorithm) {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
@@ -184,7 +222,25 @@ class JCARSASignatureServiceTest {
 
   @ParameterizedTest
   @EnumSource(RSASignatureAlgorithm.class)
-  void producedSignatureVerifiesToTrueWhenVerifyingAndSignatureCorrespondsWithContent(RSASignatureAlgorithm algorithm) {
+  void producesSignatureDifferentToClearContentWhenSigningStream(RSASignatureAlgorithm algorithm) {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            contentInputStream);
+
+    // Then
+    assertThat(signature, is(not(equalTo(CONTENT))));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void producedSignatureVerifiesToTrueWhenVerifyingByteArrayAndSignatureCorrespondsWithContent(
+      RSASignatureAlgorithm algorithm) {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
@@ -206,7 +262,33 @@ class JCARSASignatureServiceTest {
 
   @ParameterizedTest
   @EnumSource(RSASignatureAlgorithm.class)
-  void signatureVerifiesToFalseWhenVerifyingAndSignatureDoesNotCorrespondsWithContent(RSASignatureAlgorithm algorithm) {
+  void producedSignatureVerifiesToTrueWhenVerifyingStreamAndSignatureCorrespondsWithContent(
+      RSASignatureAlgorithm algorithm) {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            CONTENT);
+
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var verifyingResult =
+        rsaSignatureService.verify(
+            RSA_PUBLIC_KEY_2048_BITS,
+            contentInputStream,
+            signature);
+
+    // Then
+    assertThat(verifyingResult, is(equalTo(true)));
+  }
+
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void signatureVerifiesToFalseWhenVerifyingByteArrayAndSignatureDoesNotCorrespondsWithContent(
+      RSASignatureAlgorithm algorithm) {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
 
@@ -226,8 +308,33 @@ class JCARSASignatureServiceTest {
     assertThat(verifyingResult, is(equalTo(false)));
   }
 
+  @ParameterizedTest
+  @EnumSource(RSASignatureAlgorithm.class)
+  void signatureVerifiesToFalseWhenVerifyingStreamAndSignatureDoesNotCorrespondsWithContent(
+      RSASignatureAlgorithm algorithm) {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(algorithm);
+
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            CONTENT);
+
+    final var differentContentInputStream = new ByteArrayInputStream(DIFFERENT_CONTENT);
+
+    // When
+    final var verifyingResult =
+        rsaSignatureService.verify(
+            RSA_PUBLIC_KEY_2048_BITS,
+            differentContentInputStream,
+            signature);
+
+    // Then
+    assertThat(verifyingResult, is(equalTo(false)));
+  }
+
   @Test
-  void producesTheRightRSASignatureWhenSigningWithSha1WithRSA() {
+  void producesTheRightRSASignatureWhenSigningByteArrayWithSha1WithRSA() {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
 
@@ -242,7 +349,23 @@ class JCARSASignatureServiceTest {
   }
 
   @Test
-  void verifiesProperlyWhenVerifyingWithSha1WithRSA() {
+  void producesTheRightRSASignatureWhenSigningStreamWithSha1WithRSA() {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            contentInputStream);
+
+    // Then
+    assertThat(signature, is(equalTo(SIGNATURE_SHA1_WITH_RSA)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingByteArrayWithSha1WithRSA() {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
 
@@ -258,7 +381,24 @@ class JCARSASignatureServiceTest {
   }
 
   @Test
-  void producesTheRightRSASignatureWhenSigningWithSha256WithRSA() {
+  void verifiesProperlyWhenVerifyingStreamWithSha1WithRSA() {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA1withRSA);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var verifyingResult =
+        rsaSignatureService.verify(
+            RSA_PUBLIC_KEY_2048_BITS,
+            contentInputStream,
+            SIGNATURE_SHA1_WITH_RSA);
+
+    // Then
+    assertThat(verifyingResult, is(equalTo(true)));
+  }
+
+  @Test
+  void producesTheRightRSASignatureWhenSigningByteArrayWithSha256WithRSA() {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
 
@@ -273,7 +413,23 @@ class JCARSASignatureServiceTest {
   }
 
   @Test
-  void verifiesProperlyWhenVerifyingWithSha256WithRSA() {
+  void producesTheRightRSASignatureWhenSigningStreamWithSha256WithRSA() {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            contentInputStream);
+
+    // Then
+    assertThat(signature, is(equalTo(SIGNATURE_SHA256_WITH_RSA)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingByteArrayWithSha256WithRSA() {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
 
@@ -289,7 +445,24 @@ class JCARSASignatureServiceTest {
   }
 
   @Test
-  void producesTheRightRSASignatureWhenSigningWithSha512WithRSA() {
+  void verifiesProperlyWhenVerifyingStreamWithSha256WithRSA() {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA256withRSA);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var verifyingResult =
+        rsaSignatureService.verify(
+            RSA_PUBLIC_KEY_2048_BITS,
+            contentInputStream,
+            SIGNATURE_SHA256_WITH_RSA);
+
+    // Then
+    assertThat(verifyingResult, is(equalTo(true)));
+  }
+
+  @Test
+  void producesTheRightRSASignatureWhenSigningByteArrayWithSha512WithRSA() {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
 
@@ -304,7 +477,23 @@ class JCARSASignatureServiceTest {
   }
 
   @Test
-  void verifiesProperlyWhenVerifyingWithSha512WithRSA() {
+  void producesTheRightRSASignatureWhenSigningStreamWithSha512WithRSA() {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var signature =
+        rsaSignatureService.sign(
+            RSA_PRIVATE_KEY_2048_BITS,
+            contentInputStream);
+
+    // Then
+    assertThat(signature, is(equalTo(SIGNATURE_SHA512_WITH_RSA)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingByteArrayWithSha512WithRSA() {
     // Given
     SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
 
@@ -313,6 +502,23 @@ class JCARSASignatureServiceTest {
         rsaSignatureService.verify(
             RSA_PUBLIC_KEY_2048_BITS,
             CONTENT,
+            SIGNATURE_SHA512_WITH_RSA);
+
+    // Then
+    assertThat(verifyingResult, is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingStreamWithSha512WithRSA() {
+    // Given
+    SignatureService rsaSignatureService = new JCARSASignatureService(RSASignatureAlgorithm.SHA512withRSA);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+
+    // When
+    final var verifyingResult =
+        rsaSignatureService.verify(
+            RSA_PUBLIC_KEY_2048_BITS,
+            contentInputStream,
             SIGNATURE_SHA512_WITH_RSA);
 
     // Then

@@ -1,10 +1,11 @@
 package com.theicenet.cryptography.signature.dsa;
 
 import com.theicenet.cryptography.signature.SignatureService;
+import com.theicenet.cryptography.signature.common.JCACommonSignature;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
+import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import org.apache.commons.lang.Validate;
 
 public class JCADSASignatureService implements SignatureService {
@@ -21,34 +22,21 @@ public class JCADSASignatureService implements SignatureService {
 
   @Override
   public byte[] sign(PrivateKey privateKey, byte[] content) {
-    Validate.notNull(privateKey);
-    Validate.notNull(content);
+    return JCACommonSignature.sign(privateKey, content, algorithm.toString());
+  }
 
-    try {
-      final var signer = Signature.getInstance(algorithm.toString());
-      signer.initSign(privateKey);
-      signer.update(content);
-
-      return signer.sign();
-    } catch (Exception e) {
-      throw new DSASignatureServiceException("Exception signing content", e);
-    }
+  @Override
+  public byte[] sign(PrivateKey privateKey, InputStream contentInputStream) {
+    return JCACommonSignature.sign(privateKey, contentInputStream, algorithm.toString());
   }
 
   @Override
   public boolean verify(PublicKey publicKey, byte[] content, byte[] signature) {
-    Validate.notNull(publicKey);
-    Validate.notNull(content);
-    Validate.notNull(signature);
+    return JCACommonSignature.verify(publicKey, content, signature, algorithm.toString());
+  }
 
-    try {
-      final var verifier = Signature.getInstance(algorithm.toString());
-      verifier.initVerify(publicKey);
-      verifier.update(content);
-
-      return verifier.verify(signature);
-    } catch (Exception e) {
-      throw new DSASignatureServiceException("Exception verifying signature", e);
-    }
+  @Override
+  public boolean verify(PublicKey publicKey, InputStream contentInputStream, byte[] signature) {
+    return JCACommonSignature.verify(publicKey, contentInputStream, signature, algorithm.toString());
   }
 }

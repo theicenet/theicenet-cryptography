@@ -26,7 +26,7 @@ public class JCARSAKeyService implements AsymmetricKeyService {
     try {
       generator = KeyPairGenerator.getInstance(RSA);
     } catch (NoSuchAlgorithmException e) {
-      throw new RSAKeyServiceException("Exception generating RSA key", e);
+      throw new RSAKeyServiceException("Exception creating RSA key generator", e);
     }
     generator.initialize(keyLengthInBits, secureRandom);
 

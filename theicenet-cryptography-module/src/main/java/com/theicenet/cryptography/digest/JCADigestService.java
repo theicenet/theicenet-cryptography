@@ -33,13 +33,10 @@ public class JCADigestService implements DigestService {
         new DigestInputStream(
             contentInputStream,
             messageDigest);
+    final var nullOutputStream = OutputStream.nullOutputStream();
 
-    try (contentInputStream; digestInputStream) {
-      digestInputStream.transferTo(new OutputStream() {
-        @Override
-        public void write(int b) {
-        }
-      });
+    try (contentInputStream; digestInputStream; nullOutputStream) {
+      digestInputStream.transferTo(nullOutputStream);
     } catch (Exception e) {
       throw new DigestServiceException("Error hashing content", e);
     }

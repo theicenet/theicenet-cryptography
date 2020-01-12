@@ -42,10 +42,10 @@ class JCADigestServiceTest {
   void producesNotNullWhenDigestingStream(DigestAlgorithm algorithm) {
     // Given
     digestService = new JCADigestService(algorithm);
-    final var clearInputStream = new ByteArrayInputStream(CONTENT);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
-    final var hash = digestService.digest(clearInputStream);
+    final var hash = digestService.digest(contentInputStream);
 
     // Then
     assertThat(hash, is(notNullValue()));
@@ -69,10 +69,10 @@ class JCADigestServiceTest {
   void producesTheRightHashSizeWhenDigestingStream(DigestAlgorithm algorithm, Integer hashSizeInBits) {
     // Given
     digestService = new JCADigestService(algorithm);
-    final var clearInputStream = new ByteArrayInputStream(CONTENT);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
-    final var hash = digestService.digest(clearInputStream);
+    final var hash = digestService.digest(contentInputStream);
 
     // Then
     assertThat(hash.length * 8, is(equalTo(hashSizeInBits)));
@@ -120,10 +120,10 @@ class JCADigestServiceTest {
   void producesDigestDifferentToContentWhenDigestingStream(DigestAlgorithm algorithm) {
     // Given
     digestService = new JCADigestService(algorithm);
-    final var clearInputStream = new ByteArrayInputStream(CONTENT);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
-    final var hash = digestService.digest(clearInputStream);
+    final var hash = digestService.digest(contentInputStream);
 
     // Then
     assertThat(hash, is(not(equalTo(CONTENT))));
@@ -147,10 +147,10 @@ class JCADigestServiceTest {
   void producesTheRightHashWhenDigestingStream(DigestAlgorithm algorithm, byte[] expectedHash) {
     // Given
     digestService = new JCADigestService(algorithm);
-    final var clearInputStream = new ByteArrayInputStream(CONTENT);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
-    final var hash = digestService.digest(clearInputStream);
+    final var hash = digestService.digest(contentInputStream);
 
     // Then
     assertThat(hash, is(equalTo(expectedHash)));
