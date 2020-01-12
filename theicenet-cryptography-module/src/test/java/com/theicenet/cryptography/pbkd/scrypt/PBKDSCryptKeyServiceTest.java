@@ -16,6 +16,7 @@ import java.security.Key;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -346,9 +347,7 @@ class PBKDSCryptKeyServiceTest {
         );
 
     executorService.shutdown();
-    while (!executorService.isTerminated()) {
-      Thread.sleep(100);
-    }
+    executorService.awaitTermination(10, TimeUnit.SECONDS);
 
     // Then all keys are the same
     assertThat(generatedKeys, hasSize(1));

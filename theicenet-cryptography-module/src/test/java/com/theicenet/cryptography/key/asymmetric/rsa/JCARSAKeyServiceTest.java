@@ -20,6 +20,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -179,31 +180,28 @@ class JCARSAKeyServiceTest {
     assertThat(rsaPrivateKeySpec.getModulus().bitLength(), is(equalTo(keyLength)));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
-  void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
+  @Test
+  void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength() {
     // When generating two consecutive key pairs with the same length
-    final var generatedKeyPair_1 = rsaKeyService.generateKey(keyLength);
-    final var generatedKeyPair_2 = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_1 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair_2 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then the generated public keys are different
     assertThat(generatedKeyPair_1.getPublic(), is(not(equalTo(generatedKeyPair_2.getPublic()))));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
-  void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
+  @Test
+  void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength() {
     // When generating two consecutive key pairs with the same length
-    final var generatedKeyPair_1 = rsaKeyService.generateKey(keyLength);
-    final var generatedKeyPair_2 = rsaKeyService.generateKey(keyLength);
+    final var generatedKeyPair_1 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
+    final var generatedKeyPair_2 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then the generated private keys are different
     assertThat(generatedKeyPair_1.getPrivate(), is(not(equalTo(generatedKeyPair_2.getPrivate()))));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
-  void producesDifferentPublicKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength(int keyLength) {
+  @Test
+  void producesDifferentPublicKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
     // Given
     final var _100 = 100;
 
@@ -211,7 +209,7 @@ class JCARSAKeyServiceTest {
     final var generatePublicKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(keyLength))
+            .mapToObj(index -> rsaKeyService.generateKey(KEY_LENGTH_1024_BITS))
             .map(KeyPair::getPublic)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -219,9 +217,8 @@ class JCARSAKeyServiceTest {
     assertThat(generatePublicKeys, hasSize(_100));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
-  void producesDifferentPrivateKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength(int keyLength) {
+  @Test
+  void producesDifferentPrivateKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
     // Given
     final var _100 = 100;
 
@@ -229,7 +226,7 @@ class JCARSAKeyServiceTest {
     final var generatePrivateKeys =
         IntStream
             .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(keyLength))
+            .mapToObj(index -> rsaKeyService.generateKey(KEY_LENGTH_1024_BITS))
             .map(KeyPair::getPrivate)
             .collect(Collectors.toUnmodifiableSet());
 
@@ -237,9 +234,8 @@ class JCARSAKeyServiceTest {
     assertThat(generatePrivateKeys, hasSize(_100));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
-  void producesDifferentPublicKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength(int keyLength) throws Exception {
+  @Test
+  void producesDifferentPublicKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
     // Given
     final var _500 = 500;
 
@@ -261,22 +257,19 @@ class JCARSAKeyServiceTest {
                 throw new RuntimeException(e);
               }
 
-              final var keyPair = rsaKeyService.generateKey(keyLength);
+              final var keyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
               generatedPublicKeys.add(keyPair.getPublic());
             }));
 
     executorService.shutdown();
-    while (!executorService.isTerminated()) {
-      Thread.sleep(100);
-    }
+    executorService.awaitTermination(10, TimeUnit.SECONDS);
 
     // When generating concurrently at the same time key pairs with the same length
     assertThat(generatedPublicKeys, hasSize(_500));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {KEY_LENGTH_1024_BITS, KEY_LENGTH_2048_BITS})
-  void producesDifferentPrivateKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength(int keyLength) throws Exception {
+  @Test
+  void producesDifferentPrivateKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
     // Given
     final var _500 = 500;
 
@@ -298,14 +291,12 @@ class JCARSAKeyServiceTest {
                 throw new RuntimeException(e);
               }
 
-              final var keyPair = rsaKeyService.generateKey(keyLength);
+              final var keyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
               generatedPrivateKeys.add(keyPair.getPrivate());
             }));
 
     executorService.shutdown();
-    while (!executorService.isTerminated()) {
-      Thread.sleep(100);
-    }
+    executorService.awaitTermination(10, TimeUnit.SECONDS);
 
     // Then all private keys have been generated and all them are different
     assertThat(generatedPrivateKeys, hasSize(_500));

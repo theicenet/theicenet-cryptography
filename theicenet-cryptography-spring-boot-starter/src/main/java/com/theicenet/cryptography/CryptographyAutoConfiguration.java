@@ -11,6 +11,8 @@ import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESECBCipherService;
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
+import com.theicenet.cryptography.key.asymmetric.ecdsa.ECDSACurve;
+import com.theicenet.cryptography.key.asymmetric.ecdsa.JCAECDSAKeyService;
 import com.theicenet.cryptography.randomise.RandomiseService;
 import com.theicenet.cryptography.randomise.iv.JCAIVService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
@@ -95,6 +97,14 @@ public class CryptographyAutoConfiguration {
       @Value("${cryptography.signature.asymmetric.dsa.algorithm:SHA256withDSA}") DSASignatureAlgorithm algorithm) {
 
     return new JCADSASignatureService(algorithm);
+  }
+
+  @Bean("ECDSAKey")
+  public AsymmetricKeyService ecdsaKeyService(
+      @Value("${cryptography.key.ecdsa.curve:brainpoolpXXXt1}") ECDSACurve curve,
+      SecureRandom secureRandom) {
+
+    return new JCAECDSAKeyService(curve, secureRandom);
   }
 
   @Bean("PBKDArgon2")

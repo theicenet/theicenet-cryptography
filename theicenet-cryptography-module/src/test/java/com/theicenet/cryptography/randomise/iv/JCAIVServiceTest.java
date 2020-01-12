@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -139,9 +140,7 @@ class JCAIVServiceTest {
             }));
 
     executorService.shutdown();
-    while (!executorService.isTerminated()) {
-      Thread.sleep(100);
-    }
+    executorService.awaitTermination(10, TimeUnit.SECONDS);
 
     // Then all IVs have been generated and all them are different
     assertThat(
