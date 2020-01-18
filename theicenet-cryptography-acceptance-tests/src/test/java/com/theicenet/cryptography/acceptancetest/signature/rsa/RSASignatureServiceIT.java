@@ -5,7 +5,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.signature.SignatureService;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -94,10 +93,6 @@ public class RSASignatureServiceIT {
               + "00e8af47463b3350e55244d5d07b881e93e6b2c62ab735c4957b314f2b7289cdfbe43"
               + "a87bf611d1d4ba4572165558f437090823a6df048ab29c12ac389966d1d674822f456"
               + "dd49834a8ae0e19a827f216");
-
-  @Autowired
-  @Qualifier("RSAKey")
-  AsymmetricKeyService rsaKeyService;
 
   @Autowired
   @Qualifier("RSASignature")

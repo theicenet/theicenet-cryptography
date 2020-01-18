@@ -56,7 +56,7 @@ class JCAAESKeyServiceTest {
     final var generatedKey = aesKeyService.generateKey(256);
 
     // Then
-    System.out.println(Hex.encodeHex(generatedKey.getEncoded()));
+    assertThat(generatedKey, is(notNullValue()));
   }
 
   @Test

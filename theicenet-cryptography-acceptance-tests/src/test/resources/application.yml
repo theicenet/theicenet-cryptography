@@ -13,6 +13,8 @@ cryptography:
         algorithm: SHA1withRSA
       dsa:
         algorithm: SHA1withDSA
+      ecdsa:
+        algorithm: SHA1withECDSA
 
   keyDerivationFunction:
     pbkdF2WithHmacSHA:

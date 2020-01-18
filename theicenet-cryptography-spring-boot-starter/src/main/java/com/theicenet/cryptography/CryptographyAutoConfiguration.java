@@ -34,6 +34,8 @@ import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.dsa.JCADSASignatureService;
+import com.theicenet.cryptography.signature.ecdsa.ECDSASignatureAlgorithm;
+import com.theicenet.cryptography.signature.ecdsa.JCAECDSASignatureService;
 import com.theicenet.cryptography.signature.rsa.JCARSASignatureService;
 import com.theicenet.cryptography.signature.rsa.RSASignatureAlgorithm;
 import java.security.SecureRandom;
@@ -106,6 +108,14 @@ public class CryptographyAutoConfiguration {
 
     return new JCAECDSAKeyService(curve, secureRandom);
   }
+
+  @Bean("ECDSASignature")
+  public SignatureService ecdsaSignatureService(
+      @Value("${cryptography.signature.asymmetric.ecdsa.algorithm:SHA256withECDSA}") ECDSASignatureAlgorithm algorithm) {
+
+    return new JCAECDSASignatureService(algorithm);
+  }
+
 
   @Bean("PBKDArgon2")
   public PBKDKeyService pbkdArgon2KeyService(

@@ -11,7 +11,6 @@ import org.apache.commons.lang.Validate;
 public class JCAECDSAKeyService implements AsymmetricKeyService {
 
   private static final String ECDSA = "ECDSA";
-  private static final String BC = "BC";
 
   private static final String CURVE_LENGTH_PLACE_HOLDER = "XXX";
 
@@ -22,7 +21,7 @@ public class JCAECDSAKeyService implements AsymmetricKeyService {
     this.curve = curve;
     this.secureRandom = secureRandom;
 
-    // All ECC cryptography is delegated to BC implementation
+    // Bouncy Castle is required for most of the ECC curves
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
@@ -38,10 +37,7 @@ public class JCAECDSAKeyService implements AsymmetricKeyService {
 
     KeyPairGenerator generator;
     try {
-      // There is intrinsic complexity on properly implementing ECC cryptography on any given curve
-      // without leaking secret information. For all ECC cryptography we want to be sure that
-      // the security provider used is the Bouncy Castle one.
-      generator = KeyPairGenerator.getInstance(ECDSA, BC);
+      generator = KeyPairGenerator.getInstance(ECDSA);
       generator.initialize(
           new ECGenParameterSpec(
               curve.toString().replace(CURVE_LENGTH_PLACE_HOLDER, String.valueOf(keyLengthInBits))),
