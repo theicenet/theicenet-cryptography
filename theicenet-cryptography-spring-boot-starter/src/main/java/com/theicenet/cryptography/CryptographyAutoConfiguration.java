@@ -12,6 +12,7 @@ import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
+import com.theicenet.cryptography.key.asymmetric.ecc.ecdh.JCAECDHKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ecdsa.JCAECDSAKeyService;
 import com.theicenet.cryptography.randomise.RandomiseService;
 import com.theicenet.cryptography.randomise.iv.JCAIVService;
@@ -103,7 +104,7 @@ public class CryptographyAutoConfiguration {
 
   @Bean("ECDSAKey")
   public AsymmetricKeyService ecdsaKeyService(
-      @Value("${cryptography.key.ecdsa.curve:brainpoolpXXXt1}") ECCCurve curve,
+      @Value("${cryptography.key.asymmetric.ecc.ecdsa.curve:brainpoolpXXXt1}") ECCCurve curve,
       SecureRandom secureRandom) {
 
     return new JCAECDSAKeyService(curve, secureRandom);
@@ -116,6 +117,13 @@ public class CryptographyAutoConfiguration {
     return new JCAECDSASignatureService(algorithm);
   }
 
+  @Bean("ECDHKey")
+  public AsymmetricKeyService ecdhKeyService(
+      @Value("${cryptography.key.asymmetric.ecc.ecdh.curve:brainpoolpXXXt1}") ECCCurve curve,
+      SecureRandom secureRandom) {
+
+    return new JCAECDHKeyService(curve, secureRandom);
+  }
 
   @Bean("PBKDArgon2")
   public PBKDKeyService pbkdArgon2KeyService(

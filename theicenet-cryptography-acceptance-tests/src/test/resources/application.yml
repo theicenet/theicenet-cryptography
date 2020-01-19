@@ -35,6 +35,10 @@ cryptography:
     algorithm: SHA-1
 
   key:
-    ecdsa:
-      curve: secpXXXk1
+    asymmetric:
+      ecc:
+        ecdsa:
+          curve: secpXXXk1
+        ecdh:
+          curve: secpXXXk1
 

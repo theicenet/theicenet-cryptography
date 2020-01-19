@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.acceptancetest.key.asymmetric.ecdsa;
+package com.theicenet.cryptography.acceptancetest.key.asymmetric.ecc.ecdsa;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -20,7 +20,7 @@ class ECDSAKeyServiceIT {
   AsymmetricKeyService ecdsaKeyService;
 
   @Test
-  public void producesDSAKeyWhenGeneratingKey() {
+  public void producesECDSAKeyWhenGeneratingKey() {
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(KEY_LENGTH_256_BITS);
 
