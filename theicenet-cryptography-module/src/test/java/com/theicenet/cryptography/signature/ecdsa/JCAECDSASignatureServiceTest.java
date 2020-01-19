@@ -9,6 +9,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
+import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
@@ -24,7 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class JCAECDSASignatureServiceTest {
-  final String ECDSA = "ECDSA";
+  final ECCKeyAlgorithm ECDSA = ECCKeyAlgorithm.ECDSA;
 
   final byte[] CONTENT =
       "Content to be signed to test correctness of the ECDSA sign implementation."
@@ -69,7 +70,7 @@ class JCAECDSASignatureServiceTest {
     // Bouncy Castle is required for ECDSA key factory
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
 
-    final var keyFactory = KeyFactory.getInstance(ECDSA);
+    final var keyFactory = KeyFactory.getInstance(ECDSA.toString());
 
     final var x509EncodedKeySpec = new X509EncodedKeySpec(
         ECDSA_PUBLIC_KEY_BRAINPOOLP256R1_BYTE_ARRAY);

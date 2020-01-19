@@ -1,8 +1,8 @@
 package com.theicenet.cryptography.pbkd.pbkdf2;
 
+import com.theicenet.cryptography.pbkd.PBKDKeyServiceException;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
-import com.theicenet.cryptography.pbkd.argon2.PBKDKeyServiceException;
 import org.apache.commons.lang.Validate;
 
 import javax.crypto.SecretKey;

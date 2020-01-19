@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.cipher.asymmetric.rsa;
 
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
+import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherServiceException;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.Key;
 import java.security.PrivateKey;
@@ -40,7 +41,7 @@ public class JCARSACipherService implements AsymmetricCipherService {
 
       return cipher.doFinal(content);
     } catch (Exception e) {
-      throw new RSACipherServiceException("Exception encrypting/decrypting content", e);
+      throw new AsymmetricCipherServiceException("Exception processing RSA content", e);
     }
   }
 }

@@ -14,6 +14,8 @@ import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ecdh.JCAECDHKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ecdsa.JCAECDSAKeyService;
+import com.theicenet.cryptography.keyagreement.KeyAgreementService;
+import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
 import com.theicenet.cryptography.randomise.RandomiseService;
 import com.theicenet.cryptography.randomise.iv.JCAIVService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
@@ -123,6 +125,11 @@ public class CryptographyAutoConfiguration {
       SecureRandom secureRandom) {
 
     return new JCAECDHKeyService(curve, secureRandom);
+  }
+
+  @Bean("ECDHKeyAgreement")
+  public KeyAgreementService ecdhKeyAgreementService() {
+    return new JCACEDHKeyAgreementService();
   }
 
   @Bean("PBKDArgon2")

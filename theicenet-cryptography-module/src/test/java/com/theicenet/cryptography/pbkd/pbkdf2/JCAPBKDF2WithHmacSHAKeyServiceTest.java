@@ -8,7 +8,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.pbkd.argon2.PBKDKeyServiceException;
+import com.theicenet.cryptography.pbkd.PBKDKeyServiceException;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

@@ -88,7 +88,7 @@ public final class JCASignatureUtil {
       verifier = Signature.getInstance(algorithm);
       verifier.initVerify(publicKey);
     } catch (Exception e) {
-      throw new SignatureServiceException("Exception creating verifier", e);
+      throw new SignatureServiceException("Exception creating signature verifier", e);
     }
 
     final OutputStream signerOutputStream = buildSignatureOutputStream(verifier);
@@ -96,7 +96,7 @@ public final class JCASignatureUtil {
       contentInputStream.transferTo(signerOutputStream);
       return verifier.verify(signature);
     } catch (Exception e) {
-      throw new SignatureServiceException("Exception verifying content", e);
+      throw new SignatureServiceException("Exception verifying signature", e);
     }
   }
 

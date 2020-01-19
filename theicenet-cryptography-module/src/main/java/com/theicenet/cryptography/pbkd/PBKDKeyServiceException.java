@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.pbkd.argon2;
+package com.theicenet.cryptography.pbkd;
 
 public class PBKDKeyServiceException extends RuntimeException {
 

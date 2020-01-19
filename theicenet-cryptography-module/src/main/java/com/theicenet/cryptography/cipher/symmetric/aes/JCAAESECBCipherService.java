@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
 import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherServiceException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.crypto.Cipher;
@@ -60,7 +61,7 @@ public class JCAAESECBCipherService implements SymmetricCipherService {
     try {
       return cipher.doFinal(content);
     } catch (Exception e) {
-      throw new AESCipherServiceException("Exception processing content", e);
+      throw new SymmetricCipherServiceException("Exception processing AES content", e);
     }
   }
 
@@ -80,7 +81,7 @@ public class JCAAESECBCipherService implements SymmetricCipherService {
     try (inputStream; cipherOutputStream; outputStream) {
       inputStream.transferTo(cipherOutputStream);
     } catch (Exception e) {
-      throw new AESCipherServiceException("Exception processing content", e);
+      throw new SymmetricCipherServiceException("Exception processing AES content", e);
     }
   }
 
@@ -91,7 +92,7 @@ public class JCAAESECBCipherService implements SymmetricCipherService {
       cipher = Cipher.getInstance(AES_ECB_PKCS5PADDING);
       cipher.init(operationMode, secretKey);
     } catch (Exception e) {
-      throw new AESCipherServiceException("Exception creating cipher", e);
+      throw new SymmetricCipherServiceException("Exception creating AES cipher", e);
     }
 
     return cipher;

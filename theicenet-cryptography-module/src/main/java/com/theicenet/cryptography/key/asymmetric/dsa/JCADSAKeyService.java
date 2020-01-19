@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.key.asymmetric.dsa;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyServiceException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +26,7 @@ public class JCADSAKeyService implements AsymmetricKeyService {
     try {
       generator = KeyPairGenerator.getInstance(DSA);
     } catch (NoSuchAlgorithmException e) {
-      throw new DSAKeyServiceException("Exception generating DSA key", e);
+      throw new AsymmetricKeyServiceException("Exception generating DSA key", e);
     }
     generator.initialize(keyLengthInBits, secureRandom);
 

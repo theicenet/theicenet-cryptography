@@ -1,14 +1,14 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherServiceException;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.crypto.CipherOutputStream;
-import org.apache.commons.lang.Validate;
-
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import org.apache.commons.lang.Validate;
 
 public class JCAAESCipherService implements SymmetricIVBasedCipherService {
 
@@ -90,7 +90,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
     try {
       return cipher.doFinal(content);
     } catch (Exception e) {
-      throw new AESCipherServiceException("Exception processing content", e);
+      throw new SymmetricCipherServiceException("Exception processing AES content", e);
     }
   }
 
@@ -113,7 +113,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
     try (inputStream; cipherOutputStream; outputStream) {
       inputStream.transferTo(cipherOutputStream);
     } catch (Exception e) {
-      throw new AESCipherServiceException("Exception processing content", e);
+      throw new SymmetricCipherServiceException("Exception processing AES content", e);
     }
   }
 
@@ -144,7 +144,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
       cipher = Cipher.getInstance(String.format("AES/%s/%s", blockMode, padding));
       cipher.init(operationMode, secretKey, new IvParameterSpec(iv));
     } catch (Exception e) {
-      throw new AESCipherServiceException("Exception creating cipher", e);
+      throw new SymmetricCipherServiceException("Exception creating AES cipher", e);
     }
 
     return cipher;

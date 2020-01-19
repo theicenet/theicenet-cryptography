@@ -1,5 +1,6 @@
 package com.theicenet.cryptography.key.asymmetric.ecc;
 
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyServiceException;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -44,7 +45,7 @@ public final class JCAECCKeyUtil {
               curve.toString().replace(CURVE_LENGTH_PLACE_HOLDER, String.valueOf(keyLengthInBits))),
           secureRandom);
     } catch (Exception e) {
-      throw new ECCKeyServiceException(
+      throw new AsymmetricKeyServiceException(
           String.format("Exception creating %s key generator", eccKeyAlgorithm),
           e);
     }

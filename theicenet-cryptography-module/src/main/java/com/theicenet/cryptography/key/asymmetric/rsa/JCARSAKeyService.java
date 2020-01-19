@@ -1,12 +1,12 @@
 package com.theicenet.cryptography.key.asymmetric.rsa;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
-import org.apache.commons.lang.Validate;
-
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyServiceException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import org.apache.commons.lang.Validate;
 
 public class JCARSAKeyService implements AsymmetricKeyService {
 
@@ -26,7 +26,7 @@ public class JCARSAKeyService implements AsymmetricKeyService {
     try {
       generator = KeyPairGenerator.getInstance(RSA);
     } catch (NoSuchAlgorithmException e) {
-      throw new RSAKeyServiceException("Exception creating RSA key generator", e);
+      throw new AsymmetricKeyServiceException("Exception creating RSA key generator", e);
     }
     generator.initialize(keyLengthInBits, secureRandom);
 
