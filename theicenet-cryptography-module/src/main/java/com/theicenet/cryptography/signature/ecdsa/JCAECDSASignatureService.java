@@ -1,8 +1,7 @@
 package com.theicenet.cryptography.signature.ecdsa;
 
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.signature.common.JCACommonSignature;
-import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
+import com.theicenet.cryptography.signature.JCASignatureUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -23,21 +22,21 @@ public class JCAECDSASignatureService implements SignatureService {
 
   @Override
   public byte[] sign(PrivateKey privateKey, byte[] content) {
-    return JCACommonSignature.sign(privateKey, content, algorithm.toString());
+    return JCASignatureUtil.sign(privateKey, content, algorithm.toString());
   }
 
   @Override
   public byte[] sign(PrivateKey privateKey, InputStream contentInputStream) {
-    return JCACommonSignature.sign(privateKey, contentInputStream, algorithm.toString());
+    return JCASignatureUtil.sign(privateKey, contentInputStream, algorithm.toString());
   }
 
   @Override
   public boolean verify(PublicKey publicKey, byte[] content, byte[] signature) {
-    return JCACommonSignature.verify(publicKey, content, signature, algorithm.toString());
+    return JCASignatureUtil.verify(publicKey, content, signature, algorithm.toString());
   }
 
   @Override
   public boolean verify(PublicKey publicKey, InputStream contentInputStream, byte[] signature) {
-    return JCACommonSignature.verify(publicKey, contentInputStream, signature, algorithm.toString());
+    return JCASignatureUtil.verify(publicKey, contentInputStream, signature, algorithm.toString());
   }
 }

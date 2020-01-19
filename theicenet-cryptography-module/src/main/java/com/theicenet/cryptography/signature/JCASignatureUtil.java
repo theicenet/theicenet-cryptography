@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.signature.common;
+package com.theicenet.cryptography.signature;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,8 +8,8 @@ import java.security.Signature;
 import java.security.SignatureException;
 import org.apache.commons.lang.Validate;
 
-public final class JCACommonSignature {
-  private JCACommonSignature() {
+public final class JCASignatureUtil {
+  private JCASignatureUtil() {
   }
 
   public static byte[] sign(PrivateKey privateKey, byte[] content, String algorithm) {

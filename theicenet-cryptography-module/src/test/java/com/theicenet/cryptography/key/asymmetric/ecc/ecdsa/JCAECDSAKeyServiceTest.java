@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.key.asymmetric.ecdsa;
+package com.theicenet.cryptography.key.asymmetric.ecc.ecdsa;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -13,6 +13,8 @@ import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
+import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
+import com.theicenet.cryptography.key.asymmetric.ecc.ecdsa.JCAECDSAKeyService;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -42,7 +44,7 @@ class JCAECDSAKeyServiceTest {
   void throwsIllegalArgumentExceptionWhenGeneratingKeyAndInvalidKeyLength() {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECDSACurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
 
     final var KEY_LENGTH_128 = 128;
 
@@ -55,7 +57,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesNotNullKeyPairWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesNotNullKeyPairWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -69,7 +71,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesNotNullPublicKeyWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesNotNullPublicKeyWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -83,7 +85,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesNotNullPrivateKeyWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesNotNullPrivateKeyWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -97,7 +99,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPublicKeyWithECDSAAlgorithmWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPublicKeyWithECDSAAlgorithmWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -111,7 +113,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPrivateKeyWithECDSAAlgorithmWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPrivateKeyWithECDSAAlgorithmWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -125,7 +127,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPublicKeyWithX509FormatWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPublicKeyWithX509FormatWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -139,7 +141,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPrivateKeyWithPKCS8FormatWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPrivateKeyWithPKCS8FormatWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -153,7 +155,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPublicKeyWithContentWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPublicKeyWithContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -167,7 +169,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPrivateKeyWithContentWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPrivateKeyWithContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -181,7 +183,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPublicKeyWithNonEmptyContentWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPublicKeyWithNonEmptyContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -195,7 +197,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPrivateKeyWithNonEmptyContentWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesPrivateKeyWithNonEmptyContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -209,7 +211,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPublicKeyWithTheRightBitLengthWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) throws Exception {
+  void producesPublicKeyWithTheRightBitLengthWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -230,7 +232,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesPrivateKeyWithTheRightBitLengthWhenGeneratingKey(ECDSACurve curve, Integer keyLengthInBits) throws Exception {
+  void producesPrivateKeyWithTheRightBitLengthWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -251,7 +253,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -266,7 +268,7 @@ class JCAECDSAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithECDSACurveAndKeyLengthInBits")
-  void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(ECDSACurve curve, Integer keyLengthInBits) {
+  void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
         new JCAECDSAKeyService(curve, new SecureRandom());
@@ -280,7 +282,7 @@ class JCAECDSAKeyServiceTest {
   }
 
   static Stream<Arguments> argumentsWithECDSACurveAndKeyLengthInBits() {
-    return Stream.of(ECDSACurve.values())
+    return Stream.of(ECCCurve.values())
         .flatMap(curve ->
             curve.getKeyLengths().stream()
                 .map(keyLength -> Arguments.of(curve, keyLength)));
@@ -290,7 +292,7 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPublicKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECDSACurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
 
     final var _100 = 100;
 
@@ -310,7 +312,7 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPrivateKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECDSACurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
 
     final var _100 = 100;
 
@@ -330,7 +332,7 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPublicKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECDSACurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
 
     final var _500 = 500;
 
@@ -367,7 +369,7 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPrivateKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECDSACurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
 
     final var _500 = 500;
 

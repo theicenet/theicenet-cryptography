@@ -1,9 +1,9 @@
-package com.theicenet.cryptography.key.asymmetric.ecdsa;
+package com.theicenet.cryptography.key.asymmetric.ecc;
 
 import java.util.Collection;
 import java.util.List;
 
-public enum ECDSACurve {
+public enum ECCCurve {
   primeXXXv1(192, 239, 256),
   primeXXXv2(192, 239),
   primeXXXv3(192, 239),
@@ -27,7 +27,7 @@ public enum ECDSACurve {
 
   private final Collection<Integer> keyLengths;
 
-  ECDSACurve(Integer... keyLengths) {
+  ECCCurve(Integer... keyLengths) {
     this.keyLengths = List.of(keyLengths);
   }
 

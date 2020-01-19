@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.signature.common;
+package com.theicenet.cryptography.signature;
 
 public class SignatureServiceException extends RuntimeException {
 
