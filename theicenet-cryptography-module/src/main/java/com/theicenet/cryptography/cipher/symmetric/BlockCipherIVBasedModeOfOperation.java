@@ -1,4 +1,4 @@
-package com.theicenet.cryptography.cipher.symmetric.aes;
+package com.theicenet.cryptography.cipher.symmetric;
 
 public enum BlockCipherIVBasedModeOfOperation {
   CBC,

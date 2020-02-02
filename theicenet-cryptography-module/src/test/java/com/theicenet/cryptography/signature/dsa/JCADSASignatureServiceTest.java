@@ -34,6 +34,14 @@ class JCADSASignatureServiceTest {
       "Totally different content to test that verify detects properly when signature is not correct."
           .getBytes(StandardCharsets.UTF_8);
 
+  final byte[] CONTENT_20_BYTES =
+      "12345678901234567890"
+          .getBytes(StandardCharsets.UTF_8);
+
+  final byte[] DIFFERENT_CONTENT_20_BYTES =
+      "abcdefghij1234567890"
+          .getBytes(StandardCharsets.UTF_8);
+
   final byte[] DSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY =
       HexUtil.decodeHex(
           "308203473082023906072a8648ce3804013082022c0282010100963d69e42e599e65992e"
@@ -117,13 +125,19 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesNotNullWhenSigningByteArray(DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
 
     // When
     final var signature =
         dsaSignatureService.sign(
             DSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+            content);
 
     // Then
     assertThat(signature, is(notNullValue()));
@@ -133,8 +147,14 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesNotNullWhenSigningByteStream(DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
+    final var contentInputStream = new ByteArrayInputStream(content);
 
     // When
     final var signature =
@@ -150,13 +170,19 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesRightSizeWhenSigningByteArray(DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
 
     // When
     final var signature =
         dsaSignatureService.sign(
             DSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+            content);
 
     // Then
     assertThat( // For a 2048 bit modulus key the signature size should be between 68 and 72 bytes
@@ -168,8 +194,14 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesRightSizeWhenSigningStream(DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
+    final var contentInputStream = new ByteArrayInputStream(content);
 
     // When
     final var signature =
@@ -187,13 +219,19 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesSignatureDifferentToClearContentWhenSigningByteArray(DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
 
     // When
     final var signature =
         dsaSignatureService.sign(
             DSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+            content);
 
     // Then
     assertThat(signature, is(not(equalTo(CONTENT))));
@@ -203,8 +241,14 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producesSignatureDifferentToClearContentWhenSigningStream(DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
+    final var contentInputStream = new ByteArrayInputStream(content);
 
     // When
     final var signature =
@@ -221,18 +265,24 @@ class JCADSASignatureServiceTest {
   void producedSignatureVerifiesToTrueWhenVerifyingByteArrayAndSignatureCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
 
     final var signature =
         dsaSignatureService.sign(
             DSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+            content);
 
     // When
     final var verifyingResult =
         dsaSignatureService.verify(
             DSA_PUBLIC_KEY_2048_BITS,
-            CONTENT,
+            content,
             signature);
 
     // Then
@@ -244,14 +294,20 @@ class JCADSASignatureServiceTest {
   void producedSignatureVerifiesToTrueWhenVerifyingStreamAndSignatureCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
 
     final var signature =
         dsaSignatureService.sign(
             DSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+            content);
 
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final var contentInputStream = new ByteArrayInputStream(content);
 
     // When
     final var verifyingResult =
@@ -269,18 +325,31 @@ class JCADSASignatureServiceTest {
   void signatureVerifiesToFalseWhenVerifyingByteArrayAndSignatureDoesNotCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
 
     final var signature =
         dsaSignatureService.sign(
             DSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+            content);
+
+    final byte[] differentContent;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      differentContent = DIFFERENT_CONTENT_20_BYTES;
+    } else {
+      differentContent = DIFFERENT_CONTENT;
+    }
 
     // When
     final var verifyingResult =
         dsaSignatureService.verify(
             DSA_PUBLIC_KEY_2048_BITS,
-            DIFFERENT_CONTENT,
+            differentContent,
             signature);
 
     // Then
@@ -292,14 +361,26 @@ class JCADSASignatureServiceTest {
   void signatureVerifiesToFalseWhenVerifyingStreamAndSignatureDoesNotCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
+    final byte[] content;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      content = CONTENT_20_BYTES;
+    } else {
+      content = CONTENT;
+    }
 
     final var signature =
         dsaSignatureService.sign(
             DSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+            content);
 
-    final var differentContentInputStream = new ByteArrayInputStream(DIFFERENT_CONTENT);
+    final byte[] differentContent;
+    if (algorithm.equals(DSASignatureAlgorithm.NONEwithDSA)) {
+      differentContent = DIFFERENT_CONTENT_20_BYTES;
+    } else {
+      differentContent = DIFFERENT_CONTENT;
+    }
+    final var differentContentInputStream = new ByteArrayInputStream(differentContent);
 
     // When
     final var verifyingResult =
@@ -315,7 +396,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha1WithDSA() {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
 
     // When
     final var verifyingResult =
@@ -331,7 +412,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha1WithDSA() {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
     final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
@@ -348,7 +429,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha224WithDSA() {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
 
     // When
     final var verifyingResult =
@@ -364,7 +445,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha224WithDSA() {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
     final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
@@ -381,7 +462,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha256WithDSA() {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
 
     // When
     final var verifyingResult =
@@ -397,7 +478,7 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha256WithDSA() {
     // Given
-    SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
     final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When

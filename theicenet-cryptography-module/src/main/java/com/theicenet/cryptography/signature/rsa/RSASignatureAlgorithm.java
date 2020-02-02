@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.signature.rsa;
 
 public enum RSASignatureAlgorithm {
+  NonewithRSA,
   RIPEMD128withRSA,
   RIPEMD160withRSA,
   RIPEMD256withRSA,

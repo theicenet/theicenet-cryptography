@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.signature.ecdsa;
 
 public enum ECDSASignatureAlgorithm {
+  NoneWithECDSA,
   RIPEMD160withECDSA,
   SHA1withECDSA,
   SHA224withECDSA,

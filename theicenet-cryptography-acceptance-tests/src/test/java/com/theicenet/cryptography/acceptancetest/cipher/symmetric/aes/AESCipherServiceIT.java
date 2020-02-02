@@ -5,7 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.acceptancetest.util.HexUtil;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,8 +54,8 @@ class AESCipherServiceIT {
   SymmetricIVBasedCipherService aesIVBasedCipherService;
 
   @Autowired
-  @Qualifier("AESCipher")
-  SymmetricCipherService aesCipherService;
+  @Qualifier("AESNonIVBasedCipher")
+  SymmetricNonIVBasedCipherService aesCipherService;
 
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithCFBAndByteArray() {

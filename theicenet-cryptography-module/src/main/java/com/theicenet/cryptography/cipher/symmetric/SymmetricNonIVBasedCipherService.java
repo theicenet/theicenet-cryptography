@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import javax.crypto.SecretKey;
 
-public interface SymmetricCipherService {
+public interface SymmetricNonIVBasedCipherService {
 
   byte[] encrypt(SecretKey secretKey, byte[] clearContent);
 

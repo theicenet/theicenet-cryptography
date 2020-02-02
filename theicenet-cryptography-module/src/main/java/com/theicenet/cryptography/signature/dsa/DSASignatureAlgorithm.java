@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.signature.dsa;
 
 public enum DSASignatureAlgorithm {
+  NONEwithDSA,
   SHA1withDSA,
   SHA224withDSA,
   SHA256withDSA,

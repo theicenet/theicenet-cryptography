@@ -3,11 +3,12 @@ package com.theicenet.cryptography;
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
-import com.theicenet.cryptography.cipher.symmetric.aes.BlockCipherIVBasedModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESCipherService;
-import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESECBCipherService;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESIVBasedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVBasedCipherService;
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
@@ -30,7 +31,7 @@ import com.theicenet.cryptography.pbkd.argon2.Argon2Version;
 import com.theicenet.cryptography.pbkd.argon2.PBKDArgon2KeyService;
 import com.theicenet.cryptography.pbkd.pbkdf2.JCAPBKDF2WithHmacSHAKeyService;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
-import com.theicenet.cryptography.pbkd.pbkdf2.ShaAlgorithm;
+import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2ShaAlgorithm;
 import com.theicenet.cryptography.randomise.salt.JCASaltService;
 import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptKeyService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
@@ -65,12 +66,12 @@ public class CryptographyAutoConfiguration {
   public SymmetricIVBasedCipherService aesIVBasedCipherService(
       @Value("${cryptography.cipher.symmetric.aes.blockMode:CTR}") BlockCipherIVBasedModeOfOperation blockMode) {
 
-    return new JCAAESCipherService(blockMode);
+    return new JCAAESIVBasedCipherService(blockMode);
   }
 
-  @Bean("AESCipher")
-  public SymmetricCipherService aesCipherService() {
-    return new JCAAESECBCipherService();
+  @Bean("AESNonIVBasedCipher")
+  public SymmetricNonIVBasedCipherService aesCipherService() {
+    return new JCAAESNonIVBasedCipherService(BlockCipherNonIVBasedModeOfOperation.ECB);
   }
 
   @Bean("RSAKey")
@@ -146,7 +147,7 @@ public class CryptographyAutoConfiguration {
 
   @Bean("PBKDF2")
   public PBKDKeyService pbkdF2KeyService(
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm:SHA512}") ShaAlgorithm shaAlgorithm,
+      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm:SHA512}") PBKDF2ShaAlgorithm shaAlgorithm,
       @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations:131070}") Integer iterations) {
 
     return new JCAPBKDF2WithHmacSHAKeyService(new PBKDF2Configuration(shaAlgorithm, iterations));

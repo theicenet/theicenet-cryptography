@@ -1,6 +1,6 @@
 package com.theicenet.cryptography.pbkd.pbkdf2;
 
-public enum ShaAlgorithm {
+public enum PBKDF2ShaAlgorithm {
   SHA1,
   SHA256,
   SHA512,

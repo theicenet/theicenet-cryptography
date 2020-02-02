@@ -7,6 +7,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import com.theicenet.cryptography.test.util.HexUtil;
 import java.io.ByteArrayInputStream;
@@ -22,7 +23,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class JCAAESCipherServiceTest {
+class JCAAESIVBasedCipherServiceTest {
 
   // Given
   static final String AES = "AES";
@@ -78,7 +79,7 @@ class JCAAESCipherServiceTest {
 
   @BeforeEach
   void setUp() {
-    aesCipherService = new JCAAESCipherService(CTR);
+    aesCipherService = new JCAAESIVBasedCipherService(CTR);
   }
 
   @Test
@@ -185,7 +186,7 @@ class JCAAESCipherServiceTest {
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingByteArray(
       BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -201,7 +202,7 @@ class JCAAESCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingByteArrayWithBlockModeCBC() {
     // Given
-    aesCipherService = new JCAAESCipherService(BlockCipherIVBasedModeOfOperation.CBC);
+    aesCipherService = new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
 
     // When
     final var encrypted =
@@ -224,7 +225,7 @@ class JCAAESCipherServiceTest {
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingStream(
       BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -243,7 +244,7 @@ class JCAAESCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingStreamWithBlockModeCBC() {
     // Given
-    aesCipherService = new JCAAESCipherService(BlockCipherIVBasedModeOfOperation.CBC);
+    aesCipherService = new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -271,7 +272,7 @@ class JCAAESCipherServiceTest {
       byte[] expectedEncryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -294,7 +295,7 @@ class JCAAESCipherServiceTest {
       byte[] expectedEncryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(clearContent);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -445,7 +446,7 @@ class JCAAESCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -468,7 +469,7 @@ class JCAAESCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
@@ -494,7 +495,7 @@ class JCAAESCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -517,7 +518,7 @@ class JCAAESCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESCipherService(blockMode);
+    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();

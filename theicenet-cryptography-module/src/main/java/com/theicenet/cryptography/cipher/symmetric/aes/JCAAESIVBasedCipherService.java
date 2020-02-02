@@ -1,5 +1,6 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherServiceException;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import java.io.InputStream;
@@ -10,7 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.lang.Validate;
 
-public class JCAAESCipherService implements SymmetricIVBasedCipherService {
+public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService {
 
   private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
@@ -18,7 +19,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
 
   private final BlockCipherIVBasedModeOfOperation blockMode;
 
-  public JCAAESCipherService(BlockCipherIVBasedModeOfOperation blockMode) {
+  public JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation blockMode) {
     this.blockMode = blockMode;
   }
 
@@ -137,7 +138,7 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
       BlockCipherIVBasedModeOfOperation blockMode,
       SecretKey secretKey,
       byte[] iv,
-      Padding padding) {
+      AESPadding padding) {
 
     final Cipher cipher;
     try {
@@ -150,17 +151,17 @@ public class JCAAESCipherService implements SymmetricIVBasedCipherService {
     return cipher;
   }
 
-  private Padding paddingForBlockMode(BlockCipherIVBasedModeOfOperation mode) {
+  private AESPadding paddingForBlockMode(BlockCipherIVBasedModeOfOperation mode) {
 
-    final Padding padding;
+    final AESPadding padding;
     switch (mode) {
       case CFB:
       case OFB:
       case CTR:
-        padding = Padding.NOPADDING;
+        padding = AESPadding.NOPADDING;
         break;
       case CBC:
-        padding = Padding.PKCS5PADDING;
+        padding = AESPadding.PKCS5PADDING;
         break;
       default:
         throw new IllegalArgumentException(

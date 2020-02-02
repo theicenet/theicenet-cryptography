@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.cipher.asymmetric.rsa;
 
 public enum RSAPadding {
+  NoPadding,
   PKCS1Padding,
   OAEPWithMD5AndMGF1Padding,
   OAEPWithSHA1AndMGF1Padding,

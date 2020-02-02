@@ -113,8 +113,9 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
               + "afdd985d4665963f9a43e9d");
 
   @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullPassword(ShaAlgorithm shaAlgorithm) {
+  @EnumSource(PBKDF2ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullPassword(
+      PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -136,8 +137,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullSalt(ShaAlgorithm shaAlgorithm) {
+  @EnumSource(PBKDF2ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullSalt(PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -159,8 +160,9 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNegativeKeyLength(ShaAlgorithm shaAlgorithm) {
+  @EnumSource(PBKDF2ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNegativeKeyLength(
+      PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -182,8 +184,9 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndZeroKeyLength(ShaAlgorithm shaAlgorithm) {
+  @EnumSource(PBKDF2ShaAlgorithm.class)
+  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndZeroKeyLength(
+      PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -204,8 +207,9 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void throwsJCAPBKDF2WithHmacSHAKeyExceptionWhenGeneratingKeyAndException(ShaAlgorithm shaAlgorithm) {
+  @EnumSource(PBKDF2ShaAlgorithm.class)
+  void throwsJCAPBKDF2WithHmacSHAKeyExceptionWhenGeneratingKeyAndException(
+      PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var MINUS_ONE_ITERATIONS = -1;
     final var pbkdKeyService =
@@ -225,8 +229,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesNotNullWhenGeneratingKey(ShaAlgorithm shaAlgorithm) {
+  @EnumSource(PBKDF2ShaAlgorithm.class)
+  void producesNotNullWhenGeneratingKey(PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -247,10 +251,10 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @EnumSource(
-      value = ShaAlgorithm.class,
+      value = PBKDF2ShaAlgorithm.class,
       names = {"SHA3_256", "SHA3_512"},
       mode = Mode.EXCLUDE)
-  void producesKeyWithRightAlgorithmWhenGeneratingKeyAndSha1And2(ShaAlgorithm shaAlgorithm) {
+  void producesKeyWithRightAlgorithmWhenGeneratingKeyAndSha1And2(PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -274,10 +278,10 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @EnumSource(
-      value = ShaAlgorithm.class,
+      value = PBKDF2ShaAlgorithm.class,
       names = {"SHA3_256", "SHA3_512"},
       mode = Mode.INCLUDE)
-  void producesKeyWithRightAlgorithmWhenGeneratingKeyAndSha3(ShaAlgorithm shaAlgorithm) {
+  void producesKeyWithRightAlgorithmWhenGeneratingKeyAndSha3(PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -297,8 +301,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(ShaAlgorithm.class)
-  void producesKeyWithRAWFormatWhenGeneratingKey(ShaAlgorithm shaAlgorithm) {
+  @EnumSource(PBKDF2ShaAlgorithm.class)
+  void producesKeyWithRAWFormatWhenGeneratingKey(PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -319,7 +323,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithAllShaAlgorithmAndMultipleKeyLengths")
-  void producesKeyWithTheRequestLengthWhenGeneratingKey(ShaAlgorithm shaAlgorithm, Integer keyLength) {
+  void producesKeyWithTheRequestLengthWhenGeneratingKey(PBKDF2ShaAlgorithm shaAlgorithm, Integer keyLength) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -341,7 +345,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithAllShaAlgorithmAndMultipleKeyLengths")
-  void producesTheSameKeyWhenGeneratingTwoConsecutiveKeysWithTheSamePasswordSaltAndLength(ShaAlgorithm shaAlgorithm, Integer keyLength) {
+  void producesTheSameKeyWhenGeneratingTwoConsecutiveKeysWithTheSamePasswordSaltAndLength(
+      PBKDF2ShaAlgorithm shaAlgorithm, Integer keyLength) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -367,7 +372,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithAllShaAlgorithmAndMultipleKeyLengths")
-  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSameSaltAndLengthButDifferentPassword(ShaAlgorithm shaAlgorithm, Integer keyLength) {
+  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSameSaltAndLengthButDifferentPassword(
+      PBKDF2ShaAlgorithm shaAlgorithm, Integer keyLength) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -393,7 +399,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithAllShaAlgorithmAndMultipleKeyLengths")
-  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSamePasswordAndLengthButDifferentSalt(ShaAlgorithm shaAlgorithm, Integer keyLength) {
+  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSamePasswordAndLengthButDifferentSalt(
+      PBKDF2ShaAlgorithm shaAlgorithm, Integer keyLength) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -419,7 +426,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithAllShaAlgorithmAndMultipleKeyLengths")
-  void producesTheSameKeyWhenGeneratingManyConsecutiveKeysWithTheSamePasswordSaltAndLength(ShaAlgorithm shaAlgorithm, Integer keyLength) {
+  void producesTheSameKeyWhenGeneratingManyConsecutiveKeysWithTheSamePasswordSaltAndLength(
+      PBKDF2ShaAlgorithm shaAlgorithm, Integer keyLength) {
     // Given
     final var _100 = 100;
     final var pbkdKeyService =
@@ -447,7 +455,8 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithAllShaAlgorithmAndMultipleKeyLengths")
-  void producesTheSameKeyWhenGeneratingConcurrentlyManyKeysWithTheSamePasswordSaltAndLength(ShaAlgorithm shaAlgorithm, Integer keyLength) throws Exception {
+  void producesTheSameKeyWhenGeneratingConcurrentlyManyKeysWithTheSamePasswordSaltAndLength(
+      PBKDF2ShaAlgorithm shaAlgorithm, Integer keyLength) throws Exception {
     // Given
     final var _500 = 500;
     final var pbkdKeyService =
@@ -493,7 +502,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   static Stream<Arguments> argumentsWithAllShaAlgorithmAndMultipleKeyLengths() {
     return Stream
-        .of(ShaAlgorithm.values())
+        .of(PBKDF2ShaAlgorithm.values())
         .flatMap(shaAlgorithm ->
             Stream
                 .of(
@@ -508,7 +517,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   @ParameterizedTest
   @MethodSource("argumentsWithAllShaAlgorithmAndMultipleKeyLengthsAndExpectedGeneratedKey")
   void producesTheRightKeyWhenGeneratingKey(
-      ShaAlgorithm shaAlgorithm,
+      PBKDF2ShaAlgorithm shaAlgorithm,
       String password,
       byte[] salt,
       Integer keyLength,
@@ -536,84 +545,84 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
   static Stream<Arguments> argumentsWithAllShaAlgorithmAndMultipleKeyLengthsAndExpectedGeneratedKey() {
     return Stream.of(
         Arguments.of(
-            ShaAlgorithm.SHA1,
+            PBKDF2ShaAlgorithm.SHA1,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_128_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA1_HASH_128_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA1,
+            PBKDF2ShaAlgorithm.SHA1,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_256_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA1_HASH_256_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA1,
+            PBKDF2ShaAlgorithm.SHA1,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_512_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA1_HASH_512_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA1,
+            PBKDF2ShaAlgorithm.SHA1,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_1024_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA1_HASH_1024_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA256,
+            PBKDF2ShaAlgorithm.SHA256,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_128_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA256_HASH_128_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA256,
+            PBKDF2ShaAlgorithm.SHA256,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_256_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA256_HASH_256_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA256,
+            PBKDF2ShaAlgorithm.SHA256,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_512_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA256_HASH_512_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA256,
+            PBKDF2ShaAlgorithm.SHA256,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_1024_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA256_HASH_1024_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA512,
+            PBKDF2ShaAlgorithm.SHA512,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_128_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA512_HASH_128_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA512,
+            PBKDF2ShaAlgorithm.SHA512,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_256_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA512_HASH_256_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA512,
+            PBKDF2ShaAlgorithm.SHA512,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_512_BITS,
             _100_ITERATIONS,
             PBKDF2_WITH_HMAC_SHA512_HASH_512_BITS),
         Arguments.of(
-            ShaAlgorithm.SHA512,
+            PBKDF2ShaAlgorithm.SHA512,
             PASSWORD_1234567890_80_BITS,
             SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
             KEY_LENGTH_1024_BITS,

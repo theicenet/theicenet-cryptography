@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherServiceException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,9 +10,14 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import org.apache.commons.lang.Validate;
 
-public class JCAAESECBCipherService implements SymmetricCipherService {
+public class JCAAESNonIVBasedCipherService implements SymmetricNonIVBasedCipherService {
 
-  private static final String AES_ECB_PKCS5PADDING = "AES/ECB/PKCS5PADDING";
+  private final BlockCipherNonIVBasedModeOfOperation blockMode;
+
+  public JCAAESNonIVBasedCipherService(
+      BlockCipherNonIVBasedModeOfOperation blockMode) {
+    this.blockMode = blockMode;
+  }
 
   @Override
   public byte[] encrypt(SecretKey secretKey, byte[] clearContent) {
@@ -89,7 +95,7 @@ public class JCAAESECBCipherService implements SymmetricCipherService {
 
     final Cipher cipher;
     try {
-      cipher = Cipher.getInstance(AES_ECB_PKCS5PADDING);
+      cipher = Cipher.getInstance(String.format("AES/%s/PKCS5PADDING", blockMode));
       cipher.init(operationMode, secretKey);
     } catch (Exception e) {
       throw new SymmetricCipherServiceException("Exception creating AES cipher", e);

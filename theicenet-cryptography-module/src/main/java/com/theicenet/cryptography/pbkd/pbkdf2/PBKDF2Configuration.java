@@ -6,7 +6,7 @@ public final class PBKDF2Configuration {
   private final String algorithm;
   private final Integer iterations;
 
-  public PBKDF2Configuration(ShaAlgorithm shaAlgorithm, Integer iterations) {
+  public PBKDF2Configuration(PBKDF2ShaAlgorithm shaAlgorithm, Integer iterations) {
 
     this.algorithm = String.format("%s%s", PBKDF2_WITH_HMAC, shaAlgorithm.toString());
     this.iterations = iterations;
