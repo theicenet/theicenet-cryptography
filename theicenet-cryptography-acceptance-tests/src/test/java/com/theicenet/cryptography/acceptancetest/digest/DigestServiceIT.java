@@ -37,10 +37,10 @@ class DigestServiceIT {
   @Test
   void producesTheRightHashWhenDigestingStream() {
     // Given
-    final var clearInputStream = new ByteArrayInputStream(CONTENT);
+    final var contentInputStream = new ByteArrayInputStream(CONTENT);
 
     // When
-    final var hash = digestService.digest(clearInputStream);
+    final var hash = digestService.digest(contentInputStream);
 
     // Then
     assertThat(hash, is(equalTo(SHA_1_HASH)));

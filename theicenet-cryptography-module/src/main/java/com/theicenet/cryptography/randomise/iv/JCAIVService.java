@@ -1,9 +1,8 @@
 package com.theicenet.cryptography.randomise.iv;
 
 import com.theicenet.cryptography.randomise.RandomiseService;
-import org.apache.commons.lang.Validate;
-
 import java.security.SecureRandom;
+import org.apache.commons.lang.Validate;
 
 public class JCAIVService implements RandomiseService {
 

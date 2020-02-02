@@ -3,27 +3,28 @@ package com.theicenet.cryptography;
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESIVBasedCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVBasedCipherService;
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
+import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ecdh.JCAECDHKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ecdsa.JCAECDSAKeyService;
-import com.theicenet.cryptography.keyagreement.KeyAgreementService;
-import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
-import com.theicenet.cryptography.randomise.RandomiseService;
-import com.theicenet.cryptography.randomise.iv.JCAIVService;
-import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
-import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
+import com.theicenet.cryptography.keyagreement.KeyAgreementService;
+import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
+import com.theicenet.cryptography.mac.MacService;
+import com.theicenet.cryptography.mac.hmac.HmacAlgorithm;
+import com.theicenet.cryptography.mac.hmac.JCAHmacService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Configuration;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Type;
@@ -32,9 +33,11 @@ import com.theicenet.cryptography.pbkd.argon2.PBKDArgon2KeyService;
 import com.theicenet.cryptography.pbkd.pbkdf2.JCAPBKDF2WithHmacSHAKeyService;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2ShaAlgorithm;
-import com.theicenet.cryptography.randomise.salt.JCASaltService;
 import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptKeyService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
+import com.theicenet.cryptography.randomise.RandomiseService;
+import com.theicenet.cryptography.randomise.iv.JCAIVService;
+import com.theicenet.cryptography.randomise.salt.JCASaltService;
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.dsa.JCADSASignatureService;
@@ -178,5 +181,12 @@ public class CryptographyAutoConfiguration {
       @Value("${cryptography.digest.algorithm:SHA-256}") DigestAlgorithm algorithm) {
 
     return new JCADigestService(algorithm);
+  }
+
+  @Bean("Hmac")
+  public MacService hmacService(
+      @Value("${cryptography.mac.algorithm:HmacSHA256}") HmacAlgorithm algorithm) {
+
+    return new JCAHmacService(algorithm);
   }
 }

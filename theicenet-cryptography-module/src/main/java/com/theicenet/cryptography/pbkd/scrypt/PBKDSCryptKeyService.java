@@ -1,12 +1,11 @@
 package com.theicenet.cryptography.pbkd.scrypt;
 
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
-import org.apache.commons.lang.Validate;
-import org.bouncycastle.crypto.generators.SCrypt;
-
+import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
+import org.apache.commons.lang.Validate;
+import org.bouncycastle.crypto.generators.SCrypt;
 
 public class PBKDSCryptKeyService implements PBKDKeyService {
 

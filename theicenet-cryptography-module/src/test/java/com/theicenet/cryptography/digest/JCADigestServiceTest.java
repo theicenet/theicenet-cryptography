@@ -28,7 +28,7 @@ class JCADigestServiceTest {
   @EnumSource(DigestAlgorithm.class)
   void producesNotNullWhenDigestingByteArray(DigestAlgorithm algorithm) {
     // Given
-    digestService = new JCADigestService(algorithm);
+    final DigestService digestService = new JCADigestService(algorithm);
 
     // When
     final var hash = digestService.digest(CONTENT);

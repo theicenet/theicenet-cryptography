@@ -34,6 +34,9 @@ cryptography:
   digest:
     algorithm: SHA-1
 
+  mac:
+    algorithm: HmacSHA1
+
   key:
     asymmetric:
       ecc:
