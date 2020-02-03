@@ -23,19 +23,15 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>1.13</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mutabilitydetector</groupId>
-        <artifactId>MutabilityDetector</artifactId>
-        <version>0.10.2</version>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.6</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
   <modules>
+    <module>theicenet-cryptography-test-support</module>
     <module>theicenet-cryptography-module</module>
     <module>theicenet-cryptography-spring-boot-starter</module>
     <module>theicenet-cryptography-acceptance-tests</module>

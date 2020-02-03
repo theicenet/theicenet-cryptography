@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.signature.dsa;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.CombinableMatcher.both;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -10,7 +11,8 @@ import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.test.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -264,6 +266,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producedSignatureVerifiesToTrueWhenVerifyingByteArrayAndSignatureCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
+
     // Given
     final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
     final byte[] content;
@@ -293,6 +296,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void producedSignatureVerifiesToTrueWhenVerifyingStreamAndSignatureCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
+
     // Given
     final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
     final byte[] content;
@@ -324,6 +328,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void signatureVerifiesToFalseWhenVerifyingByteArrayAndSignatureDoesNotCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
+
     // Given
     final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
     final byte[] content;
@@ -360,6 +365,7 @@ class JCADSASignatureServiceTest {
   @EnumSource(DSASignatureAlgorithm.class)
   void signatureVerifiesToFalseWhenVerifyingStreamAndSignatureDoesNotCorrespondsWithContent(
       DSASignatureAlgorithm algorithm) {
+
     // Given
     final SignatureService dsaSignatureService = new JCADSASignatureService(algorithm);
     final byte[] content;
@@ -396,7 +402,8 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha1WithDSA() {
     // Given
-    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
 
     // When
     final var verifyingResult =
@@ -412,14 +419,14 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha1WithDSA() {
     // Given
-    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA1withDSA);
 
     // When
     final var verifyingResult =
         dsaSignatureService.verify(
             DSA_PUBLIC_KEY_2048_BITS,
-            contentInputStream,
+            new ByteArrayInputStream(CONTENT),
             SIGNATURE_SHA1_WITH_DSA);
 
     // Then
@@ -429,7 +436,8 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha224WithDSA() {
     // Given
-    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
 
     // When
     final var verifyingResult =
@@ -445,14 +453,14 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha224WithDSA() {
     // Given
-    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA224withDSA);
 
     // When
     final var verifyingResult =
         dsaSignatureService.verify(
             DSA_PUBLIC_KEY_2048_BITS,
-            contentInputStream,
+            new ByteArrayInputStream(CONTENT),
             SIGNATURE_SHA224_WITH_DSA);
 
     // Then
@@ -462,7 +470,8 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha256WithDSA() {
     // Given
-    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
 
     // When
     final var verifyingResult =
@@ -478,17 +487,297 @@ class JCADSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha256WithDSA() {
     // Given
-    final SignatureService dsaSignatureService = new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
 
     // When
     final var verifyingResult =
         dsaSignatureService.verify(
             DSA_PUBLIC_KEY_2048_BITS,
-            contentInputStream,
+            new ByteArrayInputStream(CONTENT),
             SIGNATURE_SHA256_WITH_DSA);
 
     // Then
     assertThat(verifyingResult, is(equalTo(true)));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningTwoConsecutiveTimesTheSameContentWithTheSamePrivateKeyForByteArray() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    // When
+    final var signature_1 = dsaSignatureService.sign(DSA_PRIVATE_KEY_2048_BITS, CONTENT);
+    final var signature_2 = dsaSignatureService.sign(DSA_PRIVATE_KEY_2048_BITS, CONTENT);
+
+    // Then
+    assertThat(signature_1, is(not(equalTo(signature_2))));
+    assertThat(
+        dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature_1),
+        is(equalTo(true)));
+    assertThat(
+        dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature_2),
+        is(equalTo(true)));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningTwoConsecutiveTimesTheSameContentWithTheSamePrivateKeyForStream() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    // When
+    final var signature_1 =
+        dsaSignatureService.sign(DSA_PRIVATE_KEY_2048_BITS, new ByteArrayInputStream(CONTENT));
+    final var signature_2 =
+        dsaSignatureService.sign(DSA_PRIVATE_KEY_2048_BITS, new ByteArrayInputStream(CONTENT));
+
+    // Then
+    assertThat(signature_1, is(not(equalTo(signature_2))));
+    assertThat(
+        dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature_1),
+        is(equalTo(true)));
+    assertThat(
+        dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature_2),
+        is(equalTo(true)));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningManyConsecutiveTimesTheSameContentWithTheSamePrivateKeyForByteArray() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    dsaSignatureService.sign(DSA_PRIVATE_KEY_2048_BITS, CONTENT)));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_100));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature -> dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningManyConsecutiveTimesTheSameContentWithTheSamePrivateKeyForStream() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    dsaSignatureService.sign(DSA_PRIVATE_KEY_2048_BITS, new ByteArrayInputStream(CONTENT))));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_100));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature -> dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningConcurrentlyTheSameContentWithTheSamePrivateKeyForByteArray() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    dsaSignatureService.sign(DSA_PRIVATE_KEY_2048_BITS, CONTENT)));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_500));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature -> dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningConcurrentlyTheSameContentWithTheSamePrivateKeyForStream() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    dsaSignatureService.sign(
+                        DSA_PRIVATE_KEY_2048_BITS,
+                        new ByteArrayInputStream(CONTENT))));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_500));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature -> dsaSignatureService.verify(DSA_PUBLIC_KEY_2048_BITS, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingTwoConsecutiveTimesTheSameSignatureForByteArray() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    // When
+    final var verifyingResult_1 =
+        dsaSignatureService.verify(
+            DSA_PUBLIC_KEY_2048_BITS,
+            CONTENT,
+            SIGNATURE_SHA256_WITH_DSA);
+
+    final var verifyingResult_2 =
+        dsaSignatureService.verify(
+            DSA_PUBLIC_KEY_2048_BITS,
+            CONTENT,
+            SIGNATURE_SHA256_WITH_DSA);
+
+    // Then
+    assertThat(verifyingResult_1, is(equalTo(true)));
+    assertThat(verifyingResult_2, is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingTwoConsecutiveTimesTheSameSignatureForStream() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    // When
+    final var verifyingResult_1 =
+        dsaSignatureService.verify(
+            DSA_PUBLIC_KEY_2048_BITS,
+            new ByteArrayInputStream(CONTENT),
+            SIGNATURE_SHA256_WITH_DSA);
+
+    final var verifyingResult_2 =
+        dsaSignatureService.verify(
+            DSA_PUBLIC_KEY_2048_BITS,
+            new ByteArrayInputStream(CONTENT),
+            SIGNATURE_SHA256_WITH_DSA);
+
+    // Then
+    assertThat(verifyingResult_1, is(equalTo(true)));
+    assertThat(verifyingResult_2, is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingManyConsecutiveTimesTheSameSignatureForByteArray() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                dsaSignatureService.verify(
+                    DSA_PUBLIC_KEY_2048_BITS,
+                    CONTENT,
+                    SIGNATURE_SHA256_WITH_DSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingManyConsecutiveTimesTheSameSignatureForStream() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                dsaSignatureService.verify(
+                    DSA_PUBLIC_KEY_2048_BITS,
+                    new ByteArrayInputStream(CONTENT),
+                    SIGNATURE_SHA256_WITH_DSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingConcurrentlyTheSameSignatureForByteArray() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                dsaSignatureService.verify(
+                    DSA_PUBLIC_KEY_2048_BITS,
+                    CONTENT,
+                    SIGNATURE_SHA256_WITH_DSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingConcurrentlyTheSameSignatureForStream() {
+    // Given
+    final SignatureService dsaSignatureService =
+        new JCADSASignatureService(DSASignatureAlgorithm.SHA256withDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                dsaSignatureService.verify(
+                    DSA_PUBLIC_KEY_2048_BITS,
+                    new ByteArrayInputStream(CONTENT),
+                    SIGNATURE_SHA256_WITH_DSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
   }
 }

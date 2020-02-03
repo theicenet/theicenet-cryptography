@@ -10,19 +10,12 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -187,7 +180,10 @@ class JCARSAKeyServiceTest {
     final var generatedKeyPair_2 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then the generated public keys are different
-    assertThat(generatedKeyPair_1.getPublic(), is(not(equalTo(generatedKeyPair_2.getPublic()))));
+    assertThat(
+        generatedKeyPair_1.getPublic().getEncoded(),
+        is(not(equalTo(
+            generatedKeyPair_2.getPublic().getEncoded()))));
   }
 
   @Test
@@ -197,7 +193,10 @@ class JCARSAKeyServiceTest {
     final var generatedKeyPair_2 = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 
     // Then the generated private keys are different
-    assertThat(generatedKeyPair_1.getPrivate(), is(not(equalTo(generatedKeyPair_2.getPrivate()))));
+    assertThat(
+        generatedKeyPair_1.getPrivate().getEncoded(),
+        is(not(equalTo(
+            generatedKeyPair_2.getPrivate().getEncoded()))));
   }
 
   @Test
@@ -206,15 +205,18 @@ class JCARSAKeyServiceTest {
     final var _100 = 100;
 
     // When generating consecutive key pairs with the same length
-    final var generatePublicKeys =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(KEY_LENGTH_1024_BITS))
-            .map(KeyPair::getPublic)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedPublicKeysSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    rsaKeyService
+                        .generateKey(KEY_LENGTH_1024_BITS)
+                        .getPublic()
+                        .getEncoded()));
 
     // Then all public keys have been generated and all them are different
-    assertThat(generatePublicKeys, hasSize(_100));
+    assertThat(generatedPublicKeysSet, hasSize(_100));
   }
 
   @Test
@@ -223,15 +225,18 @@ class JCARSAKeyServiceTest {
     final var _100 = 100;
 
     // When generating consecutive key pairs with the same length
-    final var generatePrivateKeys =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index -> rsaKeyService.generateKey(KEY_LENGTH_1024_BITS))
-            .map(KeyPair::getPrivate)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedPrivateKeysSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    rsaKeyService
+                        .generateKey(KEY_LENGTH_1024_BITS)
+                        .getPrivate()
+                        .getEncoded()));
 
     // Then all private key have been generated and all them are different
-    assertThat(generatePrivateKeys, hasSize(_100));
+    assertThat(generatedPrivateKeysSet, hasSize(_100));
   }
 
   @Test
@@ -240,32 +245,18 @@ class JCARSAKeyServiceTest {
     final var _500 = 500;
 
     // When generating concurrently at the same time key pairs with the same length
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedPublicKeys = new CopyOnWriteArraySet<PublicKey>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              final var keyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
-              generatedPublicKeys.add(keyPair.getPublic());
-            }));
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedPublicKeysSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    rsaKeyService
+                        .generateKey(KEY_LENGTH_1024_BITS)
+                        .getPublic()
+                        .getEncoded()));
 
     // When generating concurrently at the same time key pairs with the same length
-    assertThat(generatedPublicKeys, hasSize(_500));
+    assertThat(generatedPublicKeysSet, hasSize(_500));
   }
 
   @Test
@@ -274,31 +265,17 @@ class JCARSAKeyServiceTest {
     final var _500 = 500;
 
     // When generating concurrently at the same time key pairs with the same length
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedPrivateKeys = new CopyOnWriteArraySet<PrivateKey>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              final var keyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
-              generatedPrivateKeys.add(keyPair.getPrivate());
-            }));
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedPrivateKeysSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    rsaKeyService
+                        .generateKey(KEY_LENGTH_1024_BITS)
+                        .getPrivate()
+                        .getEncoded()));
 
     // Then all private keys have been generated and all them are different
-    assertThat(generatedPrivateKeys, hasSize(_500));
+    assertThat(generatedPrivateKeysSet, hasSize(_500));
   }
 }

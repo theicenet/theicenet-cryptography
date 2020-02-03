@@ -9,20 +9,14 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
-import com.theicenet.cryptography.test.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
 
 class JCACEDHKeyAgreementServiceTest {
@@ -220,7 +214,7 @@ class JCACEDHKeyAgreementServiceTest {
   }
 
   @Test
-  void producesTheSameSecretKeyWhenGeneratingTwoConsecutiveSecretKeyForBon() {
+  void producesTheSameSecretKeyWhenGeneratingTwoConsecutiveSecretKeyForBob() {
     // When
     final var generatedSecretKey_1 =
         keyAgreementService.generateSecretKey(
@@ -242,19 +236,17 @@ class JCACEDHKeyAgreementServiceTest {
     final var _100 = 100;
 
     // When generating consecutive secret key for alice
-    final var generateSecretKeys =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index ->
-                keyAgreementService.generateSecretKey(
-                  ECDH_PRIVATE_KEY_BRAINPOOLP256R1_ALICE,
-                  ECDH_PUBLIC_KEY_BRAINPOOLP256R1_BOB))
-            .map(Hex::encodeHex)
-            .map(String::new)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedSecretKeysSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    keyAgreementService.generateSecretKey(
+                        ECDH_PRIVATE_KEY_BRAINPOOLP256R1_ALICE,
+                        ECDH_PUBLIC_KEY_BRAINPOOLP256R1_BOB)));
 
     // Then all secret keys generated are the same
-    assertThat(generateSecretKeys, hasSize(1));
+    assertThat(generatedSecretKeysSet, hasSize(1));
   }
 
   @Test
@@ -263,102 +255,54 @@ class JCACEDHKeyAgreementServiceTest {
     final var _100 = 100;
 
     // When generating consecutive secret key for bob
-    final var generateSecretKeys =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index ->
-                keyAgreementService.generateSecretKey(
-                    ECDH_PRIVATE_KEY_BRAINPOOLP256R1_BOB,
-                    ECDH_PUBLIC_KEY_BRAINPOOLP256R1_ALICE))
-            .map(Hex::encodeHex)
-            .map(String::new)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedSecretKeysSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    keyAgreementService.generateSecretKey(
+                        ECDH_PRIVATE_KEY_BRAINPOOLP256R1_BOB,
+                        ECDH_PUBLIC_KEY_BRAINPOOLP256R1_ALICE)));
 
     // Then all secret keys generated are the same
-    assertThat(generateSecretKeys, hasSize(1));
+    assertThat(generatedSecretKeysSet, hasSize(1));
   }
 
   @Test
-  void producesTheSameSecretKeyWhenGeneratingConcurrentlyManySecretKeyForAlice() throws InterruptedException {
+  void producesTheSameSecretKeyWhenGeneratingConcurrentlyManySecretKeyForAlice() {
     // Given
     final var _500 = 500;
 
     // When generating concurrently secret key for alice
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedSecretKeys = new CopyOnWriteArraySet<byte[]>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              final var generatedSecretKey =
-                  keyAgreementService.generateSecretKey(
-                      ECDH_PRIVATE_KEY_BRAINPOOLP256R1_ALICE,
-                      ECDH_PUBLIC_KEY_BRAINPOOLP256R1_BOB);
-              generatedSecretKeys.add(generatedSecretKey);
-            }));
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedSecretKeysSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    keyAgreementService.generateSecretKey(
+                        ECDH_PRIVATE_KEY_BRAINPOOLP256R1_ALICE,
+                        ECDH_PUBLIC_KEY_BRAINPOOLP256R1_BOB)));
 
     // Then all secret keys generated are the same
-    assertThat(
-        generatedSecretKeys.stream()
-          .map(Hex::encodeHex)
-          .map(String::new)
-          .collect(Collectors.toUnmodifiableSet()),
-        hasSize(1));
+    assertThat(generatedSecretKeysSet, hasSize(1));
   }
 
   @Test
-  void producesTheSameSecretKeyWhenGeneratingConcurrentlyManySecretKeyForBob() throws InterruptedException {
+  void producesTheSameSecretKeyWhenGeneratingConcurrentlyManySecretKeyForBob() {
     // Given
     final var _500 = 500;
 
     // When generating concurrently secret key for alice
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedSecretKeys = new CopyOnWriteArraySet<byte[]>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              final var generatedSecretKey =
-                  keyAgreementService.generateSecretKey(
-                      ECDH_PRIVATE_KEY_BRAINPOOLP256R1_BOB,
-                      ECDH_PUBLIC_KEY_BRAINPOOLP256R1_ALICE);
-              generatedSecretKeys.add(generatedSecretKey);
-            }));
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedSecretKeysSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    keyAgreementService.generateSecretKey(
+                        ECDH_PRIVATE_KEY_BRAINPOOLP256R1_BOB,
+                        ECDH_PUBLIC_KEY_BRAINPOOLP256R1_ALICE)));
 
     // Then all secret keys generated are the same
-    assertThat(
-        generatedSecretKeys.stream()
-            .map(Hex::encodeHex)
-            .map(String::new)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(1));
+    assertThat(generatedSecretKeysSet, hasSize(1));
   }
 }

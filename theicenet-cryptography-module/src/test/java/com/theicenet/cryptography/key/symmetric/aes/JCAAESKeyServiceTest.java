@@ -9,14 +9,9 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.SecureRandom;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import javax.crypto.SecretKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -88,71 +83,51 @@ class JCAAESKeyServiceTest {
     assertThat(generatedKeyLengthInBits, is(equalTo(keyLength)));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {
-      KEY_LENGTH_128_BITS,
-      KEY_LENGTH_256_BITS})
-  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(int keyLength) {
+  @Test
+  void producesDifferentKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength() {
     // When generating two consecutive keys with the same length
-    final var generatedKey_1 = aesKeyService.generateKey(keyLength);
-    final var generatedKey_2 = aesKeyService.generateKey(keyLength);
+    final var generatedKey_1 = aesKeyService.generateKey(KEY_LENGTH_128_BITS);
+    final var generatedKey_2 = aesKeyService.generateKey(KEY_LENGTH_128_BITS);
 
     // Then the generated keys are different
-    assertThat(generatedKey_1, is(not(equalTo(generatedKey_2))));
+    assertThat(generatedKey_1.getEncoded(), is(not(equalTo(generatedKey_2.getEncoded()))));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {
-      KEY_LENGTH_128_BITS,
-      KEY_LENGTH_256_BITS})
-  void producesDifferentKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength(int keyLength) {
+  @Test
+  void producesDifferentKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
     // Given
     final var _100 = 100;
 
     // When generating consecutive keys with the same length
-    final var generatedKeys =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index -> aesKeyService.generateKey(keyLength))
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedKeysSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    aesKeyService
+                        .generateKey(KEY_LENGTH_128_BITS)
+                        .getEncoded()));
 
     // Then all keys have been generated and all them are different
-    assertThat(generatedKeys, hasSize(_100));
+    assertThat(generatedKeysSet, hasSize(_100));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {
-      KEY_LENGTH_128_BITS,
-      KEY_LENGTH_256_BITS})
-  void producesDifferentKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength(int keyLength) throws Exception {
+  @Test
+  void producesDifferentKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
     // Given
     final var _500 = 500;
 
     // When generating concurrently at the same time random keys with the same length
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedKeys = new CopyOnWriteArraySet<SecretKey>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              generatedKeys.add(aesKeyService.generateKey(keyLength));
-            }));
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedKeysSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    aesKeyService
+                        .generateKey(KEY_LENGTH_128_BITS)
+                        .getEncoded()));
 
     // Then all keys have been generated and all them are different
-    assertThat(generatedKeys, hasSize(_500));
+    assertThat(generatedKeysSet, hasSize(_500));
   }
 }

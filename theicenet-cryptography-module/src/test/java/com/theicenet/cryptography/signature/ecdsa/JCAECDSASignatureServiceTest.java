@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.signature.ecdsa;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.CombinableMatcher.both;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -11,7 +12,8 @@ import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.test.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -85,7 +87,7 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void producesNotNullWhenSigningByteArray(ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -101,14 +103,13 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void producesNotNullWhenSigningByteStream(ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     // When
     final var signature =
         ecdsaSignatureService.sign(
             ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
-            contentInputStream);
+            new ByteArrayInputStream(CONTENT));
 
     // Then
     assertThat(signature, is(notNullValue()));
@@ -118,7 +119,7 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void producesRightSizeWhenSigningByteArray(ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -136,14 +137,13 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void producesRightSizeWhenSigningStream(ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     // When
     final var signature =
         ecdsaSignatureService.sign(
             ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
-            contentInputStream);
+            new ByteArrayInputStream(CONTENT));
 
     // Then
     assertThat( // For a curve between 160 and 512 bits key the signature size should be between 68 and 72 bytes
@@ -155,7 +155,7 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void producesSignatureDifferentToClearContentWhenSigningByteArray(ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     // When
     final var signature =
@@ -171,14 +171,13 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void producesSignatureDifferentToClearContentWhenSigningStream(ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     // When
     final var signature =
         ecdsaSignatureService.sign(
             ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
-            contentInputStream);
+            new ByteArrayInputStream(CONTENT));
 
     // Then
     assertThat(signature, is(not(equalTo(CONTENT))));
@@ -189,7 +188,7 @@ class JCAECDSASignatureServiceTest {
   void producedSignatureVerifiesToTrueWhenVerifyingByteArrayAndSignatureCorrespondsWithContent(
       ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     final var signature =
         ecdsaSignatureService.sign(
@@ -212,20 +211,18 @@ class JCAECDSASignatureServiceTest {
   void producedSignatureVerifiesToTrueWhenVerifyingStreamAndSignatureCorrespondsWithContent(
       ECDSASignatureAlgorithm algorithm) {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     final var signature =
         ecdsaSignatureService.sign(
             ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
             CONTENT);
 
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
-
     // When
     final var verifyingResult =
         ecdsaSignatureService.verify(
             ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
-            contentInputStream,
+            new ByteArrayInputStream(CONTENT),
             signature);
 
     // Then
@@ -236,8 +233,9 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void signatureVerifiesToFalseWhenVerifyingByteArrayAndSignatureDoesNotCorrespondsWithContent(
       ECDSASignatureAlgorithm algorithm) {
+
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     final var signature =
         ecdsaSignatureService.sign(
@@ -259,21 +257,20 @@ class JCAECDSASignatureServiceTest {
   @EnumSource(ECDSASignatureAlgorithm.class)
   void signatureVerifiesToFalseWhenVerifyingStreamAndSignatureDoesNotCorrespondsWithContent(
       ECDSASignatureAlgorithm algorithm) {
+
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
+    final SignatureService ecdsaSignatureService = new JCAECDSASignatureService(algorithm);
 
     final var signature =
         ecdsaSignatureService.sign(
             ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
             CONTENT);
 
-    final var differentContentInputStream = new ByteArrayInputStream(DIFFERENT_CONTENT);
-
     // When
     final var verifyingResult =
         ecdsaSignatureService.verify(
             ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
-            differentContentInputStream,
+            new ByteArrayInputStream(DIFFERENT_CONTENT),
             signature);
 
     // Then
@@ -283,7 +280,8 @@ class JCAECDSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha1WithECDSA() {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA1withECDSA);
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA1withECDSA);
 
     // When
     final var verifyingResult =
@@ -299,14 +297,14 @@ class JCAECDSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha1WithECDSA() {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA1withECDSA);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA1withECDSA);
 
     // When
     final var verifyingResult =
         ecdsaSignatureService.verify(
             ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
-            contentInputStream,
+            new ByteArrayInputStream(CONTENT),
             SIGNATURE_SHA1_WITH_ECDSA);
 
     // Then
@@ -316,7 +314,8 @@ class JCAECDSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha224WithECDSA() {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA224withECDSA);
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA224withECDSA);
 
     // When
     final var verifyingResult =
@@ -332,14 +331,14 @@ class JCAECDSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha224WithECDSA() {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA224withECDSA);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA224withECDSA);
 
     // When
     final var verifyingResult =
         ecdsaSignatureService.verify(
             ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
-            contentInputStream,
+            new ByteArrayInputStream(CONTENT),
             SIGNATURE_SHA224_WITH_ECDSA);
 
     // Then
@@ -349,7 +348,8 @@ class JCAECDSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingByteArrayWithSha256WithECDSA() {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
 
     // When
     final var verifyingResult =
@@ -365,17 +365,308 @@ class JCAECDSASignatureServiceTest {
   @Test
   void verifiesProperlyWhenVerifyingStreamWithSha256WithECDSA() {
     // Given
-    SignatureService ecdsaSignatureService = new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
 
     // When
     final var verifyingResult =
         ecdsaSignatureService.verify(
             ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
-            contentInputStream,
+            new ByteArrayInputStream(CONTENT),
             SIGNATURE_SHA256_WITH_ECDSA);
 
     // Then
     assertThat(verifyingResult, is(equalTo(true)));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningTwoConsecutiveTimesTheSameContentWithTheSamePrivateKeyForByteArray() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    // When
+    final var signature_1 = ecdsaSignatureService.sign(ECDSA_PRIVATE_KEY_BRAINPOOLP256R1, CONTENT);
+    final var signature_2 = ecdsaSignatureService.sign(ECDSA_PRIVATE_KEY_BRAINPOOLP256R1, CONTENT);
+
+    // Then
+    assertThat(signature_1, is(not(equalTo(signature_2))));
+    assertThat(
+        ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature_1),
+        is(equalTo(true)));
+    assertThat(
+        ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature_2),
+        is(equalTo(true)));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningTwoConsecutiveTimesTheSameContentWithTheSamePrivateKeyForStream() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    // When
+    final var signature_1 =
+        ecdsaSignatureService.sign(
+            ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
+            new ByteArrayInputStream(CONTENT));
+
+    final var signature_2 =
+        ecdsaSignatureService.sign(
+            ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
+            new ByteArrayInputStream(CONTENT));
+
+    // Then
+    assertThat(signature_1, is(not(equalTo(signature_2))));
+    assertThat(
+        ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature_1),
+        is(equalTo(true)));
+    assertThat(
+        ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature_2),
+        is(equalTo(true)));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningManyConsecutiveTimesTheSameContentWithTheSamePrivateKeyForByteArray() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    ecdsaSignatureService.sign(ECDSA_PRIVATE_KEY_BRAINPOOLP256R1, CONTENT)));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_100));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature ->
+            ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningManyConsecutiveTimesTheSameContentWithTheSamePrivateKeyForStream() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    ecdsaSignatureService.sign(
+                        ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
+                        new ByteArrayInputStream(CONTENT))));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_100));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature ->
+            ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningConcurrentlyTheSameContentWithTheSamePrivateKeyForByteArray() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    ecdsaSignatureService.sign(ECDSA_PRIVATE_KEY_BRAINPOOLP256R1, CONTENT)));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_500));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature ->
+            ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void producesDifferentButValidSignaturesWhenSigningConcurrentlyTheSameContentWithTheSamePrivateKeyForStream() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var generatedSignaturesSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    ecdsaSignatureService.sign(
+                        ECDSA_PRIVATE_KEY_BRAINPOOLP256R1,
+                        new ByteArrayInputStream(CONTENT))));
+
+    // Then
+    assertThat(generatedSignaturesSet, hasSize(_500));
+    generatedSignaturesSet.stream()
+        .map(HexUtil::decodeHex)
+        .map(signature ->
+            ecdsaSignatureService.verify(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1, CONTENT, signature))
+        .forEach(signatureValidation -> assertThat(signatureValidation, is(equalTo(true))));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingTwoConsecutiveTimesTheSameSignatureForByteArray() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    // When
+    final var verifyingResult_1 =
+        ecdsaSignatureService.verify(
+            ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+            CONTENT,
+            SIGNATURE_SHA256_WITH_ECDSA);
+
+    final var verifyingResult_2 =
+        ecdsaSignatureService.verify(
+            ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+            CONTENT,
+            SIGNATURE_SHA256_WITH_ECDSA);
+
+    // Then
+    assertThat(verifyingResult_1, is(equalTo(true)));
+    assertThat(verifyingResult_2, is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingTwoConsecutiveTimesTheSameSignatureForStream() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    // When
+    final var verifyingResult_1 =
+        ecdsaSignatureService.verify(
+            ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+            new ByteArrayInputStream(CONTENT),
+            SIGNATURE_SHA256_WITH_ECDSA);
+
+    final var verifyingResult_2 =
+        ecdsaSignatureService.verify(
+            ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+            new ByteArrayInputStream(CONTENT),
+            SIGNATURE_SHA256_WITH_ECDSA);
+
+    // Then
+    assertThat(verifyingResult_1, is(equalTo(true)));
+    assertThat(verifyingResult_2, is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingManyConsecutiveTimesTheSameSignatureForByteArray() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                ecdsaSignatureService.verify(
+                    ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+                    CONTENT,
+                    SIGNATURE_SHA256_WITH_ECDSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingManyConsecutiveTimesTheSameSignatureForStream() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _100 = 100;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                ecdsaSignatureService.verify(
+                    ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+                    new ByteArrayInputStream(CONTENT),
+                    SIGNATURE_SHA256_WITH_ECDSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingConcurrentlyTheSameSignatureForByteArray() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                ecdsaSignatureService.verify(
+                    ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+                    CONTENT,
+                    SIGNATURE_SHA256_WITH_ECDSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
+  }
+
+  @Test
+  void verifiesProperlyWhenVerifyingConcurrentlyTheSameSignatureForStream() {
+    // Given
+    final SignatureService ecdsaSignatureService =
+        new JCAECDSASignatureService(ECDSASignatureAlgorithm.SHA256withECDSA);
+
+    final var _500 = 500;
+
+    // When
+    final var verifyingResultsSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                ecdsaSignatureService.verify(
+                    ECDSA_PUBLIC_KEY_BRAINPOOLP256R1,
+                    new ByteArrayInputStream(CONTENT),
+                    SIGNATURE_SHA256_WITH_ECDSA));
+
+    // Then
+    assertThat(verifyingResultsSet, hasSize(1));
+    assertThat(verifyingResultsSet.iterator().next(), is(equalTo(true)));
   }
 }

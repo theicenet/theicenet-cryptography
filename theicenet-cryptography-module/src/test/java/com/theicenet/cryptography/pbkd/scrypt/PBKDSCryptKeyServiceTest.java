@@ -9,16 +9,12 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
-import com.theicenet.cryptography.test.util.HexUtil;
-import java.math.BigInteger;
+import com.theicenet.cryptography.pbkd.pbkdf2.JCAPBKDF2WithHmacSHAKeyService;
+import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
+import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2ShaAlgorithm;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +42,9 @@ class PBKDSCryptKeyServiceTest {
   static final String PASSWORD_1234567890_80_BITS = "1234567890";
   final String PASSWORD_0123456789_80_BITS = "0123456789";
 
+  final byte[] SECRET_BYTE_ARRAY_80_BITS =
+      new byte[]{6, 11, 76, -39, 65, 43, -124, 111, -119, -51};
+
   static final byte[] SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES =
       "GHIJKLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
 
@@ -57,6 +56,9 @@ class PBKDSCryptKeyServiceTest {
 
   static final byte[] SCRYPT_HASH_256_BITS =
       HexUtil.decodeHex("accbf0d4873bae1315fa16e1f8840dd8b09a2a270cfdef1afd65d3039bd97188");
+
+  static final byte[] SCRYPT_HASH_256_BITS_FOR_SECRET_BYTE_ARRAY =
+      HexUtil.decodeHex("3aa92b5d73f1241151fbab13460d28361b5a37a714735c806d69a5075fba9f48");
 
   static final byte[] SCRYPT_HASH_512_BITS =
       HexUtil.decodeHex(
@@ -291,20 +293,20 @@ class PBKDSCryptKeyServiceTest {
     final var _100 = 100;
 
     // When generating consecutive keys with the same password, salt and length
-    final var generatedKeys =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index ->
-                pbkdKeyService.generateKey(
-                    PASSWORD_1234567890_80_BITS,
-                    SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-                    keyLength))
-            .map(Key::getEncoded)
-            .map(BigInteger::new)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedKeysSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    pbkdKeyService
+                        .generateKey(
+                            PASSWORD_1234567890_80_BITS,
+                            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                            keyLength)
+                        .getEncoded()));
 
     // Then all keys are the same
-    assertThat(generatedKeys, hasSize(1));
+    assertThat(generatedKeysSet, hasSize(1));
   }
 
   @ParameterizedTest
@@ -319,38 +321,19 @@ class PBKDSCryptKeyServiceTest {
     final var _500 = 500;
 
     // When generating concurrently at the same time keys with the same password, salt and length
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedKeys = new CopyOnWriteArraySet<BigInteger>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              final var generatedKey =
-                  pbkdKeyService.generateKey(
-                      PASSWORD_1234567890_80_BITS,
-                      SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-                      keyLength);
-
-              generatedKeys.add(new BigInteger(generatedKey.getEncoded()));
-            })
-        );
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedKeysSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    pbkdKeyService.generateKey(
+                        PASSWORD_1234567890_80_BITS,
+                        SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                        keyLength)
+                        .getEncoded()));
 
     // Then all keys are the same
-    assertThat(generatedKeys, hasSize(1));
+    assertThat(generatedKeysSet, hasSize(1));
   }
 
   @ParameterizedTest
@@ -395,5 +378,21 @@ class PBKDSCryptKeyServiceTest {
             KEY_LENGTH_1024_BITS,
             SCRYPT_HASH_1024_BITS)
     );
+  }
+
+  @Test
+  void producesTheRightKeyWhenGeneratingKeyWithSecretByteArray() {
+    // When
+    final var generatedKey =
+        pbkdKeyService.generateKey(
+            SECRET_BYTE_ARRAY_80_BITS,
+            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+            KEY_LENGTH_256_BITS);
+
+    // Then
+    assertThat(
+        generatedKey.getEncoded(),
+        is(equalTo(
+            SCRYPT_HASH_256_BITS_FOR_SECRET_BYTE_ARRAY)));
   }
 }

@@ -1,7 +1,8 @@
-package com.theicenet.cryptography.acceptancetest.util;
+package com.theicenet.cryptography.test.support;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.Validate;
 
 public final class HexUtil {
 
@@ -9,10 +10,18 @@ public final class HexUtil {
   }
 
   public static byte[] decodeHex(String hex) {
+    Validate.notEmpty(hex);
+
     try {
       return Hex.decodeHex(hex);
     } catch (DecoderException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static String encodeHex(byte[] byteArray) {
+    Validate.notNull(byteArray);
+
+    return String.valueOf(Hex.encodeHex(byteArray));
   }
 }

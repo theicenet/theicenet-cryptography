@@ -10,13 +10,9 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.randomise.RandomiseService;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.SecureRandom;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,9 +37,7 @@ class JCAIVServiceTest {
 
     // When generating IV and invalid IV length
     // Then throws IllegalArgumentException
-    assertThrows(IllegalArgumentException.class, () -> {
-      ivService.generateRandom(IV_LENGTH_MINUS_ONE);
-    });
+    assertThrows(IllegalArgumentException.class, () -> ivService.generateRandom(IV_LENGTH_MINUS_ONE));
   }
 
   @Test
@@ -76,77 +70,44 @@ class JCAIVServiceTest {
     assertThat(generatedIV.length, is(equalTo(ivLength)));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {
-      IV_LENGTH_16_BYTES,
-      IV_LENGTH_32_BYTES})
-  void producesDifferentIVsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength(int ivLength) {
+  @Test
+  void producesDifferentIVsWhenGeneratingTwoConsecutiveRandomsWithTheSameLength() {
     // When generating two consecutive random IVs with the same length
-    final var generatedIV_1 = ivService.generateRandom(ivLength);
-    final var generatedIV_2 = ivService.generateRandom(ivLength);
+    final var generatedIV_1 = ivService.generateRandom(IV_LENGTH_16_BYTES);
+    final var generatedIV_2 = ivService.generateRandom(IV_LENGTH_16_BYTES);
 
     // Then the generated random IVs are different
     assertThat(generatedIV_1, is(not(equalTo(generatedIV_2))));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {
-      IV_LENGTH_16_BYTES,
-      IV_LENGTH_32_BYTES})
-  void producesDifferentIVsWhenGeneratingManyConsecutiveRandomsWithTheSameLength(int ivLength) {
+  @Test
+  void producesDifferentIVsWhenGeneratingManyConsecutiveRandomsWithTheSameLength() {
     // Given
     final var _100 = 100;
 
     // When generating consecutive random IVs with the same length
-    final var generatedIVs =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index -> ivService.generateRandom(ivLength))
-            .map(String::new)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedIVsSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> HexUtil.encodeHex(ivService.generateRandom(IV_LENGTH_16_BYTES)));
 
     // Then all IVs have been generated and all them are different
-    assertThat(generatedIVs, hasSize(_100));
+    assertThat(generatedIVsSet, hasSize(_100));
   }
 
-  @ParameterizedTest
-  @ValueSource(ints = {
-      IV_LENGTH_16_BYTES,
-      IV_LENGTH_32_BYTES})
-  void producesDifferentIVsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength(int ivLength)
-      throws InterruptedException {
+  @Test
+  void producesDifferentIVsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength() throws Exception {
     // Given
     final var _500 = 500;
 
     // When generating concurrently at the same time random IVs with the same length
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedIVs = new CopyOnWriteArraySet<byte[]>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              generatedIVs.add(ivService.generateRandom(ivLength));
-            }));
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedIVsSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(ivService.generateRandom(IV_LENGTH_16_BYTES)));
 
     // Then all IVs have been generated and all them are different
-    assertThat(
-        generatedIVs.stream()
-            .map(String::new)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_500));
+    assertThat(generatedIVsSet, hasSize(_500));
   }
 }

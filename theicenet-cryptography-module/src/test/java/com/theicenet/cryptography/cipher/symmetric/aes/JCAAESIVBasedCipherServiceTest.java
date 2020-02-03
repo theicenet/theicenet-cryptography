@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -9,14 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
-import com.theicenet.cryptography.test.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -75,15 +76,12 @@ class JCAAESIVBasedCipherServiceTest {
               + "20e0ea5e2e60ec70b0f31255a4dc6cf304edb41"
               + "92d28c725751474");
 
-  SymmetricIVBasedCipherService aesCipherService;
+  @ParameterizedTest
+  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
+  void producesNotNullWhenEncryptingByteArray(BlockCipherIVBasedModeOfOperation blockMode) {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
-  @BeforeEach
-  void setUp() {
-    aesCipherService = new JCAAESIVBasedCipherService(CTR);
-  }
-
-  @Test
-  void producesNotNullWhenEncryptingByteArray() {
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -95,9 +93,12 @@ class JCAAESIVBasedCipherServiceTest {
     assertThat(encrypted, is(notNullValue()));
   }
 
-  @Test
-  void producesNotNullWhenEncryptingStream() {
+  @ParameterizedTest
+  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
+  void producesNotNullWhenEncryptingStream(BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
@@ -112,8 +113,12 @@ class JCAAESIVBasedCipherServiceTest {
     assertThat(encryptedOutputStream.toByteArray(), is(notNullValue()));
   }
 
-  @Test
-  void producesNotEmptyWhenEncryptingByteArray() {
+  @ParameterizedTest
+  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
+  void producesNotEmptyWhenEncryptingByteArray(BlockCipherIVBasedModeOfOperation blockMode) {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -125,9 +130,12 @@ class JCAAESIVBasedCipherServiceTest {
     assertThat(encrypted.length, is(greaterThan(0)));
   }
 
-  @Test
-  void producesNotEmptyWhenEncryptingByteStream() {
+  @ParameterizedTest
+  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
+  void producesNotEmptyWhenEncryptingByteStream(BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
@@ -142,9 +150,12 @@ class JCAAESIVBasedCipherServiceTest {
     assertThat(encryptedOutputStream.toByteArray().length, is(greaterThan(0)));
   }
 
-  @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayWithInvalidIVSize() {
+  @ParameterizedTest
+  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
+  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayWithInvalidIVSize(BlockCipherIVBasedModeOfOperation blockMode) {
     // Given initialization vector of invalid size (= 64 bits)
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
@@ -158,9 +169,12 @@ class JCAAESIVBasedCipherServiceTest {
     });
   }
 
-  @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamWithInvalidIVSize() {
+  @ParameterizedTest
+  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
+  void throwsIllegalArgumentExceptionWhenEncryptingStreamWithInvalidIVSize(BlockCipherIVBasedModeOfOperation blockMode) {
     // Given initialization vector of invalid size (= 64 bits)
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
@@ -186,7 +200,7 @@ class JCAAESIVBasedCipherServiceTest {
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingByteArray(
       BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -202,7 +216,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingByteArrayWithBlockModeCBC() {
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
 
     // When
     final var encrypted =
@@ -225,7 +240,7 @@ class JCAAESIVBasedCipherServiceTest {
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingStream(
       BlockCipherIVBasedModeOfOperation blockMode) {
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -244,7 +259,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingStreamWithBlockModeCBC() {
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -272,7 +288,7 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] expectedEncryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -295,7 +311,7 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] expectedEncryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(clearContent);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -341,28 +357,198 @@ class JCAAESIVBasedCipherServiceTest {
   }
 
   @Test
-  void producesNotNullWhenDecryptingByteArray() {
+  void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    // When
+    final var encrypted_1 =
+        aesCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            CLEAR_CONTENT);
+
+    final var encrypted_2 =
+        aesCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(encrypted_1, is(equalTo(encrypted_2)));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVForStream() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    // When
+    final var clearInputStream_1 = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream_1 = new ByteArrayOutputStream();
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream_1,
+        encryptedOutputStream_1);
+
+    final var clearInputStream_2 = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream_2 = new ByteArrayOutputStream();
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream_2,
+        encryptedOutputStream_2);
+
+    // Then
+    assertThat(encryptedOutputStream_1.toByteArray(), is(equalTo(encryptedOutputStream_2.toByteArray())));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _100 = 100;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    aesCipherService.encrypt(
+                        SECRET_KEY_1234567890123456_128_BITS,
+                        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                        CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVForStream() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _100 = 100;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> {
+              final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+              final var encryptedOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.encrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                  clearInputStream,
+                  encryptedOutputStream);
+
+              return HexUtil.encodeHex(encryptedOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _500 = 500;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> HexUtil.encodeHex(
+                aesCipherService.encrypt(
+                    SECRET_KEY_1234567890123456_128_BITS,
+                    INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                    CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVForStream() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _500 = 500;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> {
+              final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+              final var encryptedOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.encrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                  clearInputStream,
+                  encryptedOutputStream);
+
+              return HexUtil.encodeHex(encryptedOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesNotNullWhenDecryptingByteArray(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherIVBasedModeOfOperation blockMode) {
+
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     // When
     final var decrypted =
         aesCipherService.decrypt(
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CTR);
+            secretKey,
+            iv,
+            encryptedContent);
 
     // Then
     assertThat(decrypted, is(notNullValue()));
   }
 
-  @Test
-  void producesNotNullWhenDecryptingStream() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesNotNullWhenDecryptingStream(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherIVBasedModeOfOperation blockMode) {
+
     // Given
-    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
+    final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When
     aesCipherService.decrypt(
-        SECRET_KEY_1234567890123456_128_BITS,
-        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        secretKey,
+        iv,
         encryptedInputStream,
         clearOutputStream);
 
@@ -370,29 +556,46 @@ class JCAAESIVBasedCipherServiceTest {
     assertThat(clearOutputStream.toByteArray(), is(notNullValue()));
   }
 
-  @Test
-  void producesNotEmptyWhenDecryptingByteArray() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesNotEmptyWhenDecryptingByteArray(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherIVBasedModeOfOperation blockMode) {
+
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     // When
     final var decrypted =
         aesCipherService.decrypt(
-            SECRET_KEY_1234567890123456_128_BITS,
-            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ENCRYPTED_CONTENT_AES_CTR);
+            secretKey,
+            iv,
+            encryptedContent);
 
     // Then
     assertThat(decrypted.length, is(greaterThan(0)));
   }
 
-  @Test
-  void producesNotEmptyWhenDecryptingStream() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void producesNotEmptyWhenDecryptingStream(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherIVBasedModeOfOperation blockMode) {
+
     // Given
-    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
+    final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When
     aesCipherService.decrypt(
-        SECRET_KEY_1234567890123456_128_BITS,
-        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        secretKey,
+        iv,
         encryptedInputStream,
         clearOutputStream);
 
@@ -400,9 +603,17 @@ class JCAAESIVBasedCipherServiceTest {
     assertThat(clearOutputStream.toByteArray().length, is(greaterThan(0)));
   }
 
-  @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingByteArrayWithInvalidIVSize() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void throwsIllegalArgumentExceptionWhenDecryptingByteArrayWithInvalidIVSize(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherIVBasedModeOfOperation blockMode) {
+
     // Given initialization vector of invalid size (= 64 bits)
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
@@ -410,26 +621,34 @@ class JCAAESIVBasedCipherServiceTest {
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
       aesCipherService.decrypt(
-          SECRET_KEY_1234567890123456_128_BITS,
+          secretKey,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
-          ENCRYPTED_CONTENT_AES_CTR);
+          encryptedContent);
     });
   }
 
-  @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingStreamWithInvalidIVSize() {
+  @ParameterizedTest
+  @MethodSource("argumentsWithEncryptedContentAndSecretKeyAndIVAndBlockModeAndExpectedDecryptedResult")
+  void throwsIllegalArgumentExceptionWhenDecryptingStreamWithInvalidIVSize(
+      byte[] encryptedContent,
+      SecretKey secretKey,
+      byte[] iv,
+      BlockCipherIVBasedModeOfOperation blockMode) {
+
     // Given initialization vector of invalid size (= 64 bits)
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
-    final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When decrypting AES with invalid IV size
     // Then throws IllegalArgumentException
     assertThrows(IllegalArgumentException.class, () -> {
       aesCipherService.decrypt(
-          SECRET_KEY_1234567890123456_128_BITS,
+          secretKey,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
           encryptedInputStream,
           clearOutputStream);
@@ -446,7 +665,7 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -469,7 +688,7 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
@@ -495,7 +714,7 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -518,7 +737,7 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] expectedDecryptedResult) {
 
     // Given
-    aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
@@ -561,6 +780,162 @@ class JCAAESIVBasedCipherServiceTest {
             CTR,
             CLEAR_CONTENT)
     );
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    // When
+    final var decrypted_1 =
+        aesCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CTR);
+
+    final var decrypted_2 =
+        aesCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ENCRYPTED_CONTENT_AES_CTR);
+
+    // Then
+    assertThat(decrypted_1, is(equalTo(decrypted_2)));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    // When
+    final var encryptedInputStream_1 = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final var clearContentOutputStream_1 = new ByteArrayOutputStream();
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream_1,
+        clearContentOutputStream_1);
+
+    final var encryptedInputStream_2 = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+    final var clearContentOutputStream_2 = new ByteArrayOutputStream();
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream_2,
+        clearContentOutputStream_2);
+
+    // Then
+    assertThat(
+        clearContentOutputStream_1.toByteArray(),
+        is(equalTo(
+            clearContentOutputStream_2.toByteArray())));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _100 = 100;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    aesCipherService.decrypt(
+                        SECRET_KEY_1234567890123456_128_BITS,
+                        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                        ENCRYPTED_CONTENT_AES_CTR)));
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _100 = 100;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> {
+              final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+              final var clearContentOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.decrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                  encryptedInputStream,
+                  clearContentOutputStream);
+
+              return HexUtil.encodeHex(clearContentOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _500 = 500;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> HexUtil.encodeHex(
+                aesCipherService.decrypt(
+                    SECRET_KEY_1234567890123456_128_BITS,
+                    INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                    ENCRYPTED_CONTENT_AES_CTR)));
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
+    // Given
+    final SymmetricIVBasedCipherService aesCipherService =
+        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+
+    final var _500 = 500;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> {
+              final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
+              final var clearContentOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.decrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                  encryptedInputStream,
+                  clearContentOutputStream);
+
+              return HexUtil.encodeHex(clearContentOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
   }
 }
 

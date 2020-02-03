@@ -1,6 +1,7 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -8,7 +9,8 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
-import com.theicenet.cryptography.test.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -161,6 +163,131 @@ class JCAAESNonIVBasedCipherServiceTest {
   }
 
   @Test
+  void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyForByteArray() {
+    // When
+    final var encrypted_1 =
+        aesCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    final var encrypted_2 =
+        aesCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(encrypted_1, is(equalTo(encrypted_2)));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyForStream() {
+    // When
+    final var clearInputStream_1 = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream_1 = new ByteArrayOutputStream();
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        clearInputStream_1,
+        encryptedOutputStream_1);
+
+    final var clearInputStream_2 = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream_2 = new ByteArrayOutputStream();
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        clearInputStream_2,
+        encryptedOutputStream_2);
+
+    // Then
+    assertThat(encryptedOutputStream_1.toByteArray(), is(equalTo(encryptedOutputStream_2.toByteArray())));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyForByteArray() {
+    // Given
+    final var _100 = 100;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    aesCipherService.encrypt(
+                        SECRET_KEY_1234567890123456_128_BITS,
+                        CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyForStream() {
+    // Given
+    final var _100 = 100;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> {
+              final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+              final var encryptedOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.encrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  clearInputStream,
+                  encryptedOutputStream);
+
+              return HexUtil.encodeHex(encryptedOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyForByteArray() {
+    // Given
+    final var _500 = 500;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> HexUtil.encodeHex(
+                aesCipherService.encrypt(
+                    SECRET_KEY_1234567890123456_128_BITS,
+                    CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyForStream() {
+    // Given
+    final var _500 = 500;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> {
+              final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+              final var encryptedOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.encrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  clearInputStream,
+                  encryptedOutputStream);
+
+              return HexUtil.encodeHex(encryptedOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
   void producesNotNullWhenDecryptingByteArray() {
     // When
     final var decrypted =
@@ -270,5 +397,130 @@ class JCAAESNonIVBasedCipherServiceTest {
 
     // Then
     assertThat(clearOutputStream.toByteArray(), is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyForByteArray() {
+    // When
+    final var decrypted_1 =
+        aesCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            ENCRYPTED_CONTENT_AES_ECB);
+
+    final var decrypted_2 =
+        aesCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            ENCRYPTED_CONTENT_AES_ECB);
+
+    // Then
+    assertThat(decrypted_1, is(equalTo(decrypted_2)));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyForStream() {
+    // When
+    final var encryptedInputStream_1 = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_ECB);
+    final var clearContentOutputStream_1 = new ByteArrayOutputStream();
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        encryptedInputStream_1,
+        clearContentOutputStream_1);
+
+    final var encryptedInputStream_2 = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_ECB);
+    final var clearContentOutputStream_2 = new ByteArrayOutputStream();
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        encryptedInputStream_2,
+        clearContentOutputStream_2);
+
+    // Then
+    assertThat(clearContentOutputStream_1.toByteArray(), is(equalTo(clearContentOutputStream_2.toByteArray())));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyForByteArray() {
+    // Given
+    final var _100 = 100;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    aesCipherService.decrypt(
+                        SECRET_KEY_1234567890123456_128_BITS,
+                        ENCRYPTED_CONTENT_AES_ECB)));
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyForStream() {
+    // Given
+    final var _100 = 100;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> {
+              final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_ECB);
+              final var clearContentOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.decrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  encryptedInputStream,
+                  clearContentOutputStream);
+
+              return HexUtil.encodeHex(clearContentOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyForByteArray() {
+    // Given
+    final var _500 = 500;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> HexUtil.encodeHex(
+                aesCipherService.decrypt(
+                    SECRET_KEY_1234567890123456_128_BITS,
+                    ENCRYPTED_CONTENT_AES_ECB)));
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyForStream() {
+    // Given
+    final var _500 = 500;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> {
+              final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_ECB);
+              final var clearContentOutputStream = new ByteArrayOutputStream();
+
+              aesCipherService.decrypt(
+                  SECRET_KEY_1234567890123456_128_BITS,
+                  encryptedInputStream,
+                  clearContentOutputStream);
+
+              return HexUtil.encodeHex(clearContentOutputStream.toByteArray());
+            });
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
   }
 }

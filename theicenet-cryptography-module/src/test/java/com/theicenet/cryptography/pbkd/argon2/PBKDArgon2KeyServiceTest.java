@@ -8,17 +8,11 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.test.util.HexUtil;
-import java.math.BigInteger;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -42,6 +36,9 @@ class PBKDArgon2KeyServiceTest {
 
   final static String PASSWORD_1234567890_80_BITS = "1234567890";
   final String PASSWORD_0123456789_80_BITS = "0123456789";
+
+  final byte[] SECRET_BYTE_ARRAY_80_BITS =
+      new byte[]{6, 11, 76, -39, 65, 43, -124, 111, -119, -51};
 
   final static byte[] SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES =
       "GHIJKLMNOPQRSTUVWXYZ".getBytes(StandardCharsets.UTF_8);
@@ -84,6 +81,9 @@ class PBKDArgon2KeyServiceTest {
 
   static final byte[] ARGON2_ID_113_HASH_256_BITS =
       HexUtil.decodeHex("aa932c068097546215d1a4777b8867035d99280c440b74eaae8942ed0ba89170");
+
+  static final byte[] ARGON2_ID_113_HASH_256_BITS_FOR_SECRET_BYTE_ARRAY =
+      HexUtil.decodeHex("dd130b549da1828892737edbb5eacccf6f4bddf7f1c4bcf132314ee645651f33");
 
   static final byte[] ARGON2_I_110_HASH_512_BITS =
       HexUtil.decodeHex(
@@ -482,6 +482,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Given
     final var _100 = 100;
+
     final var pbkdKeyService =
         new PBKDArgon2KeyService(
             new Argon2Configuration(
@@ -492,20 +493,20 @@ class PBKDArgon2KeyServiceTest {
                 PARALLELISM_2));
 
     // When generating consecutive keys with the same password, salt and length
-    final var generatedKeys =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index ->
-                pbkdKeyService.generateKey(
-                    PASSWORD_1234567890_80_BITS,
-                    SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-                    keyLength))
-            .map(Key::getEncoded)
-            .map(BigInteger::new)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedKeysSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    pbkdKeyService
+                        .generateKey(
+                            PASSWORD_1234567890_80_BITS,
+                            SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                            keyLength)
+                        .getEncoded()));
 
     // Then all keys are the same
-    assertThat(generatedKeys, hasSize(1));
+    assertThat(generatedKeysSet, hasSize(1));
   }
 
   @ParameterizedTest
@@ -517,6 +518,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Given
     final var _500 = 500;
+
     final var pbkdKeyService =
         new PBKDArgon2KeyService(
             new Argon2Configuration(
@@ -527,38 +529,19 @@ class PBKDArgon2KeyServiceTest {
                 PARALLELISM_2));
 
     // When generating concurrently at the same time keys with the same password, salt and length
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedKeys = new CopyOnWriteArraySet<BigInteger>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              final var generatedKey =
-                  pbkdKeyService.generateKey(
-                      PASSWORD_1234567890_80_BITS,
-                      SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
-                      keyLength);
-
-              generatedKeys.add(new BigInteger(generatedKey.getEncoded()));
-            })
-        );
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedKeysSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    pbkdKeyService.generateKey(
+                        PASSWORD_1234567890_80_BITS,
+                        SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,
+                        keyLength)
+                    .getEncoded()));
 
     // Then all keys are the same
-    assertThat(generatedKeys, hasSize(1));
+    assertThat(generatedKeysSet, hasSize(1));
   }
 
   static Stream<Arguments> argumentsWithAllArgon2TypesAllArgon2VersionsAndMultipleKeyLengths() {
@@ -580,7 +563,7 @@ class PBKDArgon2KeyServiceTest {
 
   @ParameterizedTest
   @MethodSource("argumentsWithAllArgon2TypesAllArgon2VersionsSomeKeyLengthsAndExpectedGeneratedKey")
-  void producesTheRightKeyWhenGeneratingKey(
+  void producesTheRightKeyWhenGeneratingKeyWithPasswordString(
       Argon2Type argon2Type,
       Argon2Version argon2Version,
       String password,
@@ -855,5 +838,31 @@ class PBKDArgon2KeyServiceTest {
             PARALLELISM_2,
             ARGON2_ID_113_HASH_1024_BITS)
     );
+  }
+
+  @Test
+  void producesTheRightKeyWhenGeneratingKeyWithSecretByteArray() {
+    // Given
+    final var pbkdKeyService =
+        new PBKDArgon2KeyService(
+            new Argon2Configuration(
+                Argon2Type.ARGON2_ID,
+                ARGON2_VERSION_13,
+                ITERATIONS_2,
+                MEMORY_POW_OF_TWO_14,
+                PARALLELISM_2));
+
+    // When
+    final var generatedKey =
+        pbkdKeyService.generateKey(
+            SECRET_BYTE_ARRAY_80_BITS,
+            SALT_ZYXWVUTSRQPONMLKJIHG_20_BYTES,
+            KEY_LENGTH_256_BITS);
+
+    // Then
+    assertThat(
+        generatedKey.getEncoded(),
+        is(equalTo(
+            ARGON2_ID_113_HASH_256_BITS_FOR_SECRET_BYTE_ARRAY)));
   }
 }

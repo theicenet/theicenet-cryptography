@@ -4,8 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import com.theicenet.cryptography.acceptancetest.util.HexUtil;
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
+import com.theicenet.cryptography.test.support.HexUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;

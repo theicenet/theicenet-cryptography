@@ -1,13 +1,15 @@
 package com.theicenet.cryptography.cipher.asymmetric.rsa;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
-import com.theicenet.cryptography.test.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -109,7 +111,7 @@ class JCARSACipherServiceTest {
   @EnumSource(RSAPadding.class)
   void producesNotNullWhenEncrypting(RSAPadding padding) {
     // Given
-    AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
 
     // When
     final var encrypted =
@@ -125,7 +127,7 @@ class JCARSACipherServiceTest {
   @EnumSource(RSAPadding.class)
   void producesSizeOfEncryptedEqualsToKeyLengthWhenEncrypting(RSAPadding padding) throws Exception {
     // Given
-    AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
 
     // When
     final var encrypted =
@@ -144,7 +146,7 @@ class JCARSACipherServiceTest {
   @EnumSource(RSAPadding.class)
   void producesEncryptedDifferentToClearContentWhenEncrypting(RSAPadding padding) {
     // Given
-    AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
 
     // When
     final var encrypted =
@@ -156,11 +158,119 @@ class JCARSACipherServiceTest {
     assertThat(encrypted, is(not(equalTo(CLEAR_CONTENT))));
   }
 
+  @Test
+  void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndNoPadding() {
+    // Given
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(RSAPadding.NoPadding);
+
+    // When
+    final var encrypted_1 =
+        rsaCipherService.encrypt(
+            RSA_PUBLIC_KEY_2048_BITS,
+            CLEAR_CONTENT);
+
+    final var encrypted_2 =
+        rsaCipherService.encrypt(
+            RSA_PUBLIC_KEY_2048_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(encrypted_1, is(equalTo(encrypted_2)));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndNoPadding() {
+    // Given
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(RSAPadding.NoPadding);
+
+    final var _100 = 100;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndNoPadding() {
+    // Given
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(RSAPadding.NoPadding);
+
+    final var _500 = 500;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesDifferentEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndPadding() {
+    // Given
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(RSAPadding.PKCS1Padding);
+
+    // When
+    final var encrypted_1 =
+        rsaCipherService.encrypt(
+            RSA_PUBLIC_KEY_2048_BITS,
+            CLEAR_CONTENT);
+
+    final var encrypted_2 =
+        rsaCipherService.encrypt(
+            RSA_PUBLIC_KEY_2048_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(encrypted_1, is(not(equalTo(encrypted_2))));
+  }
+
+  @Test
+  void producesDifferentEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndPadding() {
+    // Given
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(RSAPadding.PKCS1Padding);
+
+    final var _100 = 100;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(_100));
+  }
+
+  @Test
+  void producesDifferentEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndPadding() {
+    // Given
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(RSAPadding.PKCS1Padding);
+
+    final var _500 = 500;
+
+    // When
+    final var encryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
+
+    // Then
+    assertThat(encryptedSet, hasSize(_500));
+  }
+
   @ParameterizedTest
   @EnumSource(RSAPadding.class)
   void producesTheClearContentWhenDecrypting(RSAPadding padding) {
     // Given
-    AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
+    final AsymmetricCipherService rsaCipherService = new JCARSACipherService(padding);
 
     final var encrypted =
         rsaCipherService.encrypt(
@@ -180,7 +290,7 @@ class JCARSACipherServiceTest {
   @Test
   void decryptsProperlyWhenDecryptingWithOAEPWithSHA1AndMGF1Padding() {
     // Given
-    AsymmetricCipherService rsaCipherService =
+    final AsymmetricCipherService rsaCipherService =
         new JCARSACipherService(RSAPadding.OAEPWithSHA1AndMGF1Padding);
 
     // When
@@ -191,5 +301,69 @@ class JCARSACipherServiceTest {
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedContent() {
+    // Given
+    final AsymmetricCipherService rsaCipherService =
+        new JCARSACipherService(RSAPadding.OAEPWithSHA1AndMGF1Padding);
+
+    // When
+    final var decrypted_1 =
+        rsaCipherService.decrypt(
+            RSA_PRIVATE_KEY_2048_BITS,
+            RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING);
+
+    final var decrypted_2 =
+        rsaCipherService.decrypt(
+            RSA_PRIVATE_KEY_2048_BITS,
+            RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING);
+
+    // Then
+    assertThat(decrypted_1, is(equalTo(decrypted_2)));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedContent() {
+    // Given
+    final AsymmetricCipherService rsaCipherService =
+        new JCARSACipherService(RSAPadding.OAEPWithSHA1AndMGF1Padding);
+
+    final var _100 = 100;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () ->
+                HexUtil.encodeHex(
+                    rsaCipherService.decrypt(
+                        RSA_PRIVATE_KEY_2048_BITS,
+                        RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING)));
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
+  }
+
+  @Test
+  void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedContent() {
+    // Given
+    final AsymmetricCipherService rsaCipherService =
+        new JCARSACipherService(RSAPadding.OAEPWithSHA1AndMGF1Padding);
+
+    final var _500 = 500;
+
+    // When
+    final var decryptedSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () -> HexUtil.encodeHex(
+                rsaCipherService.decrypt(
+                    RSA_PRIVATE_KEY_2048_BITS,
+                    RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING)));
+
+    // Then
+    assertThat(decryptedSet, hasSize(1));
   }
 }

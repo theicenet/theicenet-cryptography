@@ -10,13 +10,9 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.randomise.RandomiseService;
+import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.SecureRandom;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -105,15 +101,13 @@ class JCASaltServiceTest {
     final var _100 = 100;
 
     // When generating consecutive random Salts with the same length
-    final var generatedSalts =
-        IntStream
-            .range(0, _100)
-            .mapToObj(index -> saltService.generateRandom(saltLength))
-            .map(String::new)
-            .collect(Collectors.toUnmodifiableSet());
+    final var generatedSaltsSet =
+        RunnerUtil.runConsecutively(
+            _100,
+            () -> HexUtil.encodeHex(saltService.generateRandom(saltLength)));
 
     // Then all Salts have been generated and all them are different
-    assertThat(generatedSalts, hasSize(_100));
+    assertThat(generatedSaltsSet, hasSize(_100));
   }
 
   @ParameterizedTest
@@ -122,40 +116,19 @@ class JCASaltServiceTest {
       SALT_LENGTH_32_BYTES,
       SALT_LENGTH_64_BYTES,
       SALT_LENGTH_128_BYTES})
-  void producesDifferentSaltsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength(int saltLength)
-      throws InterruptedException {
+  void producesDifferentSaltsWhenGeneratingConcurrentlyManyRandomsWithTheSameLength(int saltLength) {
     // Given
     final var _500 = 500;
 
     // When generating concurrently at the same time random Salts with the same length
-    final var countDownLatch = new CountDownLatch(_500);
-    final var executorService = Executors.newFixedThreadPool(_500);
-
-    final var generatedSalts = new CopyOnWriteArraySet<byte[]>();
-
-    IntStream
-        .range(0, _500)
-        .forEach(index ->
-            executorService.execute(() -> {
-              countDownLatch.countDown();
-              try {
-                countDownLatch.await();
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-              }
-
-              generatedSalts.add(saltService.generateRandom(saltLength));
-            }));
-
-    executorService.shutdown();
-    executorService.awaitTermination(10, TimeUnit.SECONDS);
+    final var generatedSaltsSet =
+        RunnerUtil.runConcurrently(
+            _500,
+            () ->
+                HexUtil.encodeHex(
+                    saltService.generateRandom(saltLength)));
 
     // Then all Salts have been generated and all them are different
-    assertThat(
-        generatedSalts.stream()
-            .map(String::new)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_500));
+    assertThat(generatedSaltsSet, hasSize(_500));
   }
 }
