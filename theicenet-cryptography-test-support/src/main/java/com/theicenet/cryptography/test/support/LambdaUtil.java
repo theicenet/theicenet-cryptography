@@ -9,6 +9,25 @@ public class LambdaUtil {
   }
 
   @FunctionalInterface
+  public interface ThrowingRunnable<E extends Exception> {
+    void run() throws E;
+  }
+
+  public static Runnable throwingRunnableWrapper(
+      ThrowingRunnable<Exception> throwingRunnable) {
+
+    Validate.notNull(throwingRunnable);
+
+    return () -> {
+      try {
+        throwingRunnable.run();
+      } catch (Exception ex) {
+        throw new LambdaException(ex);
+      }
+    };
+  }
+
+  @FunctionalInterface
   public interface ThrowingSupplier<T, E extends Exception> {
     T get() throws E;
   }
@@ -22,7 +41,7 @@ public class LambdaUtil {
       try {
         return throwingSupplier.get();
       } catch (Exception ex) {
-        throw new RuntimeException(ex);
+        throw new LambdaException(ex);
       }
     };
   }
@@ -37,11 +56,11 @@ public class LambdaUtil {
 
     Validate.notNull(throwingFunction);
 
-    return (t) -> {
+    return t -> {
       try {
         return throwingFunction.apply(t);
       } catch (Exception ex) {
-        throw new RuntimeException(ex);
+        throw new LambdaException(ex);
       }
     };
   }

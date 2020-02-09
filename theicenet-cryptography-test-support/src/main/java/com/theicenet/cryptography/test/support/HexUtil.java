@@ -15,7 +15,7 @@ public final class HexUtil {
     try {
       return Hex.decodeHex(hex);
     } catch (DecoderException e) {
-      throw new RuntimeException(e);
+      throw new HexException(e);
     }
   }
 

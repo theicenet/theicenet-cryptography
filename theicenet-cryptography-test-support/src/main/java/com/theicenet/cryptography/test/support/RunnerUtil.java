@@ -14,7 +14,7 @@ public class RunnerUtil {
   private RunnerUtil() {
   }
 
-  public static  <T, V> Set<T> runConsecutively(int numberOfTime, Supplier<T> supplier) {
+  public static  <T> Set<T> runConsecutively(int numberOfTime, Supplier<T> supplier) {
     Validate.isTrue(numberOfTime >= 0);
     Validate.notNull(supplier);
 
@@ -36,12 +36,9 @@ public class RunnerUtil {
               .range(0, numberConcurrentThreads)
               .mapToObj(index -> (Callable<T>) () -> {
                 countDownLatch.countDown();
-                try {
-                  countDownLatch.await();
-                } catch (InterruptedException e) {
-                  Thread.currentThread().interrupt();
-                  throw new RuntimeException(e);
-                }
+                LambdaUtil
+                    .throwingRunnableWrapper(countDownLatch::await)
+                    .run();
 
                 return supplier.get();
               })
@@ -55,12 +52,10 @@ public class RunnerUtil {
             .collect(Collectors.toUnmodifiableSet());
 
     executorService.shutdown();
-    try {
-      executorService.awaitTermination(10, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException(e);
-    }
+    LambdaUtil
+        .throwingRunnableWrapper(
+            () -> executorService.awaitTermination(10, TimeUnit.SECONDS))
+        .run();
 
     return result;
   }
