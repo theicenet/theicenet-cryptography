@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk15on</artifactId>
-      <version>1.64</version>
+      <version>1.65</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>org.mutabilitydetector</groupId>
       <artifactId>MutabilityDetector</artifactId>
-      <version>0.10.2</version>
+      <version>0.10.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
