@@ -178,7 +178,7 @@ public class CryptographyAutoConfiguration {
 
   @Bean("Digest")
   public DigestService digestService(
-      @Value("${cryptography.digest.algorithm:SHA-256}") DigestAlgorithm algorithm) {
+      @Value("${cryptography.digest.algorithm:SHA_256}") DigestAlgorithm algorithm) {
 
     return new JCADigestService(algorithm);
   }
