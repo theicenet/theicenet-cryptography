@@ -21,7 +21,7 @@ TheIceNet Cryptography fully integrates with Spring Boot, making it easy and sea
 * Getting Started
     * [TheIceNet Cryptography library requirements](#markdown-header-theicenet-cryptography-library-requirements)
     * [Installing TheIceNet Cryptography library](#markdown-header-installing-theicenet-cryptography-library)
-    * [Thread Safety](#markdown-thread-safety)
+    * [Thread Safety](#markdown-header-thread-safety)
 * [How to use TheIceNet Cryptography library](#markdown-header-how-to-use-theicenet-cryptography-library)
     * Key generation
         * Symmetric cryptography
@@ -36,11 +36,11 @@ TheIceNet Cryptography fully integrates with Spring Boot, making it easy and sea
     * Password Based Key Derivation (PBKD)
         * [Password based key derivation with PBKDF2 from string/byte array](#markdown-header-password-based-key-derivation-with-pbkdf2-from-string-or-byte-array)
         * [Password based key derivation with Scrypt from string/byte array](#markdown-header-password-based-key-derivation-with-scrypt-from-string-or-byte-array)
-        * [Password based key derivation with Argon2 from string/byte array](#markdown-header-password-key-derivation-with-argon2-from-string-or-byte-array)
+        * [Password based key derivation with Argon2 from string/byte array](#markdown-header-password-based-key-derivation-with-argon2-from-string-or-byte-array)
     * Encrypt / Decrypt
         * Symmetric cryptography
             * [Encrypt/Decrypt byte array/stream with AES and ECB block mode of operation](#markdown-header-encrypt-and-decrypt-byte-array-or-stream-with-aes-and-ecb-block-mode-of-operation)
-            * [Encrypt/Decrypt byte array/stream with AES and IV based block mode of operation](#markdown-header-encrypt-and-decrypt-byte-array-or-stream-with-aes-and-iv-based-block-mode-of-operationn)
+            * [Encrypt/Decrypt byte array/stream with AES and IV based block mode of operation](#markdown-header-encrypt-and-decrypt-byte-array-or-stream-with-aes-and-iv-based-block-mode-of-operation)
         * Asymmetric cryptography        
             * [Encrypt/Decrypt with RSA](#markdown-header-encrypt-and-decrypt-with-rsa)
     * Signature generation
