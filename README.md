@@ -1,5 +1,4 @@
 # TheIceNet Cryptography library
-*****
 
 TheIceNet Cryptography is a library which makes easy to develop cryptography-based, production-grade Spring Boot applications. 
 
@@ -8,55 +7,53 @@ The library homogenises how to use and invoke the similar families of cryptograp
 TheIceNet Cryptography fully integrates with Spring Boot, making it easy and seamless to use cryptography in any Spring Boot based applications.  
 
 ## Table of contents
-*****
 
 * TheIceNet Cryptography structure
-    * [Modules](#markdown-header-modules)
+    * [Modules](#modules)
 * TheIceNet Cryptography supported algorithms
-    * [Symmetric cryptography supported algorithms](#markdown-header-symmetric-cryptography-supported-algorithms)
-    * [Asymmetric cryptography supported algorithms](#markdown-header-asymmetric-cryptography-supported-algorithms)
-    * [Hashing supported algorithms](#markdown-header-hashing-supported-algorithms)
-    * [Password Based Key Derivation (PBKD) supported algorithms](#markdown-header-password-based-key-derivation-supported-algorithms)
-    * [Random data generation support](#markdown-header-random-data-generation-support)
+    * [Symmetric cryptography supported algorithms](#symmetric-cryptography-supported-algorithms)
+    * [Asymmetric cryptography supported algorithms](#asymmetric-cryptography-supported-algorithms)
+    * [Hashing supported algorithms](#hashing-supported-algorithms)
+    * [Password Based Key Derivation (PBKD) supported algorithms](#password-based-key-derivation-supported-algorithms)
+    * [Random data generation support](#random-data-generation-support)
 * Getting Started
-    * [TheIceNet Cryptography library requirements](#markdown-header-theicenet-cryptography-library-requirements)
-    * [Installing TheIceNet Cryptography library](#markdown-header-installing-theicenet-cryptography-library)
-    * [Thread Safety](#markdown-header-thread-safety)
-* [How to use TheIceNet Cryptography library](#markdown-header-how-to-use-theicenet-cryptography-library)
+    * [TheIceNet Cryptography library requirements](#theicenet-cryptography-library-requirements)
+    * [Installing TheIceNet Cryptography library](#installing-theicenet-cryptography-library)
+    * [Thread Safety](#thread-safety)
+* [How to use TheIceNet Cryptography library](#how-to-use-theicenet-cryptography-library)
     * Key generation
         * Symmetric cryptography
-            * [Generate random AES secret key](#markdown-header-generate-random-aes-secret-key)
+            * [Generate random AES secret key](#generate-random-aes-secret-key)
         * Asymmetric cryptography
-            * [Generate random RSA key pair](#markdown-header-generate-random-rsa-key-pair)
-            * [Generate random DSA key pair](#markdown-header-generate-random-dsa-key-pair)
-            * [Generate random ECDSA key pair](#markdown-header-generate-random-ecdsa-key-pair)
-            * [Generate random ECDH key pair](#markdown-header-generate-random-ecdh-key-pair)
+            * [Generate random RSA key pair](#generate-random-rsa-key-pair)
+            * [Generate random DSA key pair](#generate-random-dsa-key-pair)
+            * [Generate random ECDSA key pair](#generate-random-ecdsa-key-pair)
+            * [Generate random ECDH key pair](#generate-random-ecdh-key-pair)
     * Key agreement over an insecure channel
-        * [Key agreement with ECDH](#markdown-header-key-agreement-with-ecdh)
+        * [Key agreement with ECDH](#key-agreement-with-ecdh)
     * Password Based Key Derivation (PBKD)
-        * [Password based key derivation with PBKDF2 from string/byte array](#markdown-header-password-based-key-derivation-with-pbkdf2-from-string-or-byte-array)
-        * [Password based key derivation with Scrypt from string/byte array](#markdown-header-password-based-key-derivation-with-scrypt-from-string-or-byte-array)
-        * [Password based key derivation with Argon2 from string/byte array](#markdown-header-password-based-key-derivation-with-argon2-from-string-or-byte-array)
+        * [Password based key derivation with PBKDF2 from string/byte array](#password-based-key-derivation-with-pbkdf2-from-string-or-byte-array)
+        * [Password based key derivation with Scrypt from string/byte array](#password-based-key-derivation-with-scrypt-from-string-or-byte-array)
+        * [Password based key derivation with Argon2 from string/byte array](#password-based-key-derivation-with-argon2-from-string-or-byte-array)
     * Encrypt / Decrypt
         * Symmetric cryptography
-            * [Encrypt/Decrypt byte array/stream with AES and ECB block mode of operation](#markdown-header-encrypt-and-decrypt-byte-array-or-stream-with-aes-and-ecb-block-mode-of-operation)
-            * [Encrypt/Decrypt byte array/stream with AES and IV based block mode of operation](#markdown-header-encrypt-and-decrypt-byte-array-or-stream-with-aes-and-iv-based-block-mode-of-operation)
+            * [Encrypt/Decrypt byte array/stream with AES and ECB block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-ecb-block-mode-of-operation)
+            * [Encrypt/Decrypt byte array/stream with AES and IV based block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-iv-based-block-mode-of-operation)
         * Asymmetric cryptography        
-            * [Encrypt/Decrypt with RSA](#markdown-header-encrypt-and-decrypt-with-rsa)
+            * [Encrypt/Decrypt with RSA](#encrypt-and-decrypt-with-rsa)
     * Signature generation
-        * [Generate/Verify signature for a byte array/stream with RSA](#markdown-header-generate-and-verify-signature-for-a-byte-array-or-stream-with-rsa)
-        * [Generate/Verify signature for a byte array/stream with DSA](#markdown-header-generate-and-verify-signature-for-a-byte-array-or-stream-with-dsa)
-        * [Generate/Verify signature for a byte array/stream with ECDSA](#markdown-header-generate-and-verify-signature-for-a-byte-array-or-stream-with-ecdsa)
+        * [Generate/Verify signature for a byte array/stream with RSA](#generate-and-verify-signature-for-a-byte-array-or-stream-with-rsa)
+        * [Generate/Verify signature for a byte array/stream with DSA](#generate-and-verify-signature-for-a-byte-array-or-stream-with-dsa)
+        * [Generate/Verify signature for a byte array/stream with ECDSA](#generate-and-verify-signature-for-a-byte-array-or-stream-with-ecdsa)
     * Hash generation
-        * [Generate hash of byte array/stream](#markdown-header-generate-hash-of-byte-array-or-stream)
+        * [Generate hash of byte array/stream](#generate-hash-of-byte-array-or-stream)
     * Message authentication code generation
-        * [MAC generation](#markdown-header-mac-generation)
+        * [MAC generation](#mac-generation)
     * Random data generation 
-        * [Generate random initialisation vector](#markdown-header-generate-random-initialisation-vector)
-        * [Generate random salt](#markdown-header-generate-random-salt)
+        * [Generate random initialisation vector](#generate-random-initialisation-vector)
+        * [Generate random salt](#generate-random-salt)
        
 ## Modules
-*****
 
 There are four modules in TheIceNet Cryptography library, here is a quick overview of them:
 
@@ -69,7 +66,6 @@ There are four modules in TheIceNet Cryptography library, here is a quick overvi
 * **theicenet-cryptography-test-support** -> Utilities to help and support on different levels of the library automatic testing.
    
 ## Symmetric cryptography supported algorithms
-*****
 
 TheIceNet Cryptography library can work with the next symmetric cryptography algorithms,
 
@@ -90,7 +86,6 @@ TheIceNet Cryptography library can work with the next symmetric cryptography alg
         - HmacSHA512
         
 ## Asymmetric cryptography supported algorithms
-*****
 
 TheIceNet Cryptography library can work with the next asymmetric cryptography algorithms,
          
@@ -208,7 +203,6 @@ TheIceNet Cryptography library can work with the next asymmetric cryptography al
         - SHA3_512withECDSA
         
 ## Hashing supported algorithms
-*****
     
 TheIceNet Cryptography library can work with the next hashing algorithms,
 
@@ -233,7 +227,6 @@ TheIceNet Cryptography library can work with the next hashing algorithms,
     - SM3
       
 ## Password Based Key Derivation supported algorithms 
-*****
        
 TheIceNet Cryptography library can work with the next PBKD algorithms,
 
@@ -256,7 +249,6 @@ TheIceNet Cryptography library can work with the next PBKD algorithms,
             - ARGON2_VERSION_13
     
 ## Random data generation support
-*****
 
 TheIceNet Cryptography library can generate the next type of random data,
  
@@ -265,14 +257,12 @@ TheIceNet Cryptography library can generate the next type of random data,
     - Salt generation
 
 ## TheIceNet Cryptography library requirements
-*****
 
 - [Java 11](https://adoptopenjdk.net) or later
 - [Spring Boot 2.0.0](https://spring.io/projects/spring-boot) or later
 - [Maven 3.2+](https://maven.apache.org) or [Gradle 4+](https://gradle.org)
 
 ## Installing TheIceNet Cryptography library
-*****
 
 To enable TheIceNet Cryptography library in a Spring Boot application, we'll just need to add the *theicenet-cryptography-spring-boot-starter* dependency to our package manager. 
 
@@ -293,17 +283,14 @@ In Gradle
 ```
 
 ## Thread Safety
-*****
 
 All components in the TheIceNet Cryptography library are `unconditionally thread safe`. Any of the components described throughout this documentation can be safely injected in a `@Singleton` scope, and invoked by any number of threads concurrently or consecutively.
  
 TheIceNet Cryptography library does not make use of any `shared mutable state`. Because of this, the thread safety provided by the library doesn't require to use any lock or synchronization mechanism at all. This means that TheIceNet Cryptography library does not introduce any penalization in terms of throughput in order to achieve the `unconditionally thread safety`.
  
 ## How to use TheIceNet Cryptography library
-*****
 
 ### Generate random AES secret key
-*****
 
 ```java
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
@@ -330,7 +317,6 @@ public class MyComponent {
 ```
 
 ### Generate random RSA key pair
-*****
 
 ```java
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
@@ -362,7 +348,6 @@ public class MyComponent {
 ```
 
 ### Generate random DSA key pair
-*****
 
 ```java
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
@@ -394,7 +379,6 @@ public class MyComponent {
 ```
 
 ### Generate random ECDSA key pair
-*****
 
 ```java
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
@@ -460,7 +444,6 @@ The supported curves and their provided key lengths are,
     - brainpoolpXXXt1 -> 160 bits, 192 bits, 224 bits, 256 bits, 320 bits, 384 bits and 512 bits
 
 ### Generate random ECDH key pair
-*****
 
 ```java
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
@@ -526,7 +509,6 @@ The supported curves and their provided key lengths are,
     - brainpoolpXXXt1 -> 160 bits, 192 bits, 224 bits, 256 bits, 320 bits, 384 bits and 512 bits
 
 ### Key agreement with ECDH
-*****
 
 ```java
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
@@ -562,7 +544,6 @@ public class MyComponent {
 ```
       
 ### Password based key derivation with PBKDF2 from string or byte array
-*****
 
 ```java
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
@@ -612,7 +593,6 @@ The supported `shaAlgorithm` algorithms to derivate a PBKDF2 key are,
       - SHA3_512
       
 ### Password based key derivation with Scrypt from string or byte array
-*****
 
 ```java
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
@@ -655,7 +635,6 @@ cryptography:
 ```
 
 ### Password based key derivation with Argon2 from string or byte array
-*****
 
 ```java
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
@@ -711,7 +690,6 @@ The supported argon2's `versions` are,
     - ARGON2_VERSION_13
 
 ### Encrypt and decrypt byte array or stream with AES and ECB block mode of operation
-*****
 
 ```java
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
@@ -767,7 +745,6 @@ public class MyComponent {
 ```
 
 ### Encrypt and decrypt byte array or stream with AES and IV based block mode of operation
-*****
 
 ```java
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
@@ -860,7 +837,6 @@ Supported `blockMode` are,
     - CTR
 
 ### Encrypt and decrypt with RSA
-*****
 
 ```java
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
@@ -919,7 +895,6 @@ Supported `padding` modes are,
     - ISO9796_1Padding
     
 ### Generate and verify signature for a byte array or stream with RSA
-*****
 
 ```java
 import com.theicenet.cryptography.signature.SignatureService;
@@ -998,7 +973,6 @@ Supported `algorithm` are,
     - SHA512withRSA_PSS
 
 ### Generate and verify signature for a byte array or stream with DSA
-*****
 
 ```java
 import com.theicenet.cryptography.signature.SignatureService;
@@ -1065,7 +1039,6 @@ Supported `algorithm` are,
     - SHA3_512withDSA
     
 ### Generate and verify signature for a byte array or stream with ECDSA
-*****
 
 ```java
 import com.theicenet.cryptography.signature.SignatureService;
@@ -1133,7 +1106,6 @@ Supported `algorithm` are,
     - SHA3_512withECDSA
 
 ### Generate hash of byte array or stream
-*****
 
 ```java
 import com.theicenet.cryptography.digest.DigestService;
@@ -1192,7 +1164,6 @@ Supported `digest` algorithms are,
     - SM3
 
 ### MAC generation
-*****
 
 ```java
 import com.theicenet.cryptography.mac.MacService;
@@ -1233,7 +1204,6 @@ Supported `mac` algorithms are,
     - HmacSHA512
 
 ### Generate random initialisation vector
-*****
 
 ```java
 import com.theicenet.cryptography.randomise.RandomiseService;
@@ -1259,7 +1229,6 @@ public class MyComponent {
 ```
 
 ### Generate random salt
-*****
 
 ```java
 import com.theicenet.cryptography.randomise.RandomiseService;
