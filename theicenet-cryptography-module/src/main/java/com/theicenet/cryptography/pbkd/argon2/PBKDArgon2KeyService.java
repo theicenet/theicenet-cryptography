@@ -27,7 +27,7 @@ import org.bouncycastle.crypto.params.Argon2Parameters;
  * Bouncy Castle based component which implements Argon2 algorithm for password based key derivation
  * (PBKD).
  *
- * @see <a href="https://en.wikipedia.org/wiki/Argon2>Argon2</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Argon2">Argon2</a>
  * @see <a href="https://en.wikipedia.org/wiki/Bouncy_Castle_(cryptography)">Bouncy Castle (cryptography)</a>
  *
  * @implNote This implementation is <b>unconditionally thread-safe</b> as required by the API interface.

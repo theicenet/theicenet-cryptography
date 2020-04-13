@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -19,6 +17,35 @@
   <properties>
     <java.version>11</java.version>
   </properties>
+
+  <scm>
+    <connection>scm:git:git@bitbucket.org:theicenet/theicenet-cryptography.git</connection>
+    <developerConnection>scm:git:git@bitbucket.org:theicenet/theicenet-cryptography.git</developerConnection>
+    <url>https://bitbucket.org/theicenet/theicenet-cryptography/src</url>
+  </scm>
+
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>
+    TheIceNet Cryptography is a library which makes easy to develop cryptography-based,
+    production-grade Spring Boot applications.
+  </description>
+  <url>https://github.com/theicenet/theicenet-cryptography</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Juan Jose Fidalgo Moran</name>
+      <email>jjfidalgo@theicenet.com</email>
+      <organization>TheIceNet</organization>
+      <organizationUrl>https://github.com/theicenet</organizationUrl>
+    </developer>
+  </developers>
 
   <dependencyManagement>
     <dependencies>
@@ -153,4 +180,188 @@
     <module>theicenet-cryptography-spring-boot-starter</module>
     <module>theicenet-cryptography-acceptance-tests</module>
   </modules>
+
+  <profiles>
+    <!-- Profile to be use when releasing to OSSRH - Sonatype Maven Central -->
+    <!-- Before releasing please make sure that you have added the required server configuration
+         with 'ossrh' credentials into the settings.xml
+
+                 <settings>
+                  <servers>
+                    <server>
+                      <id>ossrh</id>
+                      <username>your-jira-id</username>
+                      <password>your-jira-pwd</password>
+                    </server>
+                  </servers>
+                </settings>
+    -->
+    <!-- To release to OSSRH staging use
+
+         - Create/checkout the branch which is going to be use for the release. It can be any branch,
+           even master, but usually merges into master are only allowed via pull request. For this
+           reason, it's advisable to create a new branch (from master), run all maven-release-plugin
+           commands on that branch, and, once the release is finished, then create a pull request
+           to merge the branch used to release and the release commits into master.
+
+         - Set release version, create tag, set next SNAPSHOT version and push to Bitbucket Git
+
+                "mvn release:clean -Prelease"
+
+                "mvn release:prepare -Prelease"
+
+                Note: Since the Release Plugin performs a number of operations that change the
+                project in Git, it may be wise to do a dry run before a big release or on a new
+                project.
+                This will ask all the same questions, run the same tests, and output a copy of how
+                the POMs will look after transformation,
+
+                  "mvn release:prepare -DdryRun=true -Prelease"
+
+         - Deploy to OSSRH staging
+
+                "mvn release:perform -Prelease"
+
+         - If <autoReleaseAfterClose> is set to false it only releases to OSSRH staging
+         - If <autoReleaseAfterClose> is set to true it releases to OSSRH staging and automatically
+           to Maven Central Repository
+
+       If release has been done to OSSRH staging, it can be manually inspected in the staging
+       Nexus Repository Manager on,
+
+                https://oss.sonatype.org/#nexus-search;quick~theicenet-cryptography
+
+       It can be trigger a release of the staging repository later with
+
+                "cd target/checkout"
+                "mvn nexus-staging:release -Prelease"
+
+       If you find something went wrong you can drop the staging repository with
+
+                "cd target/checkout"
+                "mvn nexus-staging:drop -Prelease"
+
+       After releasing to Maven Central check the artifacts are on,
+
+                https://repo.maven.apache.org/maven2/com/theicenet
+
+
+       Important Note: SNAPSHOT versions releases have been intentionally disabled in this POM.
+       In order to enable to be able to release SNAPSHOT versions, the next configuration needs
+       to be added to the 'release' profile in this POM
+
+                <distributionManagement>
+                  <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                  </snapshotRepository>
+                </distributionManagement>
+
+       More info,
+
+                http://central.sonatype.org/pages/ossrh-guide.html
+                https://central.sonatype.org/pages/apache-maven.html
+    -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-release-plugin</artifactId>
+              <version>2.5.3</version>
+              <configuration>
+                <autoVersionSubmodules>true</autoVersionSubmodules>
+                <useReleaseProfile>false</useReleaseProfile>
+                <releaseProfiles>release</releaseProfiles>
+                <goals>deploy</goals>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.sonatype.plugins</groupId>
+              <artifactId>nexus-staging-maven-plugin</artifactId>
+              <version>1.6.8</version>
+              <extensions>true</extensions>
+              <configuration>
+                <serverId>ossrh</serverId>
+                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                <autoReleaseAfterClose>false</autoReleaseAfterClose>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <version>3.2.1</version>
+              <executions>
+                <execution>
+                  <id>attach-sources</id>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>jar-no-fork</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>3.2.0</version>
+              <executions>
+                <execution>
+                  <id>attach-javadocs</id>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <tags>
+                  <tag>
+                    <name>apiNote</name>
+                    <placement>a</placement>
+                    <head>API Note:</head>
+                  </tag>
+                  <tag>
+                    <name>implSpec</name>
+                    <placement>a</placement>
+                    <head>Implementation Requirements:</head>
+                  </tag>
+                  <tag>
+                    <name>implNote</name>
+                    <placement>a</placement>
+                    <head>Implementation Note:</head>
+                  </tag>
+                </tags>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-gpg-plugin</artifactId>
+              <version>1.6</version>
+              <executions>
+                <execution>
+                  <id>sign-artifacts</id>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>sign</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
 </project>

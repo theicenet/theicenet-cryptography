@@ -26,7 +26,7 @@ import org.bouncycastle.crypto.generators.SCrypt;
  * Bouncy Castle based component which implements Scrypt algorithm for password based key derivation
  * (PBKD).
  *
- * @see <a href="https://en.wikipedia.org/wiki/Scrypt>Scrypt</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Scrypt">Scrypt</a>
  * @see <a href="https://en.wikipedia.org/wiki/Bouncy_Castle_(cryptography)">Bouncy Castle (cryptography)</a>
  *
  * @implNote This implementation is <b>unconditionally thread-safe</b> as required by the API interface.

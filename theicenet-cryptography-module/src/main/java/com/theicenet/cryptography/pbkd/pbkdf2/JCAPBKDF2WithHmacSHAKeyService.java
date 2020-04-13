@@ -29,7 +29,7 @@ import org.apache.commons.lang.Validate;
  * Java Cryptography Architecture (JCA) based component which implements PBKDF2 algorithm for
  * password based key derivation (PBKD).
  *
- * @see <a href="https://en.wikipedia.org/wiki/PBKDF2>PBKDF2</a>
+ * @see <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>
  * @see <a href="https://en.wikipedia.org/wiki/Java_Cryptography_Architecture">Java Cryptography Architecture (JCA)</a>
  *
  * @implNote This implementation is <b>unconditionally thread-safe</b> as required by the API interface.

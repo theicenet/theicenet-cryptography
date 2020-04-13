@@ -62,7 +62,7 @@ public interface PBKDKeyService {
    * @apiNote In case this default method is overridden by an implementer of this interface, the
    *          overrider method must generate always the same final key when the in
    *          parameters (<b>secret</b>, <b>salt</b>, <b>keyLengthInBits</b>) are
-   *          the same. Generated final key must be </b>repeatable and deterministic</b>.
+   *          the same. Generated final key must be <b>repeatable and deterministic</b>.
    *
    * @param secret password to use as foundation to calculate a final key of the requested
    *                 length <b>keyLengthInBits</b>

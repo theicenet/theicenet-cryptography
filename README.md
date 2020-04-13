@@ -19,6 +19,7 @@ TheIceNet Cryptography fully integrates with Spring Boot, making it easy and sea
 * Getting Started
     * [TheIceNet Cryptography library requirements](#theicenet-cryptography-library-requirements)
     * [Installing TheIceNet Cryptography library](#installing-theicenet-cryptography-library)
+    * [Building TheIceNet Cryptography library](#building-theicenet-cryptography-library)
     * [Thread Safety](#thread-safety)
 * [How to use TheIceNet Cryptography library](#how-to-use-theicenet-cryptography-library)
     * Key generation
@@ -280,6 +281,20 @@ In Gradle
 
 ```groovy
     compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.0.0'
+```
+
+## Building TheIceNet Cryptography library
+
+TheIceNet Cryptography library uses Maven as building tool. To build the library follow the next steps,
+
+-  Clone the repository
+-  Change to the library root folder 
+```shell script
+cd theicenet-cryptography
+```
+- Build the library
+```shell script
+mvn clean install
 ```
 
 ## Thread Safety

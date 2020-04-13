@@ -19,7 +19,7 @@ import java.security.KeyPair;
 
 /**
  * A AsymmetricKeyService instance is a component which produces a random <b>key pair</b>
- * (public & private) which can be used with <b>public key cryptography</b>
+ * (public and private) which can be used with <b>public key cryptography</b>
  * (asymmetric cryptography).
  *
  * @see <a href="https://en.wikipedia.org/wiki/Public-key_cryptography">Public-key cryptography</a>
@@ -32,7 +32,7 @@ import java.security.KeyPair;
 public interface AsymmetricKeyService {
 
   /**
-   * Produces a random <b>key pair</b> (public & private) valid to be used with
+   * Produces a random <b>key pair</b> (public and private) valid to be used with
    * <b>public key cryptography</b>.
    *
    * @apiNote Generated private key must be <b>PKCS #8</b> format
