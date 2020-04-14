@@ -1,9 +1,20 @@
-image: maven:3.6.1
+image: maven:3.6.3-jdk-11
 
 pipelines:
   default:
     - step:
         caches:
           - maven
-        script: # Modify the commands below to build your repository.
-          - mvn -B clean verify # -B batch mode makes Maven less verbose
+        script:
+          - mvn -V -B clean verify
+  branches:
+    release-*:
+      - step:
+          caches:
+            - maven
+          script:
+            - openssl aes-256-cbc -d -a -md sha256 -iter 131070 -pass pass:$GPG_SIGNING_PRIVATE_KEY_PASSWORD -in private-key.gpg.enc -out private-key.gpg
+            - gpg --import private-key.gpg
+            - mvn -V -B release:clean -Prelease
+            - mvn -V -B release:prepare -Prelease
+            - mvn -V -B -s settings.xml release:perform -Prelease

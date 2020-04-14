@@ -298,6 +298,7 @@
                 <useReleaseProfile>false</useReleaseProfile>
                 <releaseProfiles>release</releaseProfiles>
                 <goals>deploy</goals>
+                <scmCommentPrefix>[theicenet-cryptography-release][skip ci]-</scmCommentPrefix>
               </configuration>
             </plugin>
             <plugin>
