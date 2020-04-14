@@ -216,7 +216,7 @@
                 This will ask all the same questions, run the same tests, and output a copy of how
                 the POMs will look after transformation,
 
-                  "mvn release:prepare -DdryRun=true -Prelease"
+                          "mvn release:prepare -DdryRun=true -Prelease"
 
          - Deploy to OSSRH staging
 
@@ -229,14 +229,18 @@
        If release has been done to OSSRH staging, it can be manually inspected in the staging
        Nexus Repository Manager on,
 
-                https://oss.sonatype.org/#nexus-search;quick~theicenet-cryptography
+                https://oss.sonatype.org/#stagingRepositories
 
-       It can be trigger a release of the staging repository later with
+       The version that is in OSSRH staging can be released or dropped from the browser on,
+
+                https://oss.sonatype.org/#stagingRepositories
+
+       Also, it can be triggered by command line a RELEASE of the staging repository later with
 
                 "cd target/checkout"
                 "mvn nexus-staging:release -Prelease"
 
-       If you find something went wrong you can drop the staging repository with
+       Or if you find something went wrong you can DROP the staging repository with
 
                 "cd target/checkout"
                 "mvn nexus-staging:drop -Prelease"
@@ -261,6 +265,15 @@
 
                 http://central.sonatype.org/pages/ossrh-guide.html
                 https://central.sonatype.org/pages/apache-maven.html
+
+       Troubleshooting,
+
+                - To fix the issue on MacOS with error message
+                  'gpg: signing failed: Inappropriate ioctl for device'
+
+                  https://gist.github.com/repodevs/a18c7bb42b2ab293155aca889d447f1b
+                  https://tutorials.technology/solved_errors/21-gpg-signing-failed-Inappropriate-ioctl-for-device.html
+                  https://stackoverflow.com/questions/57591432/gpg-signing-failed-inappropriate-ioctl-for-device-on-macos-with-maven
     -->
     <profile>
       <id>release</id>
