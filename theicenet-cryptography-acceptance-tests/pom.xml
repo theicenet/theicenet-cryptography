@@ -13,13 +13,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.theicenet</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.theicenet</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>theicenet-cryptography-test-support</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

@@ -17,7 +17,7 @@
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.theicenet</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>theicenet-cryptography-module</artifactId>
       <version>${project.version}</version>
     </dependency>
