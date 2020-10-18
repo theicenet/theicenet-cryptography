@@ -99,7 +99,7 @@ public class JCAAESNonIVBasedCipherService implements SymmetricNonIVBasedCipherS
     Validate.notNull(secretKey);
     Validate.notNull(content);
 
-    final var cipher = createCipher(operationMode, secretKey);
+    final Cipher cipher = createCipher(operationMode, secretKey);
 
     try {
       return cipher.doFinal(content);
@@ -118,8 +118,8 @@ public class JCAAESNonIVBasedCipherService implements SymmetricNonIVBasedCipherS
     Validate.notNull(inputStream);
     Validate.notNull(outputStream);
 
-    final var cipher = createCipher(operationMode, secretKey);
-    final var cipherOutputStream = new CipherOutputStream(outputStream, cipher);
+    final Cipher cipher = createCipher(operationMode, secretKey);
+    final CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
 
     try (inputStream; cipherOutputStream; outputStream) {
       inputStream.transferTo(cipherOutputStream);

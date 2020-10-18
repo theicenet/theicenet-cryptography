@@ -49,7 +49,7 @@ public class JCAHmacService implements MacService {
     Validate.notNull(secretKey);
     Validate.notNull(content);
 
-    final var macCalculator = buildMacCalculator(secretKey, algorithm);
+    final Mac macCalculator = buildMacCalculator(secretKey, algorithm);
     return macCalculator.doFinal(content);
   }
 
@@ -62,7 +62,7 @@ public class JCAHmacService implements MacService {
     Validate.notNull(secretKey);
     Validate.notNull(contentInputStream);
 
-    final var macCalculator = buildMacCalculator(secretKey, algorithm);
+    final Mac macCalculator = buildMacCalculator(secretKey, algorithm);
     final OutputStream macCalculatorOutputStream = buildMacCalculatorOutputStream(macCalculator);
 
     try(contentInputStream; macCalculatorOutputStream) {
@@ -74,7 +74,7 @@ public class JCAHmacService implements MacService {
   }
 
   private Mac buildMacCalculator(SecretKey secretKey, HmacAlgorithm algorithm) {
-    final var secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), algorithm.toString());
+    final SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), algorithm.toString());
 
     final Mac macCalculator;
     try {

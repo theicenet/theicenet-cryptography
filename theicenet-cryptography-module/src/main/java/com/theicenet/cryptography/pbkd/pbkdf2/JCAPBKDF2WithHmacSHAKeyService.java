@@ -61,7 +61,7 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
     Validate.isTrue(keyLengthInBits > 0);
 
     try {
-      final var pbeKeySpec =
+      final PBEKeySpec pbeKeySpec =
           new PBEKeySpec(
               password.toCharArray(),
               salt,
@@ -78,7 +78,7 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
       String algorithm,
       PBEKeySpec pbeKeySpec) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-    final var secretFactory = SecretKeyFactory.getInstance(algorithm);
+    final SecretKeyFactory secretFactory = SecretKeyFactory.getInstance(algorithm);
     return secretFactory.generateSecret(pbeKeySpec);
   }
 }

@@ -37,7 +37,7 @@ public final class JCASignatureUtil {
     Validate.notNull(algorithm);
 
     try {
-      final var signer = Signature.getInstance(algorithm);
+      final Signature signer = Signature.getInstance(algorithm);
       signer.initSign(privateKey);
       signer.update(content);
 
@@ -59,7 +59,7 @@ public final class JCASignatureUtil {
     Validate.notNull(algorithm);
 
     try {
-      final var verifier = Signature.getInstance(algorithm);
+      final Signature verifier = Signature.getInstance(algorithm);
       verifier.initVerify(publicKey);
       verifier.update(content);
 

@@ -122,8 +122,8 @@ public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService
     validateCipherParameters(blockMode, secretKey, iv);
     Validate.notNull(content);
 
-    final var padding = paddingForBlockMode(blockMode);
-    final var cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
+    final AESPadding padding = paddingForBlockMode(blockMode);
+    final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
 
     try {
       return cipher.doFinal(content);
@@ -144,9 +144,9 @@ public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService
     Validate.notNull(inputStream);
     Validate.notNull(outputStream);
 
-    final var padding = paddingForBlockMode(blockMode);
-    final var cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
-    final var cipherOutputStream = new CipherOutputStream(outputStream, cipher);
+    final AESPadding padding = paddingForBlockMode(blockMode);
+    final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
+    final CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
 
     try (inputStream; cipherOutputStream; outputStream) {
       inputStream.transferTo(cipherOutputStream);

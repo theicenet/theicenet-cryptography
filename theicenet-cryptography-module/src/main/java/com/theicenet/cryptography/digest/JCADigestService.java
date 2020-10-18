@@ -57,12 +57,12 @@ public class JCADigestService implements DigestService {
   public byte[] digest(InputStream contentInputStream) {
     Validate.notNull(contentInputStream);
 
-    final var messageDigest = buildMessageDigest(algorithm);
-    final var digestInputStream =
+    final MessageDigest messageDigest = buildMessageDigest(algorithm);
+    final DigestInputStream digestInputStream =
         new DigestInputStream(
             contentInputStream,
             messageDigest);
-    final var nullOutputStream = OutputStream.nullOutputStream();
+    final OutputStream nullOutputStream = OutputStream.nullOutputStream();
 
     try (contentInputStream; digestInputStream; nullOutputStream) {
       digestInputStream.transferTo(nullOutputStream);

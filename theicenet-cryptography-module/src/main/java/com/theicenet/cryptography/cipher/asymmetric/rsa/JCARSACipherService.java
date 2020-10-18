@@ -63,7 +63,7 @@ public class JCARSACipherService implements AsymmetricCipherService {
     Validate.notNull(content);
 
     try {
-      final var cipher = Cipher.getInstance(String.format("RSA/NONE/%s", padding.toString()));
+      final Cipher cipher = Cipher.getInstance(String.format("RSA/NONE/%s", padding.toString()));
       cipher.init(operationMode, key);
 
       return cipher.doFinal(content);

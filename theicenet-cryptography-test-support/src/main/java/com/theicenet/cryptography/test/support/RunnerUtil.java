@@ -18,6 +18,7 @@ package com.theicenet.cryptography.test.support;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -47,8 +48,8 @@ public class RunnerUtil {
     Validate.isTrue(numberConcurrentThreads >= 0);
     Validate.notNull(supplier);
 
-    final var countDownLatch = new CountDownLatch(numberConcurrentThreads);
-    final var executorService = Executors.newFixedThreadPool(numberConcurrentThreads);
+    final CountDownLatch countDownLatch = new CountDownLatch(numberConcurrentThreads);
+    final ExecutorService executorService = Executors.newFixedThreadPool(numberConcurrentThreads);
 
     final var futureResult =
         IntStream

@@ -84,7 +84,7 @@ public class PBKDArgon2KeyService implements PBKDKeyService {
       Argon2Configuration argon2Configuration,
       byte[] salt) {
 
-    final var argon2BytesGenerator = new Argon2BytesGenerator();
+    final Argon2BytesGenerator argon2BytesGenerator = new Argon2BytesGenerator();
     argon2BytesGenerator.init(buildArgon2Parameters(argon2Configuration, salt));
 
     return argon2BytesGenerator;
