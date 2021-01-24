@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2021‑01‑24
+
+### Added
+
+- CHANGELOG.md [@jjfidalgo]
+
+### Changed
+
+- Upgrade library dependencies to their latest versions [@jjfidalgo]
+
+
 ## [1.0.2] - 2020‑10‑18
 
 ### Changed
@@ -36,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bitbucket pipeline with the CI & release process to Maven's Central [@jjfidalgo]
 
 [unreleased]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.3...HEAD
+[1.0.3]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.2...theicenet-cryptography-1.0.3
 [1.0.2]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.1...theicenet-cryptography-1.0.2
 [1.0.1]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.0...theicenet-cryptography-1.0.1
 [1.0.0]: https://github.com/theicenet/theicenet-cryptography/releases/tag/theicenet-cryptography-1.0.0

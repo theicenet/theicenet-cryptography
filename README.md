@@ -273,7 +273,7 @@ In Maven:
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
 ```
 
