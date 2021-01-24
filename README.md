@@ -280,7 +280,7 @@ In Maven:
 In Gradle
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.0.1'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.0.3'
 ```
 
 ## Building TheIceNet Cryptography library
