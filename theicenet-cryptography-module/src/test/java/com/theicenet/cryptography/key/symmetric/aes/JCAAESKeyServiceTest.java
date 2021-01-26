@@ -118,7 +118,7 @@ class JCAAESKeyServiceTest {
 
     // When generating consecutive keys with the same length
     final var generatedKeysSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -137,7 +137,7 @@ class JCAAESKeyServiceTest {
 
     // When generating concurrently at the same time random keys with the same length
     final var generatedKeysSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(

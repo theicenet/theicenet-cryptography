@@ -29,45 +29,45 @@ import org.junit.jupiter.api.Test;
  */
 class RunnerUtilTest {
   @Test
-  void producesTheExpectedResultCountWhenRunningConsecutiveAndAllAreDifferent() {
+  void producesTheExpectedResultCountWhenRunningConsecutiveToListAndAllAreDifferent() {
     // Given
     final var _100 = 100;
 
     // When
-    final var resultSet = RunnerUtil.runConsecutively(_100, UUID::randomUUID);
+    final var resultList = RunnerUtil.runConsecutivelyToList(_100, UUID::randomUUID);
 
     // Then
-    assertThat(resultSet, hasSize(_100));
+    assertThat(resultList, hasSize(_100));
   }
 
   @Test
-  void producesTheExpectedResultCountWhenRunningConsecutiveAndAllAreEqual() {
-    // Given
-    final var _100 = 100;
-    final var TEST_CONTENT = "TEST_CONTENT";
-
-    // When
-    final var resultSet = RunnerUtil.runConsecutively(_100, () -> TEST_CONTENT);
-
-    // Then
-    assertThat(resultSet, hasSize(1));
-  }
-
-  @Test
-  void producesTheExpectedResultContentWhenRunningConsecutiveAndAllAreEqual() {
+  void producesTheExpectedResultCountWhenRunningConsecutiveToListAndAllAreEqual() {
     // Given
     final var _100 = 100;
     final var TEST_CONTENT = "TEST_CONTENT";
 
     // When
-    final var resultSet = RunnerUtil.runConsecutively(_100, () -> TEST_CONTENT);
+    final var resultList = RunnerUtil.runConsecutivelyToList(_100, () -> TEST_CONTENT);
 
     // Then
-    assertThat(resultSet.iterator().next(), is(equalTo(TEST_CONTENT)));
+    assertThat(resultList, hasSize(_100));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenRunningConsecutiveAndNegativeNumberOfTimes() {
+  void producesTheExpectedResultContentWhenRunningConsecutiveToListAndAllAreEqual() {
+    // Given
+    final var _100 = 100;
+    final var TEST_CONTENT = "TEST_CONTENT";
+
+    // When
+    final var resultList = RunnerUtil.runConsecutivelyToList(_100, () -> TEST_CONTENT);
+
+    // Then
+    resultList.forEach(result -> assertThat(result, is(equalTo(TEST_CONTENT))));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenRunningConsecutiveToListAndNegativeNumberOfTimes() {
     // Given
     final var MINUS_100 = -100;
     final var TEST_CONTENT = "TEST_CONTENT";
@@ -75,49 +75,74 @@ class RunnerUtilTest {
     // When
     assertThrows(
         IllegalArgumentException.class,
-        () -> RunnerUtil.runConsecutively(MINUS_100, () -> TEST_CONTENT));
+        () -> RunnerUtil.runConsecutivelyToList(MINUS_100, () -> TEST_CONTENT));
   }
 
   @Test
-  void producesTheExpectedResultCountWhenRunningConcurrentlyAndAllAreDifferent() {
+  void producesTheExpectedResultCountWhenRunningConsecutiveToSetAndAllAreDifferent() {
     // Given
     final var _100 = 100;
 
     // When
-    final var resultSet = RunnerUtil.runConcurrently(_100, UUID::randomUUID);
+    final var resultSet = RunnerUtil.runConsecutivelyToSet(_100, UUID::randomUUID);
 
     // Then
     assertThat(resultSet, hasSize(_100));
   }
 
   @Test
-  void producesTheExpectedResultCountWhenRunningConcurrentlyAndAllAreEqual() {
+  void producesTheExpectedResultCountWhenRunningConsecutiveToSetAndAllAreEqual() {
     // Given
     final var _100 = 100;
     final var TEST_CONTENT = "TEST_CONTENT";
 
     // When
-    final var resultSet = RunnerUtil.runConcurrently(_100, () -> TEST_CONTENT);
+    final var resultSet = RunnerUtil.runConsecutivelyToSet(_100, () -> TEST_CONTENT);
 
     // Then
     assertThat(resultSet, hasSize(1));
   }
 
   @Test
-  void producesTheExpectedResultContentWhenRunningConcurrentlyAndAllAreEqual() {
+  void producesTheExpectedResultCountWhenRunningConcurrentlyToListAndAllAreDifferent() {
+    // Given
+    final var _100 = 100;
+
+    // When
+    final var resultList = RunnerUtil.runConcurrentlyToList(_100, UUID::randomUUID);
+
+    // Then
+    assertThat(resultList, hasSize(_100));
+  }
+
+  @Test
+  void producesTheExpectedResultCountWhenRunningConcurrentlyToListAndAllAreEqual() {
     // Given
     final var _100 = 100;
     final var TEST_CONTENT = "TEST_CONTENT";
 
     // When
-    final var resultSet = RunnerUtil.runConcurrently(_100, () -> TEST_CONTENT);
+    final var resultList = RunnerUtil.runConcurrentlyToList(_100, () -> TEST_CONTENT);
 
     // Then
-    assertThat(resultSet.iterator().next(), is(equalTo(TEST_CONTENT)));
+    assertThat(resultList, hasSize(_100));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenRunningConcurrentlyAndNegativeNumberOfThread() {
+  void producesTheExpectedResultContentWhenRunningConcurrentlyToListAndAllAreEqual() {
+    // Given
+    final var _100 = 100;
+    final var TEST_CONTENT = "TEST_CONTENT";
+
+    // When
+    final var resultList = RunnerUtil.runConcurrentlyToList(_100, () -> TEST_CONTENT);
+
+    // Then
+    resultList.forEach(result -> assertThat(result, is(equalTo(TEST_CONTENT))));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenRunningConcurrentlyToListAndNegativeNumberOfThread() {
     // Given
     final var MINUS_100 = -100;
     final var TEST_CONTENT = "TEST_CONTENT";
@@ -125,6 +150,81 @@ class RunnerUtilTest {
     // When
     assertThrows(
         IllegalArgumentException.class,
-        () -> RunnerUtil.runConcurrently(MINUS_100, () -> TEST_CONTENT));
+        () -> RunnerUtil.runConcurrentlyToList(MINUS_100, () -> TEST_CONTENT));
+  }
+
+  @Test
+  void producesTheExpectedResultContentWhenRunningConsecutiveToSetAndAllAreEqual() {
+    // Given
+    final var _100 = 100;
+    final var TEST_CONTENT = "TEST_CONTENT";
+
+    // When
+    final var resultSet = RunnerUtil.runConsecutivelyToSet(_100, () -> TEST_CONTENT);
+
+    // Then
+    assertThat(resultSet.iterator().next(), is(equalTo(TEST_CONTENT)));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenRunningConsecutiveToSetAndNegativeNumberOfTimes() {
+    // Given
+    final var MINUS_100 = -100;
+    final var TEST_CONTENT = "TEST_CONTENT";
+
+    // When
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> RunnerUtil.runConsecutivelyToSet(MINUS_100, () -> TEST_CONTENT));
+  }
+
+  @Test
+  void producesTheExpectedResultCountWhenRunningConcurrentlyToSetAndAllAreDifferent() {
+    // Given
+    final var _100 = 100;
+
+    // When
+    final var resultSet = RunnerUtil.runConcurrentlyToSet(_100, UUID::randomUUID);
+
+    // Then
+    assertThat(resultSet, hasSize(_100));
+  }
+
+  @Test
+  void producesTheExpectedResultCountWhenRunningConcurrentlyToSetAndAllAreEqual() {
+    // Given
+    final var _100 = 100;
+    final var TEST_CONTENT = "TEST_CONTENT";
+
+    // When
+    final var resultSet = RunnerUtil.runConcurrentlyToSet(_100, () -> TEST_CONTENT);
+
+    // Then
+    assertThat(resultSet, hasSize(1));
+  }
+
+  @Test
+  void producesTheExpectedResultContentWhenRunningConcurrentlyToSetAndAllAreEqual() {
+    // Given
+    final var _100 = 100;
+    final var TEST_CONTENT = "TEST_CONTENT";
+
+    // When
+    final var resultSet = RunnerUtil.runConcurrentlyToSet(_100, () -> TEST_CONTENT);
+
+    // Then
+    assertThat(resultSet.iterator().next(), is(equalTo(TEST_CONTENT)));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenRunningConcurrentlyToSetAndNegativeNumberOfThread() {
+    // Given
+    final var MINUS_100 = -100;
+    final var TEST_CONTENT = "TEST_CONTENT";
+
+    // When
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> RunnerUtil.runConcurrentlyToSet(MINUS_100, () -> TEST_CONTENT));
   }
 }

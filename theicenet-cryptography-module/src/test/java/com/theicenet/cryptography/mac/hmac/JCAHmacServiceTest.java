@@ -257,7 +257,7 @@ class JCAHmacServiceTest {
 
     // When
     final var generatedMacsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -276,7 +276,7 @@ class JCAHmacServiceTest {
 
     // When
     final var generatedMacsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -297,7 +297,7 @@ class JCAHmacServiceTest {
 
     // When
     final var generatedMacsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -316,7 +316,7 @@ class JCAHmacServiceTest {
 
     // When
     final var generatedMacsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(

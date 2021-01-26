@@ -13,36 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.acceptancetest.randomise.salt;
+package com.theicenet.cryptography.acceptancetest.random;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-import com.theicenet.cryptography.randomise.RandomiseService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * @author Juan Fidalgo
  */
 @SpringBootTest
-class SaltServiceIT {
+class SecureRandomDataServiceIT {
 
-  final int SALT_LENGTH_128_BYTES = 128;
+  final int RANDOM_DATA_LENGTH_32_BYTES = 32;
 
   @Autowired
-  @Qualifier("Salt")
-  RandomiseService saltService;
+  SecureRandomDataService ivService;
 
   @Test
-  void producesSaltWhenGeneratingRandom() {
+  void producesIVWhenGeneratingRandom() {
     // When
-    final var generatedSalt = saltService.generateRandom(SALT_LENGTH_128_BYTES);
+    final var generatedIV = ivService.generateSecureRandomData(RANDOM_DATA_LENGTH_32_BYTES);
 
     // Then
-    assertThat(generatedSalt, is(notNullValue()));
+    assertThat(generatedIV, is(notNullValue()));
   }
 }

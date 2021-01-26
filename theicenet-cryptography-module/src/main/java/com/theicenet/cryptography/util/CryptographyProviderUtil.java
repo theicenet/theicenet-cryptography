@@ -23,7 +23,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public final class CryptographyProviderUtil {
+public class CryptographyProviderUtil {
 
   private static final Provider bouncyCastleProvider;
 

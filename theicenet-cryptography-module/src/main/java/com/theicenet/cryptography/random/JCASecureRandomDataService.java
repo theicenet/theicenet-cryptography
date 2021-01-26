@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.randomise.salt;
+package com.theicenet.cryptography.random;
 
-import com.theicenet.cryptography.randomise.RandomiseService;
 import java.security.SecureRandom;
 import org.apache.commons.lang.Validate;
 
 /**
- * Java Cryptography Architecture (JCA) based component which generates <b>secure random</b> salts.
+ * Java Cryptography Architecture (JCA) based component which generates <b>cryptographically secure random data</b>
  *
- * @see <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">Salt (cryptography)</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator">Cryptographically secure pseudorandom number generator</a>
  * @see <a href="https://en.wikipedia.org/wiki/Java_Cryptography_Architecture">Java Cryptography Architecture (JCA)</a>
  *
  * @implNote This implementation is <b>unconditionally thread-safe</b> as required by the API interface.
@@ -30,11 +29,11 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCASaltService implements RandomiseService {
+public class JCASecureRandomDataService implements SecureRandomDataService {
 
   private final SecureRandom secureRandom;
 
-  public JCASaltService(SecureRandom secureRandom) {
+  public JCASecureRandomDataService(SecureRandom secureRandom) {
     this.secureRandom = secureRandom;
   }
 
@@ -42,12 +41,12 @@ public class JCASaltService implements RandomiseService {
    * @implNote Produced data is <b>secure random</b> generated as requested in the API interface.
    */
   @Override
-  public byte[] generateRandom(int saltLengthInBytes) {
-    Validate.isTrue(saltLengthInBytes > 0);
+  public byte[] generateSecureRandomData(int ivLengthInBytes) {
+    Validate.isTrue(ivLengthInBytes > 0);
 
-    final byte[] salt = new byte[saltLengthInBytes];
-    secureRandom.nextBytes(salt);
+    final byte[] iv = new byte[ivLengthInBytes];
+    secureRandom.nextBytes(iv);
 
-    return salt;
+    return iv;
   }
 }

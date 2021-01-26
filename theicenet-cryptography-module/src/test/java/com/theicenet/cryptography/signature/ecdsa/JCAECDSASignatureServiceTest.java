@@ -454,7 +454,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -479,7 +479,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -506,7 +506,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -531,7 +531,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -606,7 +606,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 ecdsaSignatureService.verify(
@@ -629,7 +629,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 ecdsaSignatureService.verify(
@@ -652,7 +652,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 ecdsaSignatureService.verify(
@@ -675,7 +675,7 @@ class JCAECDSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 ecdsaSignatureService.verify(

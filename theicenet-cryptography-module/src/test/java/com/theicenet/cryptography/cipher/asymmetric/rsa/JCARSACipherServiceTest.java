@@ -205,7 +205,7 @@ class JCARSACipherServiceTest {
 
     // When
     final var encryptedSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
 
@@ -222,7 +222,7 @@ class JCARSACipherServiceTest {
 
     // When
     final var encryptedSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
 
@@ -259,7 +259,7 @@ class JCARSACipherServiceTest {
 
     // When
     final var encryptedSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
 
@@ -276,7 +276,7 @@ class JCARSACipherServiceTest {
 
     // When
     final var encryptedSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () -> HexUtil.encodeHex(rsaCipherService.encrypt(RSA_PUBLIC_KEY_2048_BITS, CLEAR_CONTENT)));
 
@@ -352,7 +352,7 @@ class JCARSACipherServiceTest {
 
     // When
     final var decryptedSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -374,7 +374,7 @@ class JCARSACipherServiceTest {
 
     // When
     final var decryptedSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () -> HexUtil.encodeHex(
                 rsaCipherService.decrypt(

@@ -24,9 +24,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.pbkd.PBKDKeyServiceException;
-import com.theicenet.cryptography.pbkd.argon2.Argon2Configuration;
-import com.theicenet.cryptography.pbkd.argon2.Argon2Type;
-import com.theicenet.cryptography.pbkd.argon2.PBKDArgon2KeyService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.nio.charset.StandardCharsets;
@@ -462,7 +459,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
     // When generating consecutive keys with the same password, salt and length
     final var generatedKeysSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -494,7 +491,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
     // When generating concurrently at the same time keys with the same password, salt and length
     final var generatedKeysSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(

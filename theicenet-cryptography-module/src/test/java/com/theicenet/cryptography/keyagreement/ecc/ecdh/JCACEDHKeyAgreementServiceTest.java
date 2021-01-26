@@ -255,7 +255,7 @@ class JCACEDHKeyAgreementServiceTest {
 
     // When generating consecutive secret key for alice
     final var generatedSecretKeysSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -274,7 +274,7 @@ class JCACEDHKeyAgreementServiceTest {
 
     // When generating consecutive secret key for bob
     final var generatedSecretKeysSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -293,7 +293,7 @@ class JCACEDHKeyAgreementServiceTest {
 
     // When generating concurrently secret key for alice
     final var generatedSecretKeysSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -312,7 +312,7 @@ class JCACEDHKeyAgreementServiceTest {
 
     // When generating concurrently secret key for alice
     final var generatedSecretKeysSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(

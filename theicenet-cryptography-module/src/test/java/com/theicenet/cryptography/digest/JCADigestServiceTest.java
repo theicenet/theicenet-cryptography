@@ -291,7 +291,7 @@ class JCADigestServiceTest {
 
     // When
     final var generatedHashesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () -> HexUtil.encodeHex(digestService.digest(CONTENT)));
 
@@ -308,7 +308,7 @@ class JCADigestServiceTest {
 
     // When
     final var generatedHashesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () -> HexUtil.encodeHex(digestService.digest(new ByteArrayInputStream(CONTENT))));
 
@@ -325,7 +325,7 @@ class JCADigestServiceTest {
 
     // When
     final var generatedHashesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () -> HexUtil.encodeHex(digestService.digest(CONTENT)));
 
@@ -342,7 +342,7 @@ class JCADigestServiceTest {
 
     // When
     final var generatedHashesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () -> HexUtil.encodeHex(digestService.digest(new ByteArrayInputStream(CONTENT))));
 

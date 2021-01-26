@@ -50,9 +50,8 @@ TheIceNet Cryptography fully integrates with Spring Boot, making it easy and sea
         * [Generate hash of byte array/stream](#generate-hash-of-byte-array-or-stream)
     * Message authentication code generation
         * [MAC generation](#mac-generation)
-    * Random data generation 
-        * [Generate random initialisation vector](#generate-random-initialisation-vector)
-        * [Generate random salt](#generate-random-salt)
+    * Secure random data generation 
+        * [Generate secure random data](#generate-secure-random-data)
        
 ## Modules
 
@@ -1218,52 +1217,26 @@ Supported `mac` algorithms are,
     - HmacSHA384
     - HmacSHA512
 
-### Generate random initialisation vector
+### Generate secure random data
 
 ```java
-import com.theicenet.cryptography.randomise.RandomiseService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MyComponent {
 
-  private final RandomiseService ivService;
+  private final SecureRandomDataService secureRandomDataService;
 
   @Autowired
-  public MyComponent(@Qualifier("IV") RandomiseService ivService) {
-    this.ivService = ivService;
+  public MyComponent(SecureRandomDataService secureRandomDataService) {
+    this.secureRandomDataService = secureRandomDataService;
   }
 
-  public void generateRandomInitializationVector() {
-    // Generate 32 bytes random initialisation vector
-    byte[] initializationVector = ivService.generateRandom(32);
-  }
-}
-```
-
-### Generate random salt
-
-```java
-import com.theicenet.cryptography.randomise.RandomiseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
-@Component
-public class MyComponent {
-
-  private final RandomiseService saltService;
-
-  @Autowired
-  public MyComponent(@Qualifier("Salt") RandomiseService saltService) {
-    this.saltService = saltService;
-  }
-
-  public void generateRandomSalt() {
-    // Generate 128 bytes salt
-    byte[] salt = saltService.generateRandom(128);
+  public void generateRandomData() {
+    // Generate 32 bytes random data
+    byte[] secureRandomData = secureRandomDataService.generateSecureRandomData(32);
   }
 }
 ```

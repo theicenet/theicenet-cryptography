@@ -224,7 +224,7 @@ class JCARSAKeyServiceTest {
 
     // When generating consecutive key pairs with the same length
     final var generatedPublicKeysSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -244,7 +244,7 @@ class JCARSAKeyServiceTest {
 
     // When generating consecutive key pairs with the same length
     final var generatedPrivateKeysSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -264,7 +264,7 @@ class JCARSAKeyServiceTest {
 
     // When generating concurrently at the same time key pairs with the same length
     final var generatedPublicKeysSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -284,7 +284,7 @@ class JCARSAKeyServiceTest {
 
     // When generating concurrently at the same time key pairs with the same length
     final var generatedPrivateKeysSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(

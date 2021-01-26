@@ -571,7 +571,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -595,7 +595,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -619,7 +619,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -643,7 +643,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -717,7 +717,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 dsaSignatureService.verify(
@@ -740,7 +740,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 dsaSignatureService.verify(
@@ -763,7 +763,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 dsaSignatureService.verify(
@@ -786,7 +786,7 @@ class JCADSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 dsaSignatureService.verify(

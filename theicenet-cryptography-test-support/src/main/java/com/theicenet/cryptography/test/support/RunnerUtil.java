@@ -15,6 +15,7 @@
  */
 package com.theicenet.cryptography.test.support;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -30,21 +31,23 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class RunnerUtil {
-  private RunnerUtil() {
-  }
+public interface RunnerUtil {
 
-  public static  <T> Set<T> runConsecutively(int numberOfTime, Supplier<T> supplier) {
+  static  <T> List<T> runConsecutivelyToList(int numberOfTime, Supplier<T> supplier) {
     Validate.isTrue(numberOfTime >= 0);
     Validate.notNull(supplier);
 
     return IntStream
         .range(0, numberOfTime)
         .mapToObj(index -> supplier.get())
-        .collect(Collectors.toUnmodifiableSet());
+        .collect(Collectors.toUnmodifiableList());
   }
 
-  public static  <T> Set<T> runConcurrently(int numberConcurrentThreads, Supplier<T> supplier) {
+  static  <T> Set<T> runConsecutivelyToSet(int numberOfTime, Supplier<T> supplier) {
+    return Set.copyOf(runConsecutivelyToList(numberOfTime, supplier));
+  }
+
+  static  <T> List<T> runConcurrentlyToList(int numberConcurrentThreads, Supplier<T> supplier) {
     Validate.isTrue(numberConcurrentThreads >= 0);
     Validate.notNull(supplier);
 
@@ -53,23 +56,23 @@ public class RunnerUtil {
 
     final var futureResult =
         IntStream
-              .range(0, numberConcurrentThreads)
-              .mapToObj(index -> (Callable<T>) () -> {
-                countDownLatch.countDown();
-                LambdaUtil
-                    .throwingRunnableWrapper(countDownLatch::await)
-                    .run();
+            .range(0, numberConcurrentThreads)
+            .mapToObj(index -> (Callable<T>) () -> {
+              countDownLatch.countDown();
+              LambdaUtil
+                  .throwingRunnableWrapper(countDownLatch::await)
+                  .run();
 
-                return supplier.get();
-              })
-              .map(executorService::submit)
-              .collect(Collectors.toUnmodifiableList());
+              return supplier.get();
+            })
+            .map(executorService::submit)
+            .collect(Collectors.toUnmodifiableList());
 
     final var result =
         futureResult.stream()
             .map(future -> LambdaUtil.throwingSupplierWrapper(future::get))
             .map(Supplier::get)
-            .collect(Collectors.toUnmodifiableSet());
+            .collect(Collectors.toUnmodifiableList());
 
     executorService.shutdown();
     LambdaUtil
@@ -78,5 +81,9 @@ public class RunnerUtil {
         .run();
 
     return result;
+  }
+
+  static  <T> Set<T> runConcurrentlyToSet(int numberConcurrentThreads, Supplier<T> supplier) {
+    return Set.copyOf(runConcurrentlyToList(numberConcurrentThreads, supplier));
   }
 }

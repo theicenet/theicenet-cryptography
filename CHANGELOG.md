@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - TBC
+
+### Added
+
+- Generic service for cryptographically secure random data generation (which replaces the specific ones for IV & Salt generation) [@jjfidalgo]
+
+### Changed
+
+- Specific services for IV & Salt generation has been replaced by a single generic service for secure random data generation
+
+### Deprecated
+
+### Removed
+
+- Service for IV generation (replaced by the generic SecureRandomDataService) (no previous deprecation) [@jjfidalgo]
+- Service for Salt generation (replaced by the generic SecureRandomDataService) (no previous deprecation) [@jjfidalgo]
+
+### Fixed
+
+### Security
+
 ## [1.0.3] - 2021‑01‑24
 
 ### Added
@@ -46,7 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Random data generation for Initialization Vector (IV) and Salt [@jjfidalgo]
 - Bitbucket pipeline with the CI & release process to Maven's Central [@jjfidalgo]
 
-[unreleased]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.3...HEAD
+[unreleased]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.0...HEAD
+[1.1.0]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.3...theicenet-cryptography-1.1.0
 [1.0.3]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.2...theicenet-cryptography-1.0.3
 [1.0.2]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.1...theicenet-cryptography-1.0.2
 [1.0.1]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.0...theicenet-cryptography-1.0.1

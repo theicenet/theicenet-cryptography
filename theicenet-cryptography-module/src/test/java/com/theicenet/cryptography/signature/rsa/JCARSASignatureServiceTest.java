@@ -585,7 +585,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -605,7 +605,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 HexUtil.encodeHex(
@@ -625,7 +625,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -645,7 +645,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var generatedSignaturesSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 HexUtil.encodeHex(
@@ -715,7 +715,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 rsaSignatureService.verify(
@@ -738,7 +738,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConsecutively(
+        RunnerUtil.runConsecutivelyToSet(
             _100,
             () ->
                 rsaSignatureService.verify(
@@ -761,7 +761,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 rsaSignatureService.verify(
@@ -784,7 +784,7 @@ class JCARSASignatureServiceTest {
 
     // When
     final var verifyingResultsSet =
-        RunnerUtil.runConcurrently(
+        RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
                 rsaSignatureService.verify(

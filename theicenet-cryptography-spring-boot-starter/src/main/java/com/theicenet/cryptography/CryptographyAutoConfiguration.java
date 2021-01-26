@@ -50,9 +50,8 @@ import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2ShaAlgorithm;
 import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptKeyService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
-import com.theicenet.cryptography.randomise.RandomiseService;
-import com.theicenet.cryptography.randomise.iv.JCAIVService;
-import com.theicenet.cryptography.randomise.salt.JCASaltService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
+import com.theicenet.cryptography.random.JCASecureRandomDataService;
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.dsa.JCADSASignatureService;
@@ -184,14 +183,9 @@ public class CryptographyAutoConfiguration {
         new SCryptConfiguration(cpuMemoryCost, blockSize, parallelization));
   }
 
-  @Bean("IV")
-  public RandomiseService ivService(SecureRandom secureRandom) {
-    return new JCAIVService(secureRandom);
-  }
-
-  @Bean("Salt")
-  public RandomiseService saltService(SecureRandom secureRandom) {
-    return new JCASaltService(secureRandom);
+  @Bean("SecureRandom")
+  public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
+    return new JCASecureRandomDataService(secureRandom);
   }
 
   @Bean("Digest")

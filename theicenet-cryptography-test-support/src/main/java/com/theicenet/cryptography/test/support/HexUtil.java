@@ -23,12 +23,9 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public final class HexUtil {
+public interface HexUtil {
 
-  private HexUtil() {
-  }
-
-  public static byte[] decodeHex(String hex) {
+  static byte[] decodeHex(String hex) {
     Validate.notEmpty(hex);
 
     try {
@@ -38,7 +35,7 @@ public final class HexUtil {
     }
   }
 
-  public static String encodeHex(byte[] byteArray) {
+  static String encodeHex(byte[] byteArray) {
     Validate.notNull(byteArray);
 
     return String.valueOf(Hex.encodeHex(byteArray));

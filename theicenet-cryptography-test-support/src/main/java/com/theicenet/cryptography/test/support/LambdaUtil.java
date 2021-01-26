@@ -23,16 +23,14 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class LambdaUtil {
-  private LambdaUtil() {
-  }
+public interface LambdaUtil {
 
   @FunctionalInterface
-  public interface ThrowingRunnable<E extends Exception> {
+  interface ThrowingRunnable<E extends Exception> {
     void run() throws E;
   }
 
-  public static Runnable throwingRunnableWrapper(
+  static Runnable throwingRunnableWrapper(
       ThrowingRunnable<Exception> throwingRunnable) {
 
     Validate.notNull(throwingRunnable);
@@ -47,11 +45,11 @@ public class LambdaUtil {
   }
 
   @FunctionalInterface
-  public interface ThrowingSupplier<T, E extends Exception> {
+  interface ThrowingSupplier<T, E extends Exception> {
     T get() throws E;
   }
 
-  public static <T> Supplier<T> throwingSupplierWrapper(
+  static <T> Supplier<T> throwingSupplierWrapper(
       ThrowingSupplier<T, Exception> throwingSupplier) {
 
     Validate.notNull(throwingSupplier);
@@ -66,11 +64,11 @@ public class LambdaUtil {
   }
 
   @FunctionalInterface
-  public interface ThrowingFunction<T, R, E extends Exception> {
+  interface ThrowingFunction<T, R, E extends Exception> {
     R apply(T t) throws E;
   }
 
-  public static <T, R> Function<T, R> throwingFunctionWrapper(
+  static <T, R> Function<T, R> throwingFunctionWrapper(
       ThrowingFunction<T, R, Exception> throwingFunction) {
 
     Validate.notNull(throwingFunction);
