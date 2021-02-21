@@ -27,9 +27,10 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public interface JCASignatureUtil {
+public final class JCASignatureUtil {
+  private JCASignatureUtil() {}
 
-  static byte[] sign(PrivateKey privateKey, byte[] content, String algorithm) {
+  public static byte[] sign(PrivateKey privateKey, byte[] content, String algorithm) {
     Validate.notNull(privateKey);
     Validate.notNull(content);
     Validate.notNull(algorithm);
@@ -45,7 +46,7 @@ public interface JCASignatureUtil {
     }
   }
 
-  static boolean verify(
+  public static boolean verify(
       PublicKey publicKey,
       byte[] content,
       byte[] signature,
@@ -67,7 +68,7 @@ public interface JCASignatureUtil {
     }
   }
 
-  static byte[] sign(PrivateKey privateKey, InputStream contentInputStream, String algorithm) {
+  public static byte[] sign(PrivateKey privateKey, InputStream contentInputStream, String algorithm) {
     Validate.notNull(privateKey);
     Validate.notNull(contentInputStream);
     Validate.notNull(algorithm);
@@ -89,7 +90,7 @@ public interface JCASignatureUtil {
     }
   }
 
-  static boolean verify(
+  public static boolean verify(
       PublicKey publicKey,
       InputStream contentInputStream,
       byte[] signature,

@@ -72,10 +72,10 @@ class RunnerUtilTest {
     final var MINUS_100 = -100;
     final var TEST_CONTENT = "TEST_CONTENT";
 
-    // When
+    // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> RunnerUtil.runConsecutivelyToList(MINUS_100, () -> TEST_CONTENT));
+        () -> RunnerUtil.runConsecutivelyToList(MINUS_100, () -> TEST_CONTENT)); // When
   }
 
   @Test
@@ -147,10 +147,10 @@ class RunnerUtilTest {
     final var MINUS_100 = -100;
     final var TEST_CONTENT = "TEST_CONTENT";
 
-    // When
+    // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> RunnerUtil.runConcurrentlyToList(MINUS_100, () -> TEST_CONTENT));
+        () -> RunnerUtil.runConcurrentlyToList(MINUS_100, () -> TEST_CONTENT)); // When
   }
 
   @Test
@@ -172,10 +172,10 @@ class RunnerUtilTest {
     final var MINUS_100 = -100;
     final var TEST_CONTENT = "TEST_CONTENT";
 
-    // When
+    // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> RunnerUtil.runConsecutivelyToSet(MINUS_100, () -> TEST_CONTENT));
+        () -> RunnerUtil.runConsecutivelyToSet(MINUS_100, () -> TEST_CONTENT)); // When
   }
 
   @Test
@@ -222,9 +222,9 @@ class RunnerUtilTest {
     final var MINUS_100 = -100;
     final var TEST_CONTENT = "TEST_CONTENT";
 
-    // When
+    // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> RunnerUtil.runConcurrentlyToSet(MINUS_100, () -> TEST_CONTENT));
+        () -> RunnerUtil.runConcurrentlyToSet(MINUS_100, () -> TEST_CONTENT)); // When
   }
 }

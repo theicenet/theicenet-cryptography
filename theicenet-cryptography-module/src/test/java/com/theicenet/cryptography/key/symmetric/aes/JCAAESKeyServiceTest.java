@@ -24,7 +24,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.SecureRandom;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,11 +54,9 @@ class JCAAESKeyServiceTest {
     // Given
     final var KEY_LENGTH_MINUS_ONE = -1;
 
-    // When generating key and invalid key length
     // Then throws IllegalArgumentException
-    assertThrows(IllegalArgumentException.class, () -> {
-      aesKeyService.generateKey(KEY_LENGTH_MINUS_ONE);
-    });
+    assertThrows(IllegalArgumentException.class, () ->
+      aesKeyService.generateKey(KEY_LENGTH_MINUS_ONE)); // When generating key and invalid key length
   }
 
   @Test

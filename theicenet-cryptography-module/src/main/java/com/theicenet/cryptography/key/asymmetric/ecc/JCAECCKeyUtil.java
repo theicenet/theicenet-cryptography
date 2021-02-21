@@ -36,8 +36,7 @@ public final class JCAECCKeyUtil {
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
-  private JCAECCKeyUtil() {
-  }
+  private JCAECCKeyUtil() {}
 
   public static KeyPair generateKey(
       int keyLengthInBits,

@@ -44,7 +44,7 @@ public interface PBKDKeyService {
    *
    * @param password password to use as foundation to calculate a final key of the requested
    *                 length <b>keyLengthInBits</b>
-   * @param salt random salt ito use to calculate a final key of the requested length
+   * @param salt random salt used to calculate a final key of the requested length
    *             <b>keyLengthInBits</b>
    * @param keyLengthInBits length in bits the generated final key must have
    * @return a final <b>repeatable and deterministic</b> key with a length in bits of

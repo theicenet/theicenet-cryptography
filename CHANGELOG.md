@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Specific services for IV & Salt generation has been replaced by a single generic service for secure random data generation
+- All library beans are loaded lazily
 
 ### Deprecated
 

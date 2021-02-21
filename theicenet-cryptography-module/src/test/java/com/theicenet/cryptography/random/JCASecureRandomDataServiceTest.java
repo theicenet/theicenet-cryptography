@@ -25,7 +25,7 @@ import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.SecureRandom;
 import java.util.Collections;
@@ -58,11 +58,10 @@ class JCASecureRandomDataServiceTest {
     // Given
     final var RANDOM_DATA_LENGTH_MINUS_ONE = -1;
 
-    // When generating random data and invalid length
     // Then throws IllegalArgumentException
     assertThrows(
         IllegalArgumentException.class,
-        () -> secureRandomDataService.generateSecureRandomData(RANDOM_DATA_LENGTH_MINUS_ONE));
+        () -> secureRandomDataService.generateSecureRandomData(RANDOM_DATA_LENGTH_MINUS_ONE)); // When generating random data and invalid length
   }
 
   @Test

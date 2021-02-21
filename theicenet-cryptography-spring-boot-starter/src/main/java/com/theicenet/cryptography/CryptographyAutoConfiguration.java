@@ -64,6 +64,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * @author Juan Fidalgo
@@ -77,11 +78,13 @@ public class CryptographyAutoConfiguration {
     return new SecureRandom();
   }
 
+  @Lazy
   @Bean("AESKey")
   public SymmetricKeyService aesKeyService(SecureRandom secureRandom) {
     return new JCAAESKeyService(secureRandom);
   }
 
+  @Lazy
   @Bean("AESIVBasedCipher")
   public SymmetricIVBasedCipherService aesIVBasedCipherService(
       @Value("${cryptography.cipher.symmetric.aes.blockMode:CTR}") BlockCipherIVBasedModeOfOperation blockMode) {
@@ -89,16 +92,19 @@ public class CryptographyAutoConfiguration {
     return new JCAAESIVBasedCipherService(blockMode);
   }
 
+  @Lazy
   @Bean("AESNonIVBasedCipher")
   public SymmetricNonIVBasedCipherService aesCipherService() {
     return new JCAAESNonIVBasedCipherService(BlockCipherNonIVBasedModeOfOperation.ECB);
   }
 
+  @Lazy
   @Bean("RSAKey")
   public AsymmetricKeyService rsaKeyService(SecureRandom secureRandom) {
     return new JCARSAKeyService(secureRandom);
   }
 
+  @Lazy
   @Bean("RSACipher")
   public AsymmetricCipherService rsaCipherService(
       @Value("${cryptography.cipher.asymmetric.rsa.padding:OAEPWithSHA256AndMGF1Padding}") RSAPadding padding) {
@@ -106,6 +112,7 @@ public class CryptographyAutoConfiguration {
     return new JCARSACipherService(padding);
   }
 
+  @Lazy
   @Bean("RSASignature")
   public SignatureService rsaSignatureService(
       @Value("${cryptography.signature.asymmetric.rsa.algorithm:SHA256withRSA_PSS}") RSASignatureAlgorithm algorithm) {
@@ -113,11 +120,13 @@ public class CryptographyAutoConfiguration {
     return new JCARSASignatureService(algorithm);
   }
 
+  @Lazy
   @Bean("DSAKey")
   public AsymmetricKeyService dsaKeyService(SecureRandom secureRandom) {
     return new JCADSAKeyService(secureRandom);
   }
 
+  @Lazy
   @Bean("DSASignature")
   public SignatureService dsaSignatureService(
       @Value("${cryptography.signature.asymmetric.dsa.algorithm:SHA256withDSA}") DSASignatureAlgorithm algorithm) {
@@ -125,6 +134,7 @@ public class CryptographyAutoConfiguration {
     return new JCADSASignatureService(algorithm);
   }
 
+  @Lazy
   @Bean("ECDSAKey")
   public AsymmetricKeyService ecdsaKeyService(
       @Value("${cryptography.key.asymmetric.ecc.ecdsa.curve:brainpoolpXXXt1}") ECCCurve curve,
@@ -133,6 +143,7 @@ public class CryptographyAutoConfiguration {
     return new JCAECDSAKeyService(curve, secureRandom);
   }
 
+  @Lazy
   @Bean("ECDSASignature")
   public SignatureService ecdsaSignatureService(
       @Value("${cryptography.signature.asymmetric.ecdsa.algorithm:SHA256withECDSA}") ECDSASignatureAlgorithm algorithm) {
@@ -140,6 +151,7 @@ public class CryptographyAutoConfiguration {
     return new JCAECDSASignatureService(algorithm);
   }
 
+  @Lazy
   @Bean("ECDHKey")
   public AsymmetricKeyService ecdhKeyService(
       @Value("${cryptography.key.asymmetric.ecc.ecdh.curve:brainpoolpXXXt1}") ECCCurve curve,
@@ -148,11 +160,13 @@ public class CryptographyAutoConfiguration {
     return new JCAECDHKeyService(curve, secureRandom);
   }
 
+  @Lazy
   @Bean("ECDHKeyAgreement")
   public KeyAgreementService ecdhKeyAgreementService() {
     return new JCACEDHKeyAgreementService();
   }
 
+  @Lazy
   @Bean("PBKDArgon2")
   public PBKDKeyService pbkdArgon2KeyService(
       @Value("${cryptography.keyDerivationFunction.argon2.type:ARGON2_ID}") Argon2Type type,
@@ -165,6 +179,7 @@ public class CryptographyAutoConfiguration {
         new Argon2Configuration(type, version, iterations, memoryPowOfTwo, parallelism));
   }
 
+  @Lazy
   @Bean("PBKDF2")
   public PBKDKeyService pbkdF2KeyService(
       @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm:SHA512}") PBKDF2ShaAlgorithm shaAlgorithm,
@@ -173,6 +188,7 @@ public class CryptographyAutoConfiguration {
     return new JCAPBKDF2WithHmacSHAKeyService(new PBKDF2Configuration(shaAlgorithm, iterations));
   }
 
+  @Lazy
   @Bean("PBKDSCrypt")
   public PBKDKeyService pbkdSCryptKeyService(
       @Value("${cryptography.keyDerivationFunction.scrypt.cpuMemoryCost:1048576}") Integer cpuMemoryCost,
@@ -183,11 +199,13 @@ public class CryptographyAutoConfiguration {
         new SCryptConfiguration(cpuMemoryCost, blockSize, parallelization));
   }
 
+  @Lazy
   @Bean("SecureRandom")
   public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
     return new JCASecureRandomDataService(secureRandom);
   }
 
+  @Lazy
   @Bean("Digest")
   public DigestService digestService(
       @Value("${cryptography.digest.algorithm:SHA_256}") DigestAlgorithm algorithm) {
@@ -195,6 +213,7 @@ public class CryptographyAutoConfiguration {
     return new JCADigestService(algorithm);
   }
 
+  @Lazy
   @Bean("Hmac")
   public MacService hmacService(
       @Value("${cryptography.mac.algorithm:HmacSHA256}") HmacAlgorithm algorithm) {

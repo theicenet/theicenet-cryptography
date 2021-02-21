@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -177,14 +177,12 @@ class JCAAESIVBasedCipherServiceTest {
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
-    // When encrypting AES with invalid IV size
     // Then throws IllegalArgumentException
-    assertThrows(IllegalArgumentException.class, () -> {
-      aesCipherService.encrypt(
+    assertThrows(IllegalArgumentException.class, () ->
+      aesCipherService.encrypt( // When encrypting AES with invalid IV size
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
-          CLEAR_CONTENT);
-    });
+          CLEAR_CONTENT));
   }
 
   @ParameterizedTest
@@ -199,15 +197,13 @@ class JCAAESIVBasedCipherServiceTest {
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
-    // When encrypting AES with invalid IV size
     // Then throws IllegalArgumentException
-    assertThrows(IllegalArgumentException.class, () -> {
-      aesCipherService.encrypt(
+    assertThrows(IllegalArgumentException.class, () ->
+      aesCipherService.encrypt( // When encrypting AES with invalid IV size
           SECRET_KEY_1234567890123456_128_BITS,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
           clearInputStream,
-          encryptedOutputStream);
-    });
+          encryptedOutputStream));
   }
 
   @ParameterizedTest
@@ -635,14 +631,12 @@ class JCAAESIVBasedCipherServiceTest {
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
-    // When decrypting AES with invalid IV size
     // Then throws IllegalArgumentException
-    assertThrows(IllegalArgumentException.class, () -> {
-      aesCipherService.decrypt(
+    assertThrows(IllegalArgumentException.class, () ->
+      aesCipherService.decrypt( // When decrypting AES with invalid IV size
           secretKey,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
-          encryptedContent);
-    });
+          encryptedContent));
   }
 
   @ParameterizedTest
@@ -662,15 +656,13 @@ class JCAAESIVBasedCipherServiceTest {
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
 
-    // When decrypting AES with invalid IV size
     // Then throws IllegalArgumentException
-    assertThrows(IllegalArgumentException.class, () -> {
-      aesCipherService.decrypt(
+    assertThrows(IllegalArgumentException.class, () ->
+      aesCipherService.decrypt( // When decrypting AES with invalid IV size
           secretKey,
           INITIALIZATION_VECTOR_KLMNOPQR_64_BITS,
           encryptedInputStream,
-          clearOutputStream);
-    });
+          clearOutputStream));
   }
 
   @ParameterizedTest

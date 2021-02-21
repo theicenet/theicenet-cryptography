@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.test.support;
+package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
+
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Juan Fidalgo
- * @since 1.0.0
  */
-public class HexException extends RuntimeException {
-
-  public HexException(Throwable cause) {
-    super(cause);
+class SRP6StandardGroupTest {
+  @Test
+  void checkIsImmutable() {
+    assertImmutable(SRP6StandardGroup.class);
   }
 }

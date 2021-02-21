@@ -63,7 +63,9 @@ class LambdaUtilTest {
         LambdaUtil.throwingRunnableWrapper(throwingCheckedExceptionRunnable);
 
     // Then
-    assertThrows(LambdaException.class, producedRunnable::run);
+    assertThrows(
+        LambdaException.class,
+        producedRunnable::run); // When
   }
 
   @Test
@@ -92,7 +94,9 @@ class LambdaUtilTest {
         LambdaUtil.throwingSupplierWrapper(throwingCheckedExceptionSupplier);
 
     // Then
-    assertThrows(LambdaException.class, producedSupplier::get);
+    assertThrows(
+        LambdaException.class,
+        producedSupplier::get); // When
   }
 
   @Test
@@ -121,6 +125,10 @@ class LambdaUtilTest {
         LambdaUtil.throwingFunctionWrapper(throwingCheckedExceptionFunction);
 
     // Then
-    assertThrows(LambdaException.class, () -> producedFunction.apply("test"));
+    assertThrows(
+        LambdaException.class,
+        () ->
+            // When
+            producedFunction.apply("test"));
   }
 }

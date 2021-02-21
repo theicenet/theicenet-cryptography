@@ -13,31 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.test.support;
-
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang.Validate;
+package com.theicenet.cryptography.util;
 
 /**
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public interface HexUtil {
+public class HexException extends RuntimeException {
 
-  static byte[] decodeHex(String hex) {
-    Validate.notEmpty(hex);
-
-    try {
-      return Hex.decodeHex(hex);
-    } catch (DecoderException e) {
-      throw new HexException(e);
-    }
-  }
-
-  static String encodeHex(byte[] byteArray) {
-    Validate.notNull(byteArray);
-
-    return String.valueOf(Hex.encodeHex(byteArray));
+  public HexException(Throwable cause) {
+    super(cause);
   }
 }

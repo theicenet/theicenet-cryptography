@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.test.support;
+package com.theicenet.cryptography.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -99,7 +99,11 @@ class HexUtilTest {
     // Given
     final var INVALID_HEX_REPRESENTATION = "ABCDEFXXXYY";
 
-    // When
-    assertThrows(HexException.class, () -> HexUtil.decodeHex(INVALID_HEX_REPRESENTATION));
+    // Then
+    assertThrows(
+        HexException.class,
+        () ->
+            // When
+            HexUtil.decodeHex(INVALID_HEX_REPRESENTATION));
   }
 }

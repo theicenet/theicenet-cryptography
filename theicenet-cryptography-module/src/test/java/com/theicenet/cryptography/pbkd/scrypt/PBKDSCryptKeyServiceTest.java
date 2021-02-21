@@ -24,7 +24,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;

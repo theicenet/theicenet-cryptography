@@ -78,7 +78,6 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
       String algorithm,
       PBEKeySpec pbeKeySpec) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-    final SecretKeyFactory secretFactory = SecretKeyFactory.getInstance(algorithm);
-    return secretFactory.generateSecret(pbeKeySpec);
+    return SecretKeyFactory.getInstance(algorithm).generateSecret(pbeKeySpec);
   }
 }

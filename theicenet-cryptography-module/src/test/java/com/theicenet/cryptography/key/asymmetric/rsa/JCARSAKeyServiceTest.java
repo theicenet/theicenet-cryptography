@@ -25,7 +25,7 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.KeyFactory;
 import java.security.SecureRandom;
@@ -59,11 +59,9 @@ class JCARSAKeyServiceTest {
     // Given
     final var KEY_LENGTH_MINUS_ONE = -1;
 
-    // When generating key and invalid key length
     // Then throws IllegalArgumentException
-    assertThrows(IllegalArgumentException.class, () -> {
-      rsaKeyService.generateKey(KEY_LENGTH_MINUS_ONE);
-    });
+    assertThrows(IllegalArgumentException.class, () ->
+      rsaKeyService.generateKey(KEY_LENGTH_MINUS_ONE)); // When generating key and invalid key length
   }
 
   @Test

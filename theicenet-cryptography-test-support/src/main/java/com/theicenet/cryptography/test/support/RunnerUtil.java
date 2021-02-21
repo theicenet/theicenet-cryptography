@@ -31,9 +31,11 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public interface RunnerUtil {
+public final class RunnerUtil {
 
-  static  <T> List<T> runConsecutivelyToList(int numberOfTime, Supplier<T> supplier) {
+  private RunnerUtil() {}
+
+  public static  <T> List<T> runConsecutivelyToList(int numberOfTime, Supplier<T> supplier) {
     Validate.isTrue(numberOfTime >= 0);
     Validate.notNull(supplier);
 
@@ -43,11 +45,11 @@ public interface RunnerUtil {
         .collect(Collectors.toUnmodifiableList());
   }
 
-  static  <T> Set<T> runConsecutivelyToSet(int numberOfTime, Supplier<T> supplier) {
+  public static  <T> Set<T> runConsecutivelyToSet(int numberOfTime, Supplier<T> supplier) {
     return Set.copyOf(runConsecutivelyToList(numberOfTime, supplier));
   }
 
-  static  <T> List<T> runConcurrentlyToList(int numberConcurrentThreads, Supplier<T> supplier) {
+  public static  <T> List<T> runConcurrentlyToList(int numberConcurrentThreads, Supplier<T> supplier) {
     Validate.isTrue(numberConcurrentThreads >= 0);
     Validate.notNull(supplier);
 
@@ -83,7 +85,7 @@ public interface RunnerUtil {
     return result;
   }
 
-  static  <T> Set<T> runConcurrentlyToSet(int numberConcurrentThreads, Supplier<T> supplier) {
+  public static  <T> Set<T> runConcurrentlyToSet(int numberConcurrentThreads, Supplier<T> supplier) {
     return Set.copyOf(runConcurrentlyToList(numberConcurrentThreads, supplier));
   }
 }

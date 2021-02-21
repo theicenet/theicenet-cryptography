@@ -24,7 +24,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.pbkd.PBKDKeyServiceException;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
@@ -218,6 +218,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
     assertThrows(
         IllegalArgumentException.class,
         () ->
+            // When
             pbkdKeyService.generateKey(
                 PASSWORD_1234567890_80_BITS,
                 SALT_GHIJKLMNOPQRSTUVWXYZ_20_BYTES,

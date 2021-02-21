@@ -22,7 +22,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
 import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.KeyFactory;
 import java.security.PrivateKey;

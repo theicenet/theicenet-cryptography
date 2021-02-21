@@ -20,7 +20,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;

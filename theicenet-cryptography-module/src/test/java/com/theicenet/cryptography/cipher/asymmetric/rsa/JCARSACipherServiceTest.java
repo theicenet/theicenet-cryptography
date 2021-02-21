@@ -23,7 +23,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;

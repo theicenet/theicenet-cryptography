@@ -24,7 +24,7 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.KeyFactory;

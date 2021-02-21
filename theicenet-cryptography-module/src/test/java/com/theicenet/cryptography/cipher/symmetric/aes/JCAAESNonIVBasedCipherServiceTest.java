@@ -24,7 +24,7 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
