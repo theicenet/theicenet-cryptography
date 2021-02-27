@@ -13,8 +13,8 @@ pipelines:
           caches:
             - maven
           script:
-            - openssl aes-256-cbc -d -a -md sha256 -iter 131070 -pass pass:$GPG_SIGNING_PRIVATE_KEY_PASSWORD -in private-key.gpg.enc -out private-key.gpg
-            - gpg --import private-key.gpg
+            - openssl aes-256-cbc -d -a -md sha512 -pbkdf2 -iter 1048576 -pass pass:"$THEICENET_RELEASE_PIPELINE_GPG_AES_PASSWORD" -in private-key.gpg.enc -out private-key.gpg
+            - gpg --batch --import private-key.gpg
             - mvn -V -B release:clean -Prelease
             - mvn -V -B release:prepare -Prelease
             - mvn -V -B -s settings.xml release:perform -Prelease

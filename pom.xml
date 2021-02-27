@@ -370,6 +370,14 @@
                 </goals>
               </execution>
             </executions>
+            <configuration>
+              <gpgArguments>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+              </gpgArguments>
+              <keyname>release.pipeline@theicenet.com</keyname>
+              <passphrase>${env.THEICENET_RELEASE_PIPELINE_GPG_PRIVATE_KEY_PASSWORD}</passphrase>
+            </configuration>
           </plugin>
         </plugins>
       </build>
