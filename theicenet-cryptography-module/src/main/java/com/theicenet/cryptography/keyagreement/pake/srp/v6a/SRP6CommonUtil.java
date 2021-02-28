@@ -21,8 +21,8 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUti
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toUnsignedByteArray;
 
 import com.theicenet.cryptography.digest.DigestService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -201,22 +201,23 @@ final class SRP6CommonUtil {
    * @see <a href="https://en.wikipedia.org/wiki/Secure_Remote_Password_protocol">Secure Remote Password protocol</a>
    *
    * @param N The safe prime parameter 'N' (a prime of the form N=2q+1, where q is also prime)
-   * @param random Source of secure randomness
+   * @param randomDataService Source of secure randomness
    * @return the resulting client or server's private value ('a' or 'b').
    */
-  static BigInteger generatePrivateValue(BigInteger N, SecureRandom random) {
+  static BigInteger generatePrivateValue(BigInteger N, SecureRandomDataService randomDataService) {
     Validate.notNull(N);
-    Validate.notNull(random);
+    Validate.notNull(randomDataService);
 
     final int MIN_BITS = 256;
 
     final int minBits = Math.max(MIN_BITS + 8, N.bitLength()); // MIN_BITS is increased by 8 bits to reduce chances of getting a value which is in effect less than MIN_BITS in length
+    final int minBytes = (minBits + 7) / 8;
 
-    BigInteger generatedValue = BigInteger.ZERO;
-    while(generatedValue.bitLength() < MIN_BITS){ // Iterate till generated values is at least MIN_BITS long. As minBits >= MIN_BITS + 8 there are good chances (1 - 1/2^8) it will get a valid value in the first shot
-      generatedValue = new BigInteger(minBits, random);
-    }
-
+    BigInteger generatedValue;
+    do {
+      generatedValue = toBigInteger(randomDataService.generateSecureRandomData(minBytes));
+    } while (generatedValue.bitLength() < MIN_BITS); // Iterate till generated values is at least MIN_BITS long. As minBits >= MIN_BITS + 8 there are good chances (1 - 1/2^8) it will get a valid value in the first shot
+    
     return generatedValue;
   }
 

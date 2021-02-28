@@ -41,12 +41,12 @@ public class JCASecureRandomDataService implements SecureRandomDataService {
    * @implNote Produced data is <b>secure random</b> generated as requested in the API interface.
    */
   @Override
-  public byte[] generateSecureRandomData(int ivLengthInBytes) {
-    Validate.isTrue(ivLengthInBytes > 0);
+  public byte[] generateSecureRandomData(int lengthInBytes) {
+    Validate.isTrue(lengthInBytes > 0);
 
-    final byte[] iv = new byte[ivLengthInBytes];
-    secureRandom.nextBytes(iv);
+    final byte[] randomBytes = new byte[lengthInBytes];
+    secureRandom.nextBytes(randomBytes);
 
-    return iv;
+    return randomBytes;
   }
 }

@@ -20,6 +20,7 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUti
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.isValidPublicValue;
 
 import com.theicenet.cryptography.digest.DigestService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import org.apache.commons.lang.Validate;
@@ -90,7 +91,7 @@ final class SRP6ClientUtil {
    * @param N The safe prime parameter 'N' (a prime of the form N=2q+1, where q is also prime)
    * @param g The generator of the multiplicative group 'g'
    * @param a The client's private value
-   *          computed by {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil#generatePrivateValue(BigInteger, SecureRandom) generatePrivateValue(N, random)}
+   *          computed by {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil#generatePrivateValue(BigInteger, SecureRandomDataService)  generatePrivateValue(N, random)}
    * @return the resulting client's public value 'A'
    */
   static BigInteger computeA(BigInteger N, BigInteger g, BigInteger a) {
@@ -124,7 +125,7 @@ final class SRP6ClientUtil {
    * @param u The common 'u' value
    *          computed by {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil#computeU(DigestService, BigInteger, BigInteger, BigInteger) computeU(digest, N, A, B)}
    * @param a The client's private value
-   *          computed by {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil#generatePrivateValue(BigInteger, SecureRandom) generatePrivateValue(N, random)}
+   *          computed by {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil#generatePrivateValue(BigInteger, SecureRandomDataService)  generatePrivateValue(N, random)}
    * @param B The server's public value 'B'. B mod N must be != 0 (according to specification)
    * @return the resulting pre-master secret 'S'
    */

@@ -45,6 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
+import com.theicenet.cryptography.random.JCASecureRandomDataService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -61,6 +63,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 class SRP6CommonUtilTest {
 
   final SecureRandom secureRandom = new SecureRandom();
+  final SecureRandomDataService randomDataService = new JCASecureRandomDataService(secureRandom);
 
   final DigestService sha256Digest = new JCADigestService(HASH_SHA_256);
 
@@ -464,24 +467,24 @@ class SRP6CommonUtilTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> SRP6CommonUtil.generatePrivateValue(NULL_N, secureRandom)); // When
+        () -> SRP6CommonUtil.generatePrivateValue(NULL_N, randomDataService)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingPrivateValueAndNullSecureRandom() {
+  void throwsIllegalArgumentExceptionWhenGeneratingPrivateValueAndNullRandomDataService() {
     // Given
-    final SecureRandom NULL_SECURE_RANDOM = null;
+    final SecureRandomDataService NULL_RANDOM_DATA_SERVICE = null;
 
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> SRP6CommonUtil.generatePrivateValue(N, NULL_SECURE_RANDOM)); // When
+        () -> SRP6CommonUtil.generatePrivateValue(N, NULL_RANDOM_DATA_SERVICE)); // When
   }
 
   @Test
   void producesNotNullWhenGeneratingPrivateValue() {
     // When
-    final var generatedPrivateValue = SRP6CommonUtil.generatePrivateValue(N, secureRandom);
+    final var generatedPrivateValue = SRP6CommonUtil.generatePrivateValue(N, randomDataService);
 
     // Then
     assertThat(generatedPrivateValue, is(notNullValue()));
@@ -491,7 +494,8 @@ class SRP6CommonUtilTest {
   @MethodSource("safePrimeForDifferentLengths")
   void producesValueWithLengthAtLeast256BitsWhenGeneratingPrivateValue(BigInteger safePrimeN) {
     // When
-    final var generatedPrivateValue = SRP6CommonUtil.generatePrivateValue(safePrimeN, secureRandom);
+    final var generatedPrivateValue =
+        SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService);
 
     //Then
     assertThat(generatedPrivateValue.bitLength(), is(greaterThanOrEqualTo(256)));
@@ -507,7 +511,7 @@ class SRP6CommonUtilTest {
     final var generatedPrivateValuesList =
         RunnerUtil.runConsecutivelyToList(
             _10_000,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, secureRandom));
+            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
 
     //Then
     assertThat(
@@ -528,7 +532,7 @@ class SRP6CommonUtilTest {
     final var generatedPrivateValuesSet =
         RunnerUtil.runConsecutivelyToSet(
             _10_000,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, secureRandom));
+            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
 
     //Then
     assertThat(generatedPrivateValuesSet, hasSize(_10_000));
@@ -544,7 +548,7 @@ class SRP6CommonUtilTest {
     final var generatedPrivateValuesList =
         RunnerUtil.runConcurrentlyToList(
             _500,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, secureRandom));
+            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
 
     //Then
     assertThat(
@@ -565,7 +569,7 @@ class SRP6CommonUtilTest {
     final var generatedPrivateValuesSet =
         RunnerUtil.runConcurrentlyToList(
             _500,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, secureRandom));
+            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
 
     //Then
     assertThat(generatedPrivateValuesSet, hasSize(_500));
