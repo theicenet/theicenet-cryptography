@@ -18,12 +18,9 @@ package com.theicenet.cryptography;
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
 import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
-import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESIVBasedCipherService;
-import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVBasedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
+import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVCipherService;
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
@@ -50,8 +47,8 @@ import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2ShaAlgorithm;
 import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptKeyService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
-import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.random.JCASecureRandomDataService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.dsa.JCADSASignatureService;
@@ -68,6 +65,7 @@ import org.springframework.context.annotation.Lazy;
 
 /**
  * @author Juan Fidalgo
+ * @since 1.0.0
  */
 @Configuration
 public class CryptographyAutoConfiguration {
@@ -85,17 +83,9 @@ public class CryptographyAutoConfiguration {
   }
 
   @Lazy
-  @Bean("AESIVBasedCipher")
-  public SymmetricIVBasedCipherService aesIVBasedCipherService(
-      @Value("${cryptography.cipher.symmetric.aes.blockMode:CTR}") BlockCipherIVBasedModeOfOperation blockMode) {
-
-    return new JCAAESIVBasedCipherService(blockMode);
-  }
-
-  @Lazy
-  @Bean("AESNonIVBasedCipher")
-  public SymmetricNonIVBasedCipherService aesCipherService() {
-    return new JCAAESNonIVBasedCipherService(BlockCipherNonIVBasedModeOfOperation.ECB);
+  @Bean("AESNonIVCipher")
+  public SymmetricNonIVCipherService aesCipherService() {
+    return new JCAAESNonIVCipherService(BlockCipherNonIVModeOfOperation.ECB);
   }
 
   @Lazy

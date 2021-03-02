@@ -23,8 +23,8 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
@@ -42,14 +42,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * @author Juan Fidalgo
  */
-class JCAAESIVBasedCipherServiceTest {
+class JCAAESIVCipherServiceTest {
 
   // Given
   static final String AES = "AES";
-  static final BlockCipherIVBasedModeOfOperation CBC = BlockCipherIVBasedModeOfOperation.CBC;
-  static final BlockCipherIVBasedModeOfOperation CFB = BlockCipherIVBasedModeOfOperation.CFB;
-  static final BlockCipherIVBasedModeOfOperation OFB = BlockCipherIVBasedModeOfOperation.OFB;
-  static final BlockCipherIVBasedModeOfOperation CTR = BlockCipherIVBasedModeOfOperation.CTR;
+  static final BlockCipherIVModeOfOperation CBC = BlockCipherIVModeOfOperation.CBC;
+  static final BlockCipherIVModeOfOperation CFB = BlockCipherIVModeOfOperation.CFB;
+  static final BlockCipherIVModeOfOperation OFB = BlockCipherIVModeOfOperation.OFB;
+  static final BlockCipherIVModeOfOperation CTR = BlockCipherIVModeOfOperation.CTR;
 
   static final byte[] CLEAR_CONTENT =
       "Content to encrypt with AES and different options for block cipher mode of operation"
@@ -95,10 +95,10 @@ class JCAAESIVBasedCipherServiceTest {
               + "92d28c725751474");
 
   @ParameterizedTest
-  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
-  void producesNotNullWhenEncryptingByteArray(BlockCipherIVBasedModeOfOperation blockMode) {
+  @EnumSource(BlockCipherIVModeOfOperation.class)
+  void producesNotNullWhenEncryptingByteArray(BlockCipherIVModeOfOperation blockMode) {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -112,10 +112,10 @@ class JCAAESIVBasedCipherServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
-  void producesNotNullWhenEncryptingStream(BlockCipherIVBasedModeOfOperation blockMode) {
+  @EnumSource(BlockCipherIVModeOfOperation.class)
+  void producesNotNullWhenEncryptingStream(BlockCipherIVModeOfOperation blockMode) {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -132,10 +132,10 @@ class JCAAESIVBasedCipherServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
-  void producesNotEmptyWhenEncryptingByteArray(BlockCipherIVBasedModeOfOperation blockMode) {
+  @EnumSource(BlockCipherIVModeOfOperation.class)
+  void producesNotEmptyWhenEncryptingByteArray(BlockCipherIVModeOfOperation blockMode) {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -149,10 +149,10 @@ class JCAAESIVBasedCipherServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
-  void producesNotEmptyWhenEncryptingByteStream(BlockCipherIVBasedModeOfOperation blockMode) {
+  @EnumSource(BlockCipherIVModeOfOperation.class)
+  void producesNotEmptyWhenEncryptingByteStream(BlockCipherIVModeOfOperation blockMode) {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -169,10 +169,11 @@ class JCAAESIVBasedCipherServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
-  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayWithInvalidIVSize(BlockCipherIVBasedModeOfOperation blockMode) {
+  @EnumSource(BlockCipherIVModeOfOperation.class)
+  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayWithInvalidIVSize(
+      BlockCipherIVModeOfOperation blockMode) {
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -186,10 +187,11 @@ class JCAAESIVBasedCipherServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(BlockCipherIVBasedModeOfOperation.class)
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamWithInvalidIVSize(BlockCipherIVBasedModeOfOperation blockMode) {
+  @EnumSource(BlockCipherIVModeOfOperation.class)
+  void throwsIllegalArgumentExceptionWhenEncryptingStreamWithInvalidIVSize(
+      BlockCipherIVModeOfOperation blockMode) {
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -208,13 +210,13 @@ class JCAAESIVBasedCipherServiceTest {
 
   @ParameterizedTest
   @EnumSource(
-      value = BlockCipherIVBasedModeOfOperation.class,
+      value = BlockCipherIVModeOfOperation.class,
       names = {"CBC"},
       mode = EnumSource.Mode.EXCLUDE)
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingByteArray(
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -230,8 +232,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingByteArrayWithBlockModeCBC() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CBC);
 
     // When
     final var encrypted =
@@ -248,13 +250,13 @@ class JCAAESIVBasedCipherServiceTest {
 
   @ParameterizedTest
   @EnumSource(
-      value = BlockCipherIVBasedModeOfOperation.class,
+      value = BlockCipherIVModeOfOperation.class,
       names = {"CBC"},
       mode = EnumSource.Mode.EXCLUDE)
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingStream(
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -273,8 +275,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingStreamWithBlockModeCBC() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CBC);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CBC);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -298,11 +300,11 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] clearContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode,
+      BlockCipherIVModeOfOperation blockMode,
       byte[] expectedEncryptedResult) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var encrypted =
@@ -321,11 +323,11 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] clearContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode,
+      BlockCipherIVModeOfOperation blockMode,
       byte[] expectedEncryptedResult) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var clearInputStream = new ByteArrayInputStream(clearContent);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -373,8 +375,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     // When
     final var encrypted_1 =
@@ -396,8 +398,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     // When
     final var clearInputStream_1 = new ByteArrayInputStream(CLEAR_CONTENT);
@@ -423,8 +425,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _100 = 100;
 
@@ -446,8 +448,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _100 = 100;
 
@@ -475,8 +477,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _500 = 500;
 
@@ -497,8 +499,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _500 = 500;
 
@@ -529,10 +531,10 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -551,10 +553,10 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
@@ -576,10 +578,10 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -598,10 +600,10 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
@@ -623,10 +625,10 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
 
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -645,10 +647,10 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode) {
 
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
@@ -671,11 +673,11 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode,
+      BlockCipherIVModeOfOperation blockMode,
       byte[] expectedDecryptedResult) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -694,11 +696,11 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode,
+      BlockCipherIVModeOfOperation blockMode,
       byte[] expectedDecryptedResult) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
@@ -720,11 +722,11 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode,
+      BlockCipherIVModeOfOperation blockMode,
       byte[] expectedDecryptedResult) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     // When
     final var decrypted =
@@ -743,11 +745,11 @@ class JCAAESIVBasedCipherServiceTest {
       byte[] encryptedContent,
       SecretKey secretKey,
       byte[] iv,
-      BlockCipherIVBasedModeOfOperation blockMode,
+      BlockCipherIVModeOfOperation blockMode,
       byte[] expectedDecryptedResult) {
 
     // Given
-    final SymmetricIVBasedCipherService aesCipherService = new JCAAESIVBasedCipherService(blockMode);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(blockMode);
 
     final var encryptedInputStream = new ByteArrayInputStream(encryptedContent);
     final var clearOutputStream = new ByteArrayOutputStream();
@@ -795,8 +797,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     // When
     final var decrypted_1 =
@@ -818,8 +820,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     // When
     final var encryptedInputStream_1 = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
@@ -848,8 +850,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _100 = 100;
 
@@ -871,8 +873,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _100 = 100;
 
@@ -900,8 +902,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _500 = 500;
 
@@ -922,8 +924,8 @@ class JCAAESIVBasedCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVBasedCipherService aesCipherService =
-        new JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService =
+        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
 
     final var _500 = 500;
 

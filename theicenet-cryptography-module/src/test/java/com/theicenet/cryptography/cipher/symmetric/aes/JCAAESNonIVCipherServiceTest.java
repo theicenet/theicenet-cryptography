@@ -22,8 +22,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVBasedModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.util.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Juan Fidalgo
  */
-class JCAAESNonIVBasedCipherServiceTest {
+class JCAAESNonIVCipherServiceTest {
   // Given
   final String AES = "AES";
 
@@ -57,11 +57,11 @@ class JCAAESNonIVBasedCipherServiceTest {
               + "b3f8e588b41a7ab826fc440227e99ae6e1df2d50b4b00fce059bc32"
               + "c93e9fd7c5938327e38ab");
 
-  SymmetricNonIVBasedCipherService aesCipherService;
+  SymmetricNonIVCipherService aesCipherService;
 
   @BeforeEach
   void setUp() {
-    aesCipherService = new JCAAESNonIVBasedCipherService(BlockCipherNonIVBasedModeOfOperation.ECB);
+    aesCipherService = new JCAAESNonIVCipherService(BlockCipherNonIVModeOfOperation.ECB);
   }
 
   @Test

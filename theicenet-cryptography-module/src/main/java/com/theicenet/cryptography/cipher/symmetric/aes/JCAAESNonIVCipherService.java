@@ -15,20 +15,19 @@
  */
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVBasedModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherServiceException;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.lang.Validate;
 
 /**
  * Java Cryptography Architecture (JCA) based component which encrypts and decrypts using AES
- * algorithm and an IV based block mode of operation.
+ * algorithm and a non IV based block mode of operation.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">Advanced Encryption Standard (AES)</a>
  * @see <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">Block cipher mode of operation</a>
@@ -40,36 +39,26 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService {
+public class JCAAESNonIVCipherService implements SymmetricNonIVCipherService {
 
-  private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;
-  private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
-      "IV's size must be equals to AES cipher block size = %s bytes";
+  private final BlockCipherNonIVModeOfOperation blockMode;
 
-  private final BlockCipherIVBasedModeOfOperation blockMode;
-
-  public JCAAESIVBasedCipherService(BlockCipherIVBasedModeOfOperation blockMode) {
+  public JCAAESNonIVCipherService(
+      BlockCipherNonIVModeOfOperation blockMode) {
     this.blockMode = blockMode;
   }
 
   @Override
-  public byte[] encrypt(SecretKey secretKey, byte[] iv, byte[] clearContent) {
+  public byte[] encrypt(SecretKey secretKey, byte[] clearContent) {
     return process(
         Cipher.ENCRYPT_MODE,
-        blockMode,
         secretKey,
-        iv,
         clearContent);
   }
 
   @Override
-  public byte[] decrypt(SecretKey secretKey, byte[] iv, byte[] encryptedContent) {
-    return process(
-        Cipher.DECRYPT_MODE,
-        blockMode,
-        secretKey,
-        iv,
-        encryptedContent);
+  public byte[] decrypt(SecretKey secretKey, byte[] encryptedContent) {
+    return process(Cipher.DECRYPT_MODE, secretKey, encryptedContent);
   }
 
   /**
@@ -79,15 +68,12 @@ public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService
   @Override
   public void encrypt(
       SecretKey secretKey,
-      byte[] iv,
       InputStream clearContentInputStream,
       OutputStream encryptedContentOutputStream) {
 
     process(
         Cipher.ENCRYPT_MODE,
-        blockMode,
         secretKey,
-        iv,
         clearContentInputStream,
         encryptedContentOutputStream);
   }
@@ -99,31 +85,21 @@ public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService
   @Override
   public void decrypt(
       SecretKey secretKey,
-      byte[] iv,
       InputStream encryptedContentInputStream,
       OutputStream clearContentOutputStream) {
     
     process(
         Cipher.DECRYPT_MODE,
-        blockMode,
         secretKey,
-        iv,
         encryptedContentInputStream,
         clearContentOutputStream);
   }
 
-  private byte[] process(
-      int operationMode,
-      BlockCipherIVBasedModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      byte[] content) {
-
-    validateCipherParameters(blockMode, secretKey, iv);
+  private byte[] process(int operationMode, SecretKey secretKey, byte[] content) {
+    Validate.notNull(secretKey);
     Validate.notNull(content);
 
-    final AESPadding padding = paddingForBlockMode(blockMode);
-    final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
+    final Cipher cipher = createCipher(operationMode, secretKey);
 
     try {
       return cipher.doFinal(content);
@@ -134,18 +110,15 @@ public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService
 
   private void process(
       int operationMode,
-      BlockCipherIVBasedModeOfOperation blockMode,
       SecretKey secretKey,
-      byte[] iv,
       InputStream inputStream,
       OutputStream outputStream) {
 
-    validateCipherParameters(blockMode, secretKey, iv);
+    Validate.notNull(secretKey);
     Validate.notNull(inputStream);
     Validate.notNull(outputStream);
 
-    final AESPadding padding = paddingForBlockMode(blockMode);
-    final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
+    final Cipher cipher = createCipher(operationMode, secretKey);
     final CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
 
     try (inputStream; cipherOutputStream; outputStream) {
@@ -155,58 +128,16 @@ public class JCAAESIVBasedCipherService implements SymmetricIVBasedCipherService
     }
   }
 
-  private void validateCipherParameters(
-      BlockCipherIVBasedModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv) {
-
-    Validate.notNull(blockMode);
-    Validate.notNull(secretKey);
-    Validate.notNull(iv);
-    Validate.isTrue(
-        iv.length == AES_CIPHER_BLOCK_SIZE_16_BYTES,
-        String.format(
-            IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES,
-            AES_CIPHER_BLOCK_SIZE_16_BYTES));
-  }
-
-  private Cipher createCipher(
-      Integer operationMode,
-      BlockCipherIVBasedModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      AESPadding padding) {
+  private Cipher createCipher(Integer operationMode, SecretKey secretKey) {
 
     final Cipher cipher;
     try {
-      cipher = Cipher.getInstance(String.format("AES/%s/%s", blockMode, padding));
-      cipher.init(operationMode, secretKey, new IvParameterSpec(iv));
+      cipher = Cipher.getInstance(String.format("AES/%s/PKCS5PADDING", blockMode));
+      cipher.init(operationMode, secretKey);
     } catch (Exception e) {
       throw new SymmetricCipherServiceException("Exception creating AES cipher", e);
     }
 
     return cipher;
-  }
-
-  private AESPadding paddingForBlockMode(BlockCipherIVBasedModeOfOperation mode) {
-
-    final AESPadding padding;
-    switch (mode) {
-      case CFB:
-      case OFB:
-      case CTR:
-        padding = AESPadding.NOPADDING;
-        break;
-      case CBC:
-        padding = AESPadding.PKCS5PADDING;
-        break;
-      default:
-        throw new IllegalArgumentException(
-            String.format(
-                "Unsupported block cipher mode of operation [%s]",
-                mode));
-    }
-
-    return padding;
   }
 }

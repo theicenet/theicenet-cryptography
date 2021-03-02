@@ -2,7 +2,7 @@ cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: CFB
+        blockMode: CBC, CFB, OFB, CTR
     asymmetric:
       rsa:
         padding: OAEPWithSHA1AndMGF1Padding

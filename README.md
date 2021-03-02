@@ -6,6 +6,9 @@ The library homogenises how to use and invoke the similar families of cryptograp
 
 TheIceNet Cryptography fully integrates with Spring Boot, making it easy and seamless to use cryptography in any Spring Boot based applications.  
 
+Though TheIceNet Cryptography stands out in Spring Boot based applications, it can also be used in vanilla Java applications.
+The main cryptographic modules `theicenet-cryptography-module` is 100% Spring agnostic, and so, this module can be easily be used in any non Spring based application.
+
 ## Table of contents
 
 * TheIceNet Cryptography structure
@@ -59,7 +62,7 @@ There are four modules in TheIceNet Cryptography library, here is a quick overvi
 
 * **theicenet-cryptography-spring-boot-starter** -> Spring Boot starter module which provides TheIceNet Cryptography library with full and seamless integration in any Spring Boot application.
 
-* **theicenet-cryptography-module** -> Main cryptography module which provides with the foundations and cryptography components. Worth to mention that TheIceNet Cryptography library can be enabled as well in vanilla Java application by just adding this module to our package manager. (The use of TheIceNet Cryptography library in vanilla Java applications is not included in this documentation) 
+* **theicenet-cryptography-module** -> Main cryptography module which provides with the foundations and cryptography components. TheIceNet Cryptography library can be enabled as well in vanilla Java application by just adding this module to your package manager. (The use of TheIceNet Cryptography library in vanilla Java applications is not included in this documentation) 
     
 * **theicenet-cryptography-acceptance-tests** -> TheIceNet Cryptography library acceptance tests.
 
@@ -706,7 +709,7 @@ The supported argon2's `versions` are,
 ### Encrypt and decrypt byte array or stream with AES and ECB block mode of operation
 
 ```java
-import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVBasedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.crypto.SecretKey;
@@ -717,12 +720,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyComponent {
 
-  private final SymmetricNonIVBasedCipherService aesCipherService;
+  private final SymmetricNonIVCipherService aesCipherService;
 
   @Autowired
   public MyComponent(
-      @Qualifier("AESNonIVBasedCipher") SymmetricNonIVBasedCipherService aesCipherService) {
-
+      @Qualifier("AESNonIVCipher") SymmetricNonIVCipherService aesCipherService) {
     this.aesCipherService = aesCipherService;
   }
 
@@ -761,7 +763,7 @@ public class MyComponent {
 ### Encrypt and decrypt byte array or stream with AES and IV based block mode of operation
 
 ```java
-import com.theicenet.cryptography.cipher.symmetric.SymmetricIVBasedCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.crypto.SecretKey;
@@ -772,13 +774,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyComponent {
 
-  private final SymmetricIVBasedCipherService aesIVBasedCipherService;
+  private final SymmetricIVCipherService aesIVCipherService;
 
   @Autowired
   public MyComponent(
-      @Qualifier("AESIVBasedCipher") SymmetricIVBasedCipherService aesIVBasedCipherService) {
-
-    this.aesIVBasedCipherService = aesIVBasedCipherService;
+      @Qualifier("AESIVCipher_CFB") SymmetricIVCipherService aesIVCipherService) {
+    this.aesIVCipherService = aesIVCipherService;
   }
 
   /** Byte array **/
@@ -789,7 +790,7 @@ public class MyComponent {
       byte[] clearContent) {
 
     byte[] encryptedContent =
-        aesIVBasedCipherService.encrypt(secretKey, initializationVector, clearContent);
+        aesIVCipherService.encrypt(secretKey, initializationVector, clearContent);
   }
 
   public void decryptByteArray(
@@ -798,7 +799,7 @@ public class MyComponent {
       byte[] encryptedContent) {
 
     byte[] clearContent =
-        aesIVBasedCipherService.decrypt(secretKey, initializationVector, encryptedContent);
+        aesIVCipherService.decrypt(secretKey, initializationVector, encryptedContent);
   }
 
   /** Stream **/
@@ -810,7 +811,7 @@ public class MyComponent {
       OutputStream encryptedOutputStream) {
 
     // Input and output stream are flushed and closed before `encrypt` method returns
-    aesIVBasedCipherService.encrypt(
+    aesIVCipherService.encrypt(
         secretKey,
         initializationVector,
         clearInputStream,
@@ -824,7 +825,7 @@ public class MyComponent {
       OutputStream clearOutputStream) {
 
     // Input and output stream are flushed and closed before `decrypt` method returns
-    aesIVBasedCipherService.decrypt(
+    aesIVCipherService.decrypt(
         secretKey,
         initializationVector,
         encryptedInputStream,
@@ -833,7 +834,7 @@ public class MyComponent {
 }
 ```
 
-The default `blockMode` of operation used is `CRT`, but you can override this default value in the `application.yml`. 
+The `blockMode` of operation to be used must be set up in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -843,12 +844,64 @@ cryptography:
         blockMode: CFB
 ```
 
-Supported `blockMode` are,
+Multiple AES ciphers for different block modes of operation can be created in the same Spring Boot context.
+Just specify the different block mode of operation ciphers you wish to create into the Spring Context, separated by comma,
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: CFB, CRT, CBC
+```
+
+If only one single `blockMode` of operation is specified in the `application.yml`, then the AES cipher can be just injected by,
+
+```java
+@Autowired
+SymmetricIVCipherService aesIVCipherService;
+```
+
+If multiple `blockModes` of operation are specified in the `application.yml`, then the cipher for each specific `blockMode` of operation can be injected by,
+
+```java
+@Autowired
+@Qualifier("AESIVCipher_XXX")
+SymmetricIVCipherService aesIVCipherService;
+```
+
+Where `XXX` must be replaced by the `blockMode` of operation to inject,
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: CFB, CBC, CTR
+```
+
+```java
+@Autowired
+@Qualifier("AESIVCipher_CFB")
+SymmetricIVCipherService aesCFBIVCipherService;
+
+@Autowired
+@Qualifier("AESIVCipher_CBC")
+SymmetricIVCipherService aesCFBIVCipherService;
+
+@Autowired
+@Qualifier("AESIVCipher_CTR")
+SymmetricIVCipherService aesCFBIVCipherService;
+```
+
+Supported `blockModes` of operation are,
 
     - CBC 
     - CFB 
     - OFB 
     - CTR
+
+
 
 ### Encrypt and decrypt with RSA
 

@@ -19,7 +19,7 @@ package com.theicenet.cryptography.cipher.symmetric;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public enum BlockCipherIVBasedModeOfOperation {
+public enum BlockCipherIVModeOfOperation {
   CBC,
   CFB,
   OFB,

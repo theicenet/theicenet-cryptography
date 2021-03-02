@@ -1,2 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.theicenet.cryptography.CryptographyAutoConfiguration
+
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.theicenet.cryptography.AESEnvironmentPostProcessor
