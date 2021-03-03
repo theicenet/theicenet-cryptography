@@ -22,8 +22,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.util.HexUtil;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -90,8 +88,8 @@ class AESCipherServiceIT {
               + "0b0f31255a4dc6cf304edb4192d28c725751474");
 
   @Autowired
-  @Qualifier("AESNonIVCipher")
-  SymmetricNonIVCipherService aesCipherService;
+  @Qualifier("AESNonIVCipher_ECB")
+  SymmetricNonIVCipherService aesECBNonIVCipherService;
 
   @Autowired
   @Qualifier("AESIVCipher_CBC")
@@ -113,7 +111,7 @@ class AESCipherServiceIT {
   void producesTheRightEncryptedResultWhenEncryptingWithECB() {
     // When
     final var encrypted =
-        aesCipherService.encrypt(
+        aesECBNonIVCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             CLEAR_CONTENT);
 
@@ -177,7 +175,7 @@ class AESCipherServiceIT {
   void producesTheRightDecryptedResultWhenDecryptingWithECB() {
     // When
     final var decrypted =
-        aesCipherService.decrypt(
+        aesECBNonIVCipherService.decrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             ENCRYPTED_CONTENT_AES_ECB);
 

@@ -1,5 +1,10 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.theicenet.cryptography.CryptographyAutoConfiguration
+# Initializers
+org.springframework.context.ApplicationContextInitializer=\
+  com.theicenet.cryptography.AESDynamicContextInitializer,\
+  com.theicenet.cryptography.RSADynamicContextInitializer
 
-org.springframework.boot.env.EnvironmentPostProcessor=\
-  com.theicenet.cryptography.AESEnvironmentPostProcessor
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.theicenet.cryptography.CryptographyStaticAutoConfiguration
+
+

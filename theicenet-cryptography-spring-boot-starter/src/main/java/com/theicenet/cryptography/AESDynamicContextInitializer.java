@@ -15,48 +15,42 @@
  */
 package com.theicenet.cryptography;
 
-import static java.util.Objects.isNull;
-
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESIVCipherService;
-import java.util.Collection;
+import com.theicenet.cryptography.util.PropertiesUtil;
 import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public class AESApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-  private final Set<BlockCipherIVModeOfOperation> blockModes;
-
-  public AESApplicationContextInitializer(
-      Set<BlockCipherIVModeOfOperation> blockModes) {
-    this.blockModes = blockModes;
-  }
+public class AESDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
-    final ConfigurableListableBeanFactory factory = applicationContext.getBeanFactory();
 
-    if (isNull(blockModes)) {
-      return;
-    }
+    final ConfigurableEnvironment environment = applicationContext.getEnvironment();
+    final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
-    blockModes.forEach(blockMode -> registerBean(factory, blockMode));
+    final Set<BlockCipherIVModeOfOperation> blockModes =
+        PropertiesUtil.getProperty(
+            environment,
+            "cryptography.cipher.symmetric.aes.blockMode",
+            BlockCipherIVModeOfOperation.class);
+
+    blockModes.forEach(blockMode -> registerBean(beanFactory, blockMode));
   }
 
   private void registerBean(
-      ConfigurableListableBeanFactory factory,
+      ConfigurableListableBeanFactory beanFactory,
       BlockCipherIVModeOfOperation blockMode) {
 
-    final String beanName = String.format("%s_%s", "AESIVCipher", blockMode);
-    final SymmetricIVCipherService beanInstance = new JCAAESIVCipherService(blockMode);
-
-    factory.registerSingleton(beanName, beanInstance);
+    beanFactory.registerSingleton(
+        String.format("%s_%s", "AESIVCipher", blockMode),
+        new JCAAESIVCipherService(blockMode));
   }
 }

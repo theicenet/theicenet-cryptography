@@ -103,18 +103,33 @@ public class RSACipherServiceIT {
 
   final byte[] RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING =
       HexUtil.decodeHex(
-          "1c4514470fa422bb28f233e691f6b00c2a3ae4935b0436a12a8ac045aded8f6e5c99197e20b91"
-              + "572e40a465bbb7512fe5552bca690baca673aea21b1b39a43cdf89011e01f6d6e43827d"
-              + "05bfb5bcfadb0ef65e70425f3e3d624b21868ca946d9370e1b9559af7cba15246a4b7fb"
-              + "65767cc53dd8ec3ba742aeea335b93c1cfb7d0f23ab8845993b7f9680f96c9e015ac35c"
-              + "a2d0e17b1b41561fb28e5a72d509e5b6da59b760ba74a9efe751c574c4cf89bd305321b"
-              + "aba310fe72bbc5ff15ed7f848490a3b9a0877152697abf4b1754f4f6a7f09d96f729d6d"
-              + "a5ade53bc297e6e6c218c379d6d99ab5278c68137d83006f3f7b2921672de3670f1055d"
-              + "8e7400222");
+          "60d49d2ad8679a76377016f06023a1ffcc53943e08c365e217e0dd77dc0c080e27a78b3"
+              + "d1336b2f54d4ac63ef1e1d6ead99297fef93bc860daa853ea8cadbf27417e8f2e"
+              + "021f09f61e1a2ad6dd9b4b58e4fa7a07ce7dc8a89a89318fea0d6874ef3778344"
+              + "468f527a2ddef00a6da958231be21b7edb8d3deec3b3b7038b3f1688ade2ad6df"
+              + "34e4646e21977316186521acb54899ed040ca230657899963e1056d0c783b18e5"
+              + "0f11ceb1251d039079e1d35deb36fbdbd84947f989f755b3b00c427be8d91dfd2"
+              + "cb86c88964c2a70510b85d6ccad6361f50402ccebd6fd3d8ad6c7dae5d705505d"
+              + "d8d427a01946121937d4c3536e2ef1388adf0113fb8e7e278d6");
+
+  final byte[] RSA_ENCRYPTED_PKCS1_PADDING =
+      HexUtil.decodeHex(
+          "a9ce2fcd5056674c8940e519a214073f1a7eb377a5474e20ef95d409c171398ab1d28a5"
+              + "a475cd5dfa8c36e7b5b09c063dd9fd2f9b519f1204c6907b71e6b9109576d48a6"
+              + "27986dcc581ca9a6b6b56eba7eb02bf43ff7bc795bb83e2226faa7f82810e7a52"
+              + "c0c112039df24c5b1419e2b9efd4939795f5a465302cfadc7c025ca6e0e4340af"
+              + "a40a5b8efdc5a876944e19e4c8dafdc142bf937aecd5d1c2610812207617f760a"
+              + "65ea8d15ac27db6eaeca0154f9b2b7fc71e445ffc8f38d03820349c3fad804fbb"
+              + "99cebeb8a0e2d84453cc147416c730315dd4b7a8ce6ac3461235ddedbb0888622"
+              + "06529cf54593f3825a30119e699f0a453f141081e4015a0ef87");
 
   @Autowired
-  @Qualifier("RSACipher")
-  AsymmetricCipherService rsaCipherService;
+  @Qualifier("RSACipher_OAEPWithSHA1AndMGF1Padding")
+  AsymmetricCipherService rsaOAEPWithSHA1AndMGF1PaddingCipherService;
+
+  @Autowired
+  @Qualifier("RSACipher_PKCS1Padding")
+  AsymmetricCipherService rsaPKCS1PaddingCipherService;
 
   RSACipherServiceIT() throws Exception {
     final var keyFactory = KeyFactory.getInstance(RSA);
@@ -127,10 +142,10 @@ public class RSACipherServiceIT {
   }
 
   @Test
-  void decryptsProperly() {
+  void decryptsProperlyOAEPWithSHA1AndMGF1Padding() {
     // When
     final var decrypted =
-        rsaCipherService.decrypt(
+        rsaOAEPWithSHA1AndMGF1PaddingCipherService.decrypt(
             RSA_PRIVATE_KEY_2048_BITS,
             RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING);
 
@@ -139,16 +154,45 @@ public class RSACipherServiceIT {
   }
 
   @Test
-  void encryptsProperly() {
+  void encryptsProperlyOAEPWithSHA1AndMGF1Padding() {
     // When
     final var encrypted =
-        rsaCipherService.encrypt(
+        rsaOAEPWithSHA1AndMGF1PaddingCipherService.encrypt(
             RSA_PUBLIC_KEY_2048_BITS,
             CLEAR_CONTENT);
 
     // Then
     final var decrypted =
-        rsaCipherService.decrypt(
+        rsaOAEPWithSHA1AndMGF1PaddingCipherService.decrypt(
+            RSA_PRIVATE_KEY_2048_BITS,
+            encrypted);
+
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void decryptsProperlyPKCS1Padding() {
+    // When
+    final var decrypted =
+        rsaPKCS1PaddingCipherService.decrypt(
+            RSA_PRIVATE_KEY_2048_BITS,
+            RSA_ENCRYPTED_PKCS1_PADDING);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void encryptsProperlyPKCS1Padding() {
+    // When
+    final var encrypted =
+        rsaPKCS1PaddingCipherService.encrypt(
+            RSA_PUBLIC_KEY_2048_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    final var decrypted =
+        rsaPKCS1PaddingCipherService.decrypt(
             RSA_PRIVATE_KEY_2048_BITS,
             encrypted);
 

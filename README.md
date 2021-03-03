@@ -724,7 +724,7 @@ public class MyComponent {
 
   @Autowired
   public MyComponent(
-      @Qualifier("AESNonIVCipher") SymmetricNonIVCipherService aesCipherService) {
+      @Qualifier("AESNonIVCipher_ECB") SymmetricNonIVCipherService aesCipherService) {
     this.aesCipherService = aesCipherService;
   }
 
@@ -758,6 +758,13 @@ public class MyComponent {
     aesCipherService.decrypt(secretKey, encryptedInputStream, clearOutputStream);
   }
 }
+```
+
+For AES with ECB block mode of operation, injection can be simplified to just,
+
+```java
+@Autowired
+SymmetricNonIVCipherService aesCipherService;
 ```
 
 ### Encrypt and decrypt byte array or stream with AES and IV based block mode of operation
@@ -844,18 +851,29 @@ cryptography:
         blockMode: CFB
 ```
 
-Multiple AES ciphers for different block modes of operation can be created in the same Spring Boot context.
-Just specify the different block mode of operation ciphers you wish to create into the Spring Context, separated by comma,
+Multiple AES ciphers for different `blockModes` of operation can be created in the same Spring Boot context.
+Just specify the different `blockModes` of operation ciphers you wish to create into the Spring Context, separated by a comma,
 
 ```yaml
 cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: CFB, CRT, CBC
+        blockMode: 
+          CFB, 
+          CRT, 
+          CBC
 ```
 
 If only one single `blockMode` of operation is specified in the `application.yml`, then the AES cipher can be just injected by,
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: CFB
+```
 
 ```java
 @Autowired
@@ -866,18 +884,21 @@ If multiple `blockModes` of operation are specified in the `application.yml`, th
 
 ```java
 @Autowired
-@Qualifier("AESIVCipher_XXX")
+@Qualifier("AESIVCipher_${blockMode}")
 SymmetricIVCipherService aesIVCipherService;
 ```
 
-Where `XXX` must be replaced by the `blockMode` of operation to inject,
+Where `${blockMode}` must be replaced by the `blockMode` of operation to inject,
 
 ```yaml
 cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: CFB, CBC, CTR
+        blockMode: 
+          CFB, 
+          CBC, 
+          CTR
 ```
 
 ```java
@@ -901,8 +922,6 @@ Supported `blockModes` of operation are,
     - OFB 
     - CTR
 
-
-
 ### Encrypt and decrypt with RSA
 
 ```java
@@ -920,9 +939,9 @@ public class MyComponent {
 
   @Autowired
   public MyComponent(
-      @Qualifier("RSACipher") AsymmetricCipherService asymmetricKeyService) {
+      @Qualifier("RSACipher_OAEPWithSHA1AndMGF1Padding") AsymmetricCipherService rsaCipherService) {
 
-    this.asymmetricKeyService = asymmetricKeyService;
+    this.asymmetricKeyService = rsaCipherService;
   }
 
   public void encrypt(PublicKey publicKey, byte[] clearContent) {
@@ -935,7 +954,7 @@ public class MyComponent {
 }
 ```
 
-The default `padding` used is `OAEPWithSHA256AndMGF1Padding`, but you can override this default value in the `application.yml`.  
+The `padding` to be used must be set up in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -943,6 +962,70 @@ cryptography:
     asymmetric:
       rsa:
         padding: OAEPWithSHA1AndMGF1Padding
+```
+
+Multiple RSA ciphers for different `paddings` can be created in the same Spring Boot context.
+Just specify the `paddings` ciphers you wish to create into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  cipher:
+    asymmetric:
+      rsa:
+        padding: 
+          NoPadding, 
+          OAEPWithSHA1AndMGF1Padding, 
+          OAEPWithSHA256AndMGF1Padding
+```
+
+If only one single `padding` is specified in the `application.yml`, then the RSA cipher can be just injected by,
+
+```yaml
+cryptography:
+  cipher:
+    asymmetric:
+      rsa:
+        padding: OAEPWithSHA1AndMGF1Padding
+```
+
+```java
+@Autowired
+AsymmetricCipherService rsaCipherService;
+```
+
+If multiple `paddings` are specified in the `application.yml`, then the cipher for each specific `padding` can be injected by,
+
+```java
+@Autowired
+@Qualifier("RSACipher_${padding}")
+AsymmetricCipherService rsaCipherService;
+```
+
+Where `${padding}` must be replaced by the `padding` to inject,
+
+```yaml
+cryptography:
+  cipher:
+    asymmetric:
+      rsa:
+        padding: 
+          NoPadding, 
+          OAEPWithSHA1AndMGF1Padding, 
+          OAEPWithSHA256AndMGF1Padding
+```
+
+```java
+@Autowired
+@Qualifier("RSACipher_NoPadding")
+AsymmetricCipherService rsaCipherService;
+
+@Autowired
+@Qualifier("RSACipher_OAEPWithSHA1AndMGF1Padding")
+AsymmetricCipherService rsaCipherService;
+
+@Autowired
+@Qualifier("RSACipher_OAEPWithSHA256AndMGF1Padding")
+AsymmetricCipherService rsaCipherService;
 ```
 
 Supported `padding` modes are,

@@ -15,9 +15,6 @@
  */
 package com.theicenet.cryptography;
 
-import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
-import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
-import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVCipherService;
@@ -68,7 +65,7 @@ import org.springframework.context.annotation.Lazy;
  * @since 1.0.0
  */
 @Configuration
-public class CryptographyAutoConfiguration {
+public class CryptographyStaticAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
@@ -83,7 +80,7 @@ public class CryptographyAutoConfiguration {
   }
 
   @Lazy
-  @Bean("AESNonIVCipher")
+  @Bean("AESNonIVCipher_ECB")
   public SymmetricNonIVCipherService aesCipherService() {
     return new JCAAESNonIVCipherService(BlockCipherNonIVModeOfOperation.ECB);
   }
@@ -92,14 +89,6 @@ public class CryptographyAutoConfiguration {
   @Bean("RSAKey")
   public AsymmetricKeyService rsaKeyService(SecureRandom secureRandom) {
     return new JCARSAKeyService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("RSACipher")
-  public AsymmetricCipherService rsaCipherService(
-      @Value("${cryptography.cipher.asymmetric.rsa.padding:OAEPWithSHA256AndMGF1Padding}") RSAPadding padding) {
-
-    return new JCARSACipherService(padding);
   }
 
   @Lazy

@@ -2,10 +2,16 @@ cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: CBC, CFB, OFB, CTR
+        blockMode:
+          CBC,
+          CFB,
+          OFB,
+          CTR
     asymmetric:
       rsa:
-        padding: OAEPWithSHA1AndMGF1Padding
+        padding:
+          OAEPWithSHA1AndMGF1Padding,
+          PKCS1Padding
 
   signature:
     asymmetric:
