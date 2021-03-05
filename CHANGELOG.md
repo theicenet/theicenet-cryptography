@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Generic service for cryptographically secure random data generation (which replaces the specific ones for IV & Salt generation) [@jjfidalgo]
+- Multiple beans for the AES cipher for different block modes of operation can be injected in the same Spring Boot context [@jjfidalgo]
+- Multiple beans for the RSA cipher for different paddings can be injected in the same Spring Boot context [@jjfidalgo]
+- Multiple beans for the RSA signer for different algorithms can be injected in the same Spring Boot context [@jjfidalgo]
 
 ### Changed
 

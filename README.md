@@ -841,7 +841,7 @@ public class MyComponent {
 }
 ```
 
-The `blockMode` of operation to be used must be set up in the `application.yml`.
+The `blockMode` of operation to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -852,7 +852,7 @@ cryptography:
 ```
 
 Multiple AES ciphers for different `blockModes` of operation can be created in the same Spring Boot context.
-Just specify the different `blockModes` of operation ciphers you wish to create into the Spring Context, separated by a comma,
+Just specify the different `blockModes` of operation you wish to create ciphers for into the Spring Context, separated by a comma,
 
 ```yaml
 cryptography:
@@ -908,11 +908,11 @@ SymmetricIVCipherService aesCFBIVCipherService;
 
 @Autowired
 @Qualifier("AESIVCipher_CBC")
-SymmetricIVCipherService aesCFBIVCipherService;
+SymmetricIVCipherService aesCFCIVCipherService;
 
 @Autowired
 @Qualifier("AESIVCipher_CTR")
-SymmetricIVCipherService aesCFBIVCipherService;
+SymmetricIVCipherService aesCTRIVCipherService;
 ```
 
 Supported `blockModes` of operation are,
@@ -954,7 +954,7 @@ public class MyComponent {
 }
 ```
 
-The `padding` to be used must be set up in the `application.yml`.
+The `padding` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -965,7 +965,7 @@ cryptography:
 ```
 
 Multiple RSA ciphers for different `paddings` can be created in the same Spring Boot context.
-Just specify the `paddings` ciphers you wish to create into the Spring Context, separated by a comma,
+Just specify the `paddings` you wish to create ciphers for into the Spring Context, separated by a comma,
 
 ```yaml
 cryptography:
@@ -1017,15 +1017,15 @@ cryptography:
 ```java
 @Autowired
 @Qualifier("RSACipher_NoPadding")
-AsymmetricCipherService rsaCipherService;
+AsymmetricCipherService rsaNoPaddingCipherService;
 
 @Autowired
 @Qualifier("RSACipher_OAEPWithSHA1AndMGF1Padding")
-AsymmetricCipherService rsaCipherService;
+AsymmetricCipherService rsaOAEPSHA1MGF1PaddingCipherService;
 
 @Autowired
 @Qualifier("RSACipher_OAEPWithSHA256AndMGF1Padding")
-AsymmetricCipherService rsaCipherService;
+AsymmetricCipherService rsaOAEPSHA256MGF1PaddingaCipherService;
 ```
 
 Supported `padding` modes are,
@@ -1058,36 +1058,36 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyComponent {
 
-  private final SignatureService signatureService;
+  private final SignatureService rsaSignatureService;
 
   @Autowired
-  public MyComponent(@Qualifier("RSASignature") SignatureService signatureService) {
-    this.signatureService = signatureService;
+  public MyComponent(@Qualifier("RSASignature_SHA1withRSA") SignatureService rsaSignatureService) {
+    this.rsaSignatureService = rsaSignatureService;
   }
 
   /** Byte array **/
 
   public void signByteArray(PrivateKey privateKey, byte[] content) {
-    byte[] signature = signatureService.sign(privateKey, content);
+    byte[] signature = rsaSignatureService.sign(privateKey, content);
   }
 
   public void verifyByteArray(PublicKey publicKey, byte[] content, byte[] signature) {
-    boolean isValidSignature = signatureService.verify(publicKey, content, signature);
+    boolean isValidSignature = rsaSignatureService.verify(publicKey, content, signature);
   }
 
   /** Stream **/
 
   public void signStream(PrivateKey privateKey, InputStream contentInputStream) {
-    byte[] signature = signatureService.sign(privateKey, contentInputStream);
+    byte[] signature = rsaSignatureService.sign(privateKey, contentInputStream);
   }
 
   public void verifyStream(PublicKey publicKey, InputStream contentInputStream, byte[] signature) {
-    boolean isValidSignature = signatureService.verify(publicKey, contentInputStream, signature);
+    boolean isValidSignature = rsaSignatureService.verify(publicKey, contentInputStream, signature);
   }
 }
 ```
 
-The default `algorithm` used is `SHA256withRSA_PSS`, but you can override this default value in the `application.yml`.  
+The `algorithm` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -1097,7 +1097,71 @@ cryptography:
         algorithm: SHA1withRSA
 ```
 
-Supported `algorithm` are,
+Multiple RSA signers for different `algorithms` can be created in the same Spring Boot context.
+Just specify the `algorithms` you wish to create signers for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      rsa:
+        algorithm: 
+          SHA1withRSA,
+          SHA256withRSA,
+          RIPEMD256withRSA
+```
+
+If only one single `algorithm` is specified in the `application.yml`, then the RSA signer can be just injected by,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      rsa:
+        algorithm: SHA1withRSA
+```
+
+```java
+@Autowired
+SignatureService rsaSignatureService;
+```
+
+If multiple `algorithms` are specified in the `application.yml`, then the signer for each specific `algorithm` can be injected by,
+
+```java
+@Autowired
+@Qualifier("RSASignature_${algorithm}")
+SignatureService rsaSignatureService;
+```
+
+Where `${algorithm}` must be replaced by the `algorithm` to inject,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      rsa:
+        algorithm:
+          SHA1withRSA,
+          SHA256withRSA,
+          RIPEMD256withRSA
+```
+
+```java
+@Autowired
+@Qualifier("RSASignature_SHA1withRSA")
+SignatureService rsaSHA1SignatureService;
+
+@Autowired
+@Qualifier("RSASignature_SHA256withRSA")
+SignatureService rsaSHA256SignatureService;
+
+@Autowired
+@Qualifier("RSASignature_RIPEMD256withRSA")
+SignatureService rsaRIPEMD256SignatureService;
+```
+
+Supported `algorithms` are,
 
     - NonewithRSA
     - RIPEMD128withRSA

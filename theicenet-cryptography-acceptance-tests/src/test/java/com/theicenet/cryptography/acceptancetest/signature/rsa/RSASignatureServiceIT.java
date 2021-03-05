@@ -103,17 +103,17 @@ public class RSASignatureServiceIT {
 
   final byte[] SIGNATURE_SHA1_WITH_RSA =
       HexUtil.decodeHex(
-          "2b8aaddc4fe16e678694a2b3aad39a7e71d7d0143725ec0b6019b097c9fc234d7f9c4e30b88"
-              + "bee6cdc6e77b096a435716a37222a603f4b3a26aab24f69146604b4b2998b5cef64e6"
-              + "90d8fe7f5c3d057edd1bc40b9e70610fea87ef3c1c53185a2c381daf16c4ab5d341ae"
-              + "5e790aa9ca4df0ea14bb85ef2b6dcee39c9815388bbde64f6fb3064275ea6f5e545a4"
-              + "b47a598a727bd668f8e885f951272d32e0d6aa44ca229b2b47991828d3aba58d3f2e0"
-              + "00e8af47463b3350e55244d5d07b881e93e6b2c62ab735c4957b314f2b7289cdfbe43"
-              + "a87bf611d1d4ba4572165558f437090823a6df048ab29c12ac389966d1d674822f456"
-              + "dd49834a8ae0e19a827f216");
+          "2b8aaddc4fe16e678694a2b3aad39a7e71d7d0143725ec0b6019b097c9fc234d7f9c4e3"
+              + "0b88bee6cdc6e77b096a435716a37222a603f4b3a26aab24f69146604b4b2998b"
+              + "5cef64e690d8fe7f5c3d057edd1bc40b9e70610fea87ef3c1c53185a2c381daf1"
+              + "6c4ab5d341ae5e790aa9ca4df0ea14bb85ef2b6dcee39c9815388bbde64f6fb30"
+              + "64275ea6f5e545a4b47a598a727bd668f8e885f951272d32e0d6aa44ca229b2b4"
+              + "7991828d3aba58d3f2e000e8af47463b3350e55244d5d07b881e93e6b2c62ab73"
+              + "5c4957b314f2b7289cdfbe43a87bf611d1d4ba4572165558f437090823a6df048"
+              + "ab29c12ac389966d1d674822f456dd49834a8ae0e19a827f216");
 
   @Autowired
-  @Qualifier("RSASignature")
+  @Qualifier("RSASignature_SHA1withRSA")
   SignatureService rsaSignatureService;
 
   RSASignatureServiceIT() throws Exception {

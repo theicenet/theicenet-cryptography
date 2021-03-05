@@ -51,8 +51,6 @@ import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.dsa.JCADSASignatureService;
 import com.theicenet.cryptography.signature.ecdsa.ECDSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.ecdsa.JCAECDSASignatureService;
-import com.theicenet.cryptography.signature.rsa.JCARSASignatureService;
-import com.theicenet.cryptography.signature.rsa.RSASignatureAlgorithm;
 import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -89,14 +87,6 @@ public class CryptographyStaticAutoConfiguration {
   @Bean("RSAKey")
   public AsymmetricKeyService rsaKeyService(SecureRandom secureRandom) {
     return new JCARSAKeyService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("RSASignature")
-  public SignatureService rsaSignatureService(
-      @Value("${cryptography.signature.asymmetric.rsa.algorithm:SHA256withRSA_PSS}") RSASignatureAlgorithm algorithm) {
-
-    return new JCARSASignatureService(algorithm);
   }
 
   @Lazy

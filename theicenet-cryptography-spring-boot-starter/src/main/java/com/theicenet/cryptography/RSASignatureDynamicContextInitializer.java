@@ -15,8 +15,8 @@
  */
 package com.theicenet.cryptography;
 
-import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
-import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
+import com.theicenet.cryptography.signature.rsa.JCARSASignatureService;
+import com.theicenet.cryptography.signature.rsa.RSASignatureAlgorithm;
 import com.theicenet.cryptography.util.PropertiesUtil;
 import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -28,7 +28,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public class RSADynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext>  {
+public class RSASignatureDynamicContextInitializer  implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -36,21 +36,21 @@ public class RSADynamicContextInitializer implements ApplicationContextInitializ
     final ConfigurableEnvironment environment = applicationContext.getEnvironment();
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
-    final Set<RSAPadding> paddings =
+    final Set<RSASignatureAlgorithm> algorithms =
         PropertiesUtil.getProperty(
             environment,
-            "cryptography.cipher.asymmetric.rsa.padding",
-            RSAPadding.class);
+            "cryptography.signature.asymmetric.rsa.algorithm",
+            RSASignatureAlgorithm.class);
 
-    paddings.forEach(padding -> registerBean(beanFactory, padding));
+    algorithms.forEach(algorithm -> registerBean(beanFactory, algorithm));
   }
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
-      RSAPadding rsaPadding) {
+      RSASignatureAlgorithm rsaSignatureAlgorithm) {
 
     beanFactory.registerSingleton(
-        String.format("%s_%s", "RSACipher", rsaPadding),
-        new JCARSACipherService(rsaPadding));
+        String.format("%s_%s", "RSASignature", rsaSignatureAlgorithm),
+        new JCARSASignatureService(rsaSignatureAlgorithm));
   }
 }

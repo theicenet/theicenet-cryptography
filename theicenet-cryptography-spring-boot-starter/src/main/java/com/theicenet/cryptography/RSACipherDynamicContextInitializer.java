@@ -15,8 +15,8 @@
  */
 package com.theicenet.cryptography;
 
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESIVCipherService;
+import com.theicenet.cryptography.cipher.asymmetric.rsa.JCARSACipherService;
+import com.theicenet.cryptography.cipher.asymmetric.rsa.RSAPadding;
 import com.theicenet.cryptography.util.PropertiesUtil;
 import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -28,7 +28,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public class AESDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class RSACipherDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -36,21 +36,21 @@ public class AESDynamicContextInitializer implements ApplicationContextInitializ
     final ConfigurableEnvironment environment = applicationContext.getEnvironment();
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
-    final Set<BlockCipherIVModeOfOperation> blockModes =
+    final Set<RSAPadding> paddings =
         PropertiesUtil.getProperty(
             environment,
-            "cryptography.cipher.symmetric.aes.blockMode",
-            BlockCipherIVModeOfOperation.class);
+            "cryptography.cipher.asymmetric.rsa.padding",
+            RSAPadding.class);
 
-    blockModes.forEach(blockMode -> registerBean(beanFactory, blockMode));
+    paddings.forEach(padding -> registerBean(beanFactory, padding));
   }
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
-      BlockCipherIVModeOfOperation blockMode) {
+      RSAPadding rsaPadding) {
 
     beanFactory.registerSingleton(
-        String.format("%s_%s", "AESIVCipher", blockMode),
-        new JCAAESIVCipherService(blockMode));
+        String.format("%s_%s", "RSACipher", rsaPadding),
+        new JCARSACipherService(rsaPadding));
   }
 }
