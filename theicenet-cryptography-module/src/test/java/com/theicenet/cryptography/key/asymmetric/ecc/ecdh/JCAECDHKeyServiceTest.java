@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.KeyFactory;
 import java.security.SecureRandom;

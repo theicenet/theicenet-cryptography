@@ -47,8 +47,6 @@ import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
 import com.theicenet.cryptography.random.JCASecureRandomDataService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.signature.dsa.DSASignatureAlgorithm;
-import com.theicenet.cryptography.signature.dsa.JCADSASignatureService;
 import com.theicenet.cryptography.signature.ecdsa.ECDSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.ecdsa.JCAECDSASignatureService;
 import java.security.SecureRandom;
@@ -63,7 +61,7 @@ import org.springframework.context.annotation.Lazy;
  * @since 1.0.0
  */
 @Configuration
-public class CryptographyStaticAutoConfiguration {
+public class StaticAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
@@ -93,14 +91,6 @@ public class CryptographyStaticAutoConfiguration {
   @Bean("DSAKey")
   public AsymmetricKeyService dsaKeyService(SecureRandom secureRandom) {
     return new JCADSAKeyService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("DSASignature")
-  public SignatureService dsaSignatureService(
-      @Value("${cryptography.signature.asymmetric.dsa.algorithm:SHA256withDSA}") DSASignatureAlgorithm algorithm) {
-
-    return new JCADSASignatureService(algorithm);
   }
 
   @Lazy

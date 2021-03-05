@@ -16,7 +16,7 @@
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toBigInteger;
-import static com.theicenet.cryptography.util.HexUtil.decodeHex;
+import static com.theicenet.cryptography.test.support.HexUtil.decodeHex;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import java.math.BigInteger;

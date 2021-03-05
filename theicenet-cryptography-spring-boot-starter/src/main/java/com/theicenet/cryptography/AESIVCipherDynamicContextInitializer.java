@@ -28,7 +28,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public class AESCipherDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class AESIVCipherDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {

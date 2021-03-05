@@ -15,18 +15,17 @@
  */
 package com.theicenet.cryptography.acceptancetest.signature.dsa;
 
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPrivateKey;
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPublicKey;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -95,27 +94,17 @@ public class DSASignatureServiceIT {
               + "c163599f6b05aa20422022066f86f6ba16b288c03dc985df9819d1069b2f2498f6e"
               + "adf7fb3575d71115e7a5");
 
-  final PublicKey DSA_PUBLIC_KEY_2048_BITS;
-  final PrivateKey DSA_PRIVATE_KEY_2048_BITS;
+  final PublicKey DSA_PUBLIC_KEY_2048_BITS = toPublicKey(DSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, DSA);
+  final PrivateKey DSA_PRIVATE_KEY_2048_BITS = toPrivateKey(DSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, DSA);
 
   final byte[] SIGNATURE_SHA1_WITH_DSA =
       HexUtil.decodeHex(
-          "304402204e44e98b2775b31365fd49c6cf21888362b9c7c5fd6e4152eaf5ca676de6e34b0220"
-              + "618985ca7197a804faaae60fee712e5c3a29af942dad60611b90efc2ca965a8c");
+          "3044022022a7bd0a9db129392bd7b70f14fe75f7d3ace68209b1e922dde8f634c37fe3ae0"
+              + "220587a1e92a3d0cf5f7350f4eb811d91f60f40f41aabc08df0f0e4c4de4453f2f3");
 
   @Autowired
-  @Qualifier("DSASignature")
+  @Qualifier("DSASignature_SHA1withDSA")
   SignatureService dsaSignatureService;
-
-  DSASignatureServiceIT() throws Exception {
-    final var keyFactory = KeyFactory.getInstance(DSA);
-
-    final var x509EncodedKeySpec = new X509EncodedKeySpec(DSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY);
-    DSA_PUBLIC_KEY_2048_BITS = keyFactory.generatePublic(x509EncodedKeySpec);
-
-    final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(DSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY);
-    DSA_PRIVATE_KEY_2048_BITS = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-  }
 
   @Test
   void verifiesProperly() {

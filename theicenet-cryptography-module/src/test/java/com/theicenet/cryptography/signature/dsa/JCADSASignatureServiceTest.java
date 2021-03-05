@@ -26,7 +26,7 @@ import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;

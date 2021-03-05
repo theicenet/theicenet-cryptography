@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

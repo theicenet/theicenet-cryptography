@@ -15,9 +15,10 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import com.theicenet.cryptography.util.HexUtil;
 import java.math.BigInteger;
 import java.util.Arrays;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.Validate;
 
@@ -67,7 +68,11 @@ final class ByteArraysUtil {
   static BigInteger toBigInteger(String hex) {
     Validate.notNull(hex);
 
-    return new BigInteger(1, HexUtil.decodeHex(hex));
+    try {
+      return new BigInteger(1, Hex.decodeHex(hex));
+    } catch (DecoderException e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   /**

@@ -27,7 +27,7 @@ import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.io.ByteArrayInputStream;

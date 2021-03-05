@@ -1200,36 +1200,36 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyComponent {
 
-  private final SignatureService signatureService;
+  private final SignatureService dsaSignatureService;
 
   @Autowired
-  public MyComponent(@Qualifier("DSASignature") SignatureService signatureService) {
-    this.signatureService = signatureService;
+  public MyComponent(@Qualifier("DSASignature_SHA1withDSA") SignatureService dsaSignatureService) {
+    this.dsaSignatureService = dsaSignatureService;
   }
 
   /** Byte array **/
 
   public void signByteArray(PrivateKey privateKey, byte[] content) {
-    byte[] signature = signatureService.sign(privateKey, content);
+    byte[] signature = dsaSignatureService.sign(privateKey, content);
   }
 
   public void verifyByteArray(PublicKey publicKey, byte[] content, byte[] signature) {
-    boolean isValidSignature = signatureService.verify(publicKey, content, signature);
+    boolean isValidSignature = dsaSignatureService.verify(publicKey, content, signature);
   }
 
   /** Byte array **/
 
   public void signStream(PrivateKey privateKey, InputStream contentInputStream) {
-    byte[] signature = signatureService.sign(privateKey, contentInputStream);
+    byte[] signature = dsaSignatureService.sign(privateKey, contentInputStream);
   }
 
   public void verifyStream(PublicKey publicKey, InputStream contentInputStream, byte[] signature) {
-    boolean isValidSignature = signatureService.verify(publicKey, contentInputStream, signature);
+    boolean isValidSignature = dsaSignatureService.verify(publicKey, contentInputStream, signature);
   }
 }
 ```
 
-The default `algorithm` used is `SHA256withDSA`, but you can override this default value in the `application.yml`.  
+The `algorithm` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -1237,6 +1237,70 @@ cryptography:
     asymmetric:
       dsa:
         algorithm: SHA1withDSA
+```
+
+Multiple DSA signers for different `algorithms` can be created in the same Spring Boot context.
+Just specify the `algorithms` you wish to create signers for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      dsa:
+        algorithm:
+          SHA1withDSA,
+          SHA256withDSA,
+          SHA512withDSA
+```
+
+If only one single `algorithm` is specified in the `application.yml`, then the DSA signer can be just injected by,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      dsa:
+        algorithm: SHA1withDSA
+```
+
+```java
+@Autowired
+SignatureService dsaSignatureService;
+```
+
+If multiple `algorithms` are specified in the `application.yml`, then the signer for each specific `algorithm` can be injected by,
+
+```java
+@Autowired
+@Qualifier("DSASignature_${algorithm}")
+SignatureService dsaSignatureService;
+```
+
+Where `${algorithm}` must be replaced by the `algorithm` to inject,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      dsa:
+        algorithm:
+          SHA1withDSA,
+          SHA256withDSA,
+          SHA512withDSA
+```
+
+```java
+@Autowired
+@Qualifier("DSASignature_SHA1withDSA")
+SignatureService dsaSHA1SignatureService;
+
+@Autowired
+@Qualifier("DSASignature_SHA256withDSA")
+SignatureService dsaSHA256SignatureService;
+
+@Autowired
+@Qualifier("DSASignature_SHA512withDSA")
+SignatureService dsaSHA512SignatureService;
 ```
 
 Supported `algorithm` are,

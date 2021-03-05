@@ -1,11 +1,12 @@
 # Initializers
 org.springframework.context.ApplicationContextInitializer=\
-  com.theicenet.cryptography.AESCipherDynamicContextInitializer,\
+  com.theicenet.cryptography.AESIVCipherDynamicContextInitializer,\
   com.theicenet.cryptography.RSACipherDynamicContextInitializer,\
-  com.theicenet.cryptography.RSASignatureDynamicContextInitializer
+  com.theicenet.cryptography.RSASignatureDynamicContextInitializer,\
+  com.theicenet.cryptography.DSASignatureDynamicContextInitializer
 
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.theicenet.cryptography.CryptographyStaticAutoConfiguration
+  com.theicenet.cryptography.StaticAutoConfiguration
 
 

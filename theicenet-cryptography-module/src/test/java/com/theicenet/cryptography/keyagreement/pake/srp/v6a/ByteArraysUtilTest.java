@@ -37,7 +37,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import java.math.BigInteger;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -170,6 +170,28 @@ class ByteArraysUtilTest {
   }
 
   @Test
+  void throwsIllegalArgumentExceptionWhenToBigIntegerAndNullHex() {
+    // Given
+    final String NULL_HEX = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ByteArraysUtil.toBigInteger(NULL_HEX)); // When
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenToBigIntegerAndInvalidHex() {
+    // Given
+    final String INVALID_HEX = "INVALID";
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ByteArraysUtil.toBigInteger(INVALID_HEX)); // When
+  }
+
+  @Test
   void producesNotNullWhenToBigIntegerAndHex() {
     // When
     final var ANY_HEX = "4C6F3F16";
@@ -179,17 +201,6 @@ class ByteArraysUtilTest {
 
     // Then
     assertThat(value, is(notNullValue()));
-  }
-
-  @Test
-  void throwsIllegalArgumentExceptionWhenToBigIntegerAndHex() {
-    // Given
-    final String NULL_HEX = null;
-
-    // Then
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> ByteArraysUtil.toBigInteger(NULL_HEX)); // When
   }
 
   @ParameterizedTest

@@ -15,18 +15,17 @@
  */
 package com.theicenet.cryptography.acceptancetest.cipher.asymmetric.rsa;
 
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPrivateKey;
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPublicKey;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.cipher.asymmetric.AsymmetricCipherService;
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -98,8 +97,8 @@ public class RSACipherServiceIT {
               + "5665d74c109c84e02ef91191fd3561f3363cd2a5d9dbc622dfb35e4fa9b9a5bce"
               + "0f4d3349d127f4902bfc2d8b1e980");
 
-  final PublicKey RSA_PUBLIC_KEY_2048_BITS;
-  final PrivateKey RSA_PRIVATE_KEY_2048_BITS;
+  final PublicKey RSA_PUBLIC_KEY_2048_BITS = toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, RSA);
+  final PrivateKey RSA_PRIVATE_KEY_2048_BITS = toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, RSA);
 
   final byte[] RSA_ENCRYPTED_OAEP_WITH_SHA1_AND_MGF1_PADDING =
       HexUtil.decodeHex(
@@ -130,16 +129,6 @@ public class RSACipherServiceIT {
   @Autowired
   @Qualifier("RSACipher_PKCS1Padding")
   AsymmetricCipherService rsaPKCS1PaddingCipherService;
-
-  RSACipherServiceIT() throws Exception {
-    final var keyFactory = KeyFactory.getInstance(RSA);
-
-    final var x509EncodedKeySpec = new X509EncodedKeySpec(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY);
-    RSA_PUBLIC_KEY_2048_BITS = keyFactory.generatePublic(x509EncodedKeySpec);
-
-    final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY);
-    RSA_PRIVATE_KEY_2048_BITS = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-  }
 
   @Test
   void decryptsProperlyOAEPWithSHA1AndMGF1Padding() {

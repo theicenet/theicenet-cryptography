@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.acceptancetest.signature.rsa;
+package com.theicenet.cryptography.test.support;
 
-import static com.theicenet.cryptography.test.support.KeyPairUtil.toPrivateKey;
-import static com.theicenet.cryptography.test.support.KeyPairUtil.toPublicKey;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.test.support.HexUtil;
-import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * @author Juan Fidalgo
  */
-@SpringBootTest
-public class RSASignatureServiceIT {
+class KeyPairUtilTest {
 
   final String RSA = "RSA";
-
-  final byte[] CONTENT =
-      "Content to be signed to test correctness of the RSA sign implementation."
-          .getBytes(StandardCharsets.UTF_8);
 
   final byte[] RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY =
       HexUtil.decodeHex(
@@ -97,46 +89,119 @@ public class RSASignatureServiceIT {
               + "5665d74c109c84e02ef91191fd3561f3363cd2a5d9dbc622dfb35e4fa9b9a5bce"
               + "0f4d3349d127f4902bfc2d8b1e980");
 
-  final PublicKey RSA_PUBLIC_KEY_2048_BITS = toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, RSA);
-  final PrivateKey RSA_PRIVATE_KEY_2048_BITS = toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, RSA);
-
-  final byte[] SIGNATURE_SHA1_WITH_RSA =
-      HexUtil.decodeHex(
-          "2b8aaddc4fe16e678694a2b3aad39a7e71d7d0143725ec0b6019b097c9fc234d7f9c4e3"
-              + "0b88bee6cdc6e77b096a435716a37222a603f4b3a26aab24f69146604b4b2998b"
-              + "5cef64e690d8fe7f5c3d057edd1bc40b9e70610fea87ef3c1c53185a2c381daf1"
-              + "6c4ab5d341ae5e790aa9ca4df0ea14bb85ef2b6dcee39c9815388bbde64f6fb30"
-              + "64275ea6f5e545a4b47a598a727bd668f8e885f951272d32e0d6aa44ca229b2b4"
-              + "7991828d3aba58d3f2e000e8af47463b3350e55244d5d07b881e93e6b2c62ab73"
-              + "5c4957b314f2b7289cdfbe43a87bf611d1d4ba4572165558f437090823a6df048"
-              + "ab29c12ac389966d1d674822f456dd49834a8ae0e19a827f216");
-
-  @Autowired
-  @Qualifier("RSASignature_SHA1withRSA")
-  SignatureService rsaSignatureService;
-
   @Test
-  void signsProperly() {
-    // When
-    final var signature =
-        rsaSignatureService.sign(
-            RSA_PRIVATE_KEY_2048_BITS,
-            CONTENT);
+  void throwsIllegalArgumentExceptionWhenToPublicKeyAndNullPublicKeyByteArray() {
+    // Given
+    final byte[] NULL_PUBLIC_KEY = null;
 
     // Then
-    assertThat(signature, is(equalTo(SIGNATURE_SHA1_WITH_RSA)));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> KeyPairUtil.toPublicKey(NULL_PUBLIC_KEY, RSA)); // When
   }
 
   @Test
-  void verifiesProperly() {
-    // When
-    final var verifyingResult =
-        rsaSignatureService.verify(
-            RSA_PUBLIC_KEY_2048_BITS,
-            CONTENT,
-            SIGNATURE_SHA1_WITH_RSA);
+  void throwsIllegalArgumentExceptionWhenToPublicKeyAndNullAlgorithm() {
+    // Given
+    final String NULL_ALGORITHM = null;
 
     // Then
-    assertThat(verifyingResult, is(equalTo(true)));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> KeyPairUtil.toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, NULL_ALGORITHM)); // When
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenToPublicKeyAndInvalidAlgorithm() {
+    // Given
+    final String INVALID_ALGORITHM = "INVALID";
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> KeyPairUtil.toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, INVALID_ALGORITHM)); // When
+  }
+
+  @Test
+  void producesNotNullWhenToPublicKey() {
+    // When
+    final var publicKey = KeyPairUtil.toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, RSA);
+
+    // Then
+    assertThat(publicKey, is(notNullValue()));
+  }
+
+  @Test
+  void producesTheRightResultWhenToPublicKey()
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+    // Given
+    final var keyFactory = KeyFactory.getInstance(RSA);
+    final var x509EncodedKeySpec = new X509EncodedKeySpec(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY);
+    final var expectedPublicKey = keyFactory.generatePublic(x509EncodedKeySpec);
+
+    // When
+    final var publicKey = KeyPairUtil.toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, RSA);
+
+    // Then
+    assertThat(publicKey, is(equalTo(expectedPublicKey)));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenToPrivateKeyAndNullPrivateKeyByteArray() {
+    // Given
+    final byte[] NULL_PRIVATE_KEY = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> KeyPairUtil.toPrivateKey(NULL_PRIVATE_KEY, RSA)); // When
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenToPrivateKeyAndNullAlgorithm() {
+    // Given
+    final String NULL_ALGORITHM = null;
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> KeyPairUtil.toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, NULL_ALGORITHM)); // When
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenToPrivateKeyAndInvalidAlgorithm() {
+    // Given
+    final String INVALID_ALGORITHM = "INVALID";
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> KeyPairUtil.toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, INVALID_ALGORITHM)); // When
+  }
+
+  @Test
+  void producesNotNullWhenToPrivateKey() {
+    // When
+    final var privateKey = KeyPairUtil.toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, RSA);
+
+    // Then
+    assertThat(privateKey, is(notNullValue()));
+  }
+
+  @Test
+  void producesTheRightResultWhenToPrivateKey()
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+    // Given
+    final var keyFactory = KeyFactory.getInstance(RSA);
+    final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY);
+    final var expectedPrivateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+
+    // When
+    final var privateKey = KeyPairUtil.toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, RSA);
+
+    // Then
+    assertThat(privateKey, is(equalTo(expectedPrivateKey)));
   }
 }

@@ -21,7 +21,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
-import com.theicenet.cryptography.util.HexUtil;
+import com.theicenet.cryptography.test.support.HexUtil;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
