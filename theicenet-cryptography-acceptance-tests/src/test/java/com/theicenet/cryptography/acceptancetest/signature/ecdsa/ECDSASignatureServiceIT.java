@@ -77,7 +77,7 @@ public class ECDSASignatureServiceIT {
               + "865ee94b85228f4a19e492817d633717bb9a8fb9b78ecd67365918c1050848");
 
   @Autowired
-  @Qualifier("ECDSASignature")
+  @Qualifier("ECDSASignature_SHA1withECDSA")
   SignatureService ecdsaSignatureService;
 
   @Test

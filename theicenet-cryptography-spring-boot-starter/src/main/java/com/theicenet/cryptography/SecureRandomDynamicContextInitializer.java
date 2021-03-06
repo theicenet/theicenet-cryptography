@@ -16,6 +16,7 @@
 package com.theicenet.cryptography;
 
 import java.security.SecureRandom;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,14 +27,14 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public class SecureRandomDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-  private static final String SECURE_RANDOM_BEAN_NAME = "secureRandom";
-
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
-    if (!beanFactory.containsBean(SECURE_RANDOM_BEAN_NAME)) {
-      beanFactory.registerSingleton(SECURE_RANDOM_BEAN_NAME, new SecureRandom());
+    try {
+      beanFactory.getBean(SecureRandom.class);
+    } catch (NoSuchBeanDefinitionException e) {
+      beanFactory.registerSingleton("secureRandom", new SecureRandom());
     }
   }
 }

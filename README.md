@@ -1474,36 +1474,37 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyComponent {
 
-  private final SignatureService signatureService;
+  private final SignatureService ecdsaSignatureService;
 
   @Autowired
-  public MyComponent(@Qualifier("ECDSASignature") SignatureService signatureService) {
-    this.signatureService = signatureService;
+  public MyComponent(
+      @Qualifier("ECDSASignature_SHA1withECDSA") SignatureService ecdsaSignatureService) {
+    this.ecdsaSignatureService = ecdsaSignatureService;
   }
 
   /** Byte array **/
 
   public void signByteArray(PrivateKey privateKey, byte[] content) {
-    byte[] signature = signatureService.sign(privateKey, content);
+    byte[] signature = ecdsaSignatureService.sign(privateKey, content);
   }
 
   public void verifyByteArray(PublicKey publicKey, byte[] content, byte[] signature) {
-    boolean isValidSignature = signatureService.verify(publicKey, content, signature);
+    boolean isValidSignature = ecdsaSignatureService.verify(publicKey, content, signature);
   }
 
   /** Stream **/
 
   public void signStream(PrivateKey privateKey, InputStream contentInputStream) {
-    byte[] signature = signatureService.sign(privateKey, contentInputStream);
+    byte[] signature = ecdsaSignatureService.sign(privateKey, contentInputStream);
   }
 
   public void verifyStream(PublicKey publicKey, InputStream contentInputStream, byte[] signature) {
-    boolean isValidSignature = signatureService.verify(publicKey, contentInputStream, signature);
+    boolean isValidSignature = ecdsaSignatureService.verify(publicKey, contentInputStream, signature);
   }
 }
 ```
 
-The default `algorithm` used is `SHA256withECDSA`, but you can override this default value in the `application.yml`.  
+The `algorithm` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -1511,6 +1512,73 @@ cryptography:
     asymmetric:
       ecdsa:
         algorithm: SHA1withECDSA
+```
+
+Multiple ECDSA signers for different `algorithms` can be created in the same Spring Boot context.
+Just specify the `algorithms` you wish to create signers for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      ecdsa:
+        algorithm: 
+          SHA1withECDSA,
+          SHA256withECDSA,
+          SHA512withECDSA
+```
+
+If only one single `algorithm` is specified in the `application.yml`, then the ECDSA signer must be injected by,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      ecdsa:
+        algorithm: SHA1withECDSA
+```
+
+```java
+@Autowired
+@Qualifier("ECDSASignature_SHA1withECDSA")
+SignatureService ecdsaSignatureService;
+```
+
+The @Qualifier is required even if one single `algorithm` is specified.
+
+If multiple `algorithms` are specified in the `application.yml`, then the signer for each specific `algorithm` can be injected by,
+
+```java
+@Autowired
+@Qualifier("ECDSASignature_${algorithm}")
+SignatureService ecdsaSignatureService;
+```
+
+Where `${algorithm}` must be replaced by the `algorithm` to inject,
+
+```yaml
+cryptography:
+  signature:
+    asymmetric:
+      ecdsa:
+        algorithm:
+          SHA1withECDSA,
+          SHA256withECDSA,
+          SHA512withECDSA
+```
+
+```java
+@Autowired
+@Qualifier("ECDSASignature_SHA1withDSA")
+SignatureService ecdsaSHA1SignatureService;
+
+@Autowired
+@Qualifier("ECDSASignature_SHA256withDSA")
+SignatureService ecdsaSHA256SignatureService;
+
+@Autowired
+@Qualifier("ECDSASignature_SHA512withDSA")
+SignatureService ecdsaSHA512SignatureService;
 ```
 
 Supported `algorithm` are,

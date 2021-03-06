@@ -23,8 +23,6 @@ import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
-import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
-import com.theicenet.cryptography.key.asymmetric.ecc.ecdh.JCAECDHKeyService;
 import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
@@ -45,9 +43,6 @@ import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptKeyService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
 import com.theicenet.cryptography.random.JCASecureRandomDataService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
-import com.theicenet.cryptography.signature.SignatureService;
-import com.theicenet.cryptography.signature.ecdsa.ECDSASignatureAlgorithm;
-import com.theicenet.cryptography.signature.ecdsa.JCAECDSASignatureService;
 import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -88,14 +83,6 @@ public class StaticAutoConfiguration {
   @Bean("DSAKey")
   public AsymmetricKeyService dsaKeyService(SecureRandom secureRandom) {
     return new JCADSAKeyService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("ECDSASignature")
-  public SignatureService ecdsaSignatureService(
-      @Value("${cryptography.signature.asymmetric.ecdsa.algorithm:SHA256withECDSA}") ECDSASignatureAlgorithm algorithm) {
-
-    return new JCAECDSASignatureService(algorithm);
   }
 
   @Lazy
