@@ -25,7 +25,6 @@ import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ecdh.JCAECDHKeyService;
-import com.theicenet.cryptography.key.asymmetric.ecc.ecdsa.JCAECDSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
@@ -51,23 +50,21 @@ import com.theicenet.cryptography.signature.ecdsa.ECDSASignatureAlgorithm;
 import com.theicenet.cryptography.signature.ecdsa.JCAECDSASignatureService;
 import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 /**
+ * IMPORTANT:
+ *  Please note that SecureRandom bean is defined in SecureRandomDynamicContextInitializer
+ *  as it's required in some other Context initializers, which are run earlier than this Auto
+ *  Configuration. Please ignore any IDE warning on this matter.
+ *
  * @author Juan Fidalgo
  * @since 1.0.0
  */
 @Configuration
 public class StaticAutoConfiguration {
-
-  @Bean
-  @ConditionalOnMissingBean
-  public SecureRandom secureRandom() {
-    return new SecureRandom();
-  }
 
   @Lazy
   @Bean("AESKey")
@@ -91,15 +88,6 @@ public class StaticAutoConfiguration {
   @Bean("DSAKey")
   public AsymmetricKeyService dsaKeyService(SecureRandom secureRandom) {
     return new JCADSAKeyService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("ECDSAKey")
-  public AsymmetricKeyService ecdsaKeyService(
-      @Value("${cryptography.key.asymmetric.ecc.ecdsa.curve:brainpoolpXXXt1}") ECCCurve curve,
-      SecureRandom secureRandom) {
-
-    return new JCAECDSAKeyService(curve, secureRandom);
   }
 
   @Lazy
@@ -159,7 +147,7 @@ public class StaticAutoConfiguration {
   }
 
   @Lazy
-  @Bean("SecureRandom")
+  @Bean("SecureRandomData")
   public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
     return new JCASecureRandomDataService(secureRandom);
   }

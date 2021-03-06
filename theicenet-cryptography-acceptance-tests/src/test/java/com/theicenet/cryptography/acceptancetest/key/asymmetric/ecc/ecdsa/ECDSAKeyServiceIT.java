@@ -34,7 +34,7 @@ class ECDSAKeyServiceIT {
   final int KEY_LENGTH_256_BITS = 256;
 
   @Autowired
-  @Qualifier("ECDSAKey")
+  @Qualifier("ECDSAKey_secpXXXk1")
   AsymmetricKeyService ecdsaKeyService;
 
   @Test

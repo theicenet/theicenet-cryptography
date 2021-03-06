@@ -22,6 +22,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -33,14 +34,15 @@ class SecureRandomDataServiceIT {
   final int RANDOM_DATA_LENGTH_32_BYTES = 32;
 
   @Autowired
-  SecureRandomDataService ivService;
+  SecureRandomDataService randomDataService;
 
   @Test
-  void producesIVWhenGeneratingRandom() {
+  void producesRandomDataWhenGeneratingRandom() {
     // When
-    final var generatedIV = ivService.generateSecureRandomData(RANDOM_DATA_LENGTH_32_BYTES);
+    final var generatedRandomData =
+        randomDataService.generateSecureRandomData(RANDOM_DATA_LENGTH_32_BYTES);
 
     // Then
-    assertThat(generatedIV, is(notNullValue()));
+    assertThat(generatedRandomData, is(notNullValue()));
   }
 }

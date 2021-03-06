@@ -409,16 +409,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyComponent {
 
-  private final AsymmetricKeyService asymmetricKeyService;
+  private final AsymmetricKeyService ecdsaKeyService;
 
   @Autowired
-  public MyComponent(@Qualifier("ECDSAKey") AsymmetricKeyService asymmetricKeyService) {
-    this.asymmetricKeyService = asymmetricKeyService;
+  public MyComponent(@Qualifier("ECDSAKey_secpXXXk1") AsymmetricKeyService ecdsaKeyService) {
+    this.ecdsaKeyService = ecdsaKeyService;
   }
 
   public void generateRandomKeyPair() {
     // Generate key with 256 bits length
-    KeyPair keyPair = asymmetricKeyService.generateKey(256);
+    KeyPair keyPair = ecdsaKeyService.generateKey(256);
 
     PublicKey publicKey = keyPair.getPublic(); // X.509 format publicKey
     PrivateKey privateKey = keyPair.getPrivate(); // PKCS#8 format privateKey
@@ -426,7 +426,7 @@ public class MyComponent {
 }
 ```
 
-The default curve used is `brainpoolpXXXt1`, but you can override this default value in the `application.yml`. 
+The `curve` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -435,6 +435,76 @@ cryptography:
       ecc:
         ecdsa:
           curve: secpXXXk1
+```
+
+Multiple ECDSA key generators for different `curves` can be created in the same Spring Boot context.
+Just specify the `curves` you wish to create ciphers for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  key:
+    asymmetric:
+      ecc:
+        ecdsa:
+          curve: 
+            secpXXXk1,
+            P_XXX,
+            brainpoolpXXXr1
+```
+
+If only one single `curve` is specified in the `application.yml`, then the ECDSA key generator must be injected by,
+
+```yaml
+cryptography:
+  key:
+    asymmetric:
+      ecc:
+        ecdsa:
+          curve: secpXXXk1
+```
+
+```java
+@Autowired
+@Qualifier("ECDSAKey_secpXXXk1")
+AsymmetricKeyService ecdsaKeyService;
+```
+
+The @Qualifier is required even if one single `curve` is specified.
+
+If multiple `curves` are specified in the `application.yml`, then the key generator for each specific `curve` can be injected by,
+
+```java
+@Autowired
+@Qualifier("ECDSAKey_${curve}")
+AsymmetricKeyService ecdsaKeyService;
+```
+
+Where `${curve}` must be replaced by the `curve` to inject,
+
+```yaml
+cryptography:
+  key:
+    asymmetric:
+      ecc:
+        ecdsa:
+          curve:
+            secpXXXk1,
+            P_XXX,
+            brainpoolpXXXr1
+```
+
+```java
+@Autowired
+@Qualifier("ECDSAKey_secpXXXk1")
+AsymmetricKeyService ecdsaSecpXXXk1KeyService;
+
+@Autowired
+@Qualifier("ECDSAKey_P_XXX")
+AsymmetricKeyService ecdsaPXXXKeyService;
+
+@Autowired
+@Qualifier("ECDSAKey_brainpoolpXXXr1")
+AsymmetricKeyService ecdsaBrainpoolpXXXr1KeyService;
 ```
 
 The supported curves and their provided key lengths are,
@@ -1111,7 +1181,7 @@ cryptography:
           RIPEMD256withRSA
 ```
 
-If only one single `algorithm` is specified in the `application.yml`, then the RSA signer can be just injected by,
+If only one single `algorithm` is specified in the `application.yml`, then the RSA signer must injected by,
 
 ```yaml
 cryptography:
@@ -1123,6 +1193,7 @@ cryptography:
 
 ```java
 @Autowired
+@Qualifier("RSASignature_SHA1withRSA")
 SignatureService rsaSignatureService;
 ```
 
@@ -1253,7 +1324,7 @@ cryptography:
           SHA512withDSA
 ```
 
-If only one single `algorithm` is specified in the `application.yml`, then the DSA signer can be just injected by,
+If only one single `algorithm` is specified in the `application.yml`, then the DSA signer must be injected by,
 
 ```yaml
 cryptography:
@@ -1265,8 +1336,11 @@ cryptography:
 
 ```java
 @Autowired
+@Qualifier("DSASignature_SHA1withDSA")
 SignatureService dsaSignatureService;
 ```
+
+The @Qualifier is required even if one single `algorithm` is specified.
 
 If multiple `algorithms` are specified in the `application.yml`, then the signer for each specific `algorithm` can be injected by,
 
