@@ -27,6 +27,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -50,6 +51,7 @@ class MacServiceIT {
       HexUtil.decodeHex("a2fdff1710aef9c827262bd54dc0f653a7050672");
 
   @Autowired
+  @Qualifier("MAC_HmacSHA1")
   MacService macService;
 
   @Test

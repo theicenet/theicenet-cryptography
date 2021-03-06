@@ -15,8 +15,8 @@
  */
 package com.theicenet.cryptography;
 
-import com.theicenet.cryptography.signature.ecdsa.ECDSASignatureAlgorithm;
-import com.theicenet.cryptography.signature.ecdsa.JCAECDSASignatureService;
+import com.theicenet.cryptography.mac.hmac.HmacAlgorithm;
+import com.theicenet.cryptography.mac.hmac.JCAHmacService;
 import com.theicenet.cryptography.util.PropertiesUtil;
 import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -28,7 +28,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public class ECDSASignatureDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class MacDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -36,21 +36,21 @@ public class ECDSASignatureDynamicContextInitializer implements ApplicationConte
     final ConfigurableEnvironment environment = applicationContext.getEnvironment();
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
-    final Set<ECDSASignatureAlgorithm> algorithms =
+    final Set<HmacAlgorithm> algorithms =
         PropertiesUtil.getProperty(
             environment,
-            "cryptography.signature.asymmetric.ecdsa.algorithm",
-            ECDSASignatureAlgorithm.class);
+            "cryptography.mac.algorithm",
+            HmacAlgorithm.class);
 
     algorithms.forEach(algorithm -> registerBean(beanFactory, algorithm));
   }
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
-      ECDSASignatureAlgorithm ecdsaSignatureAlgorithm) {
+      HmacAlgorithm algorithm) {
 
     beanFactory.registerSingleton(
-        String.format("%s_%s", "ECDSASignature", ecdsaSignatureAlgorithm),
-        new JCAECDSASignatureService(ecdsaSignatureAlgorithm));
+        String.format("%s_%s", "MAC", algorithm.name()),
+        new JCAHmacService(algorithm));
   }
 }

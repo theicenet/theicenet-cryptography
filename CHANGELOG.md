@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multiple beans for the ECDH key generator for different EC curves can be injected in the same Spring Boot context [@jjfidalgo]
 - Multiple beans for the ECDSA signer for different algorithms can be injected in the same Spring Boot context [@jjfidalgo]
 - Multiple beans for the Digester for different algorithms can be injected in the same Spring Boot context [@jjfidalgo]
+- Multiple beans for the MAC calculator for different algorithms can be injected in the same Spring Boot context [@jjfidalgo]
 
 ### Changed
 

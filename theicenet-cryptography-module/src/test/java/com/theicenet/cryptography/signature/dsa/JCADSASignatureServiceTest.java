@@ -15,6 +15,8 @@
  */
 package com.theicenet.cryptography.signature.dsa;
 
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPrivateKey;
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPublicKey;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.CombinableMatcher.both;
@@ -30,11 +32,8 @@ import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -113,8 +112,8 @@ class JCADSASignatureServiceTest {
               + "c163599f6b05aa20422022066f86f6ba16b288c03dc985df9819d1069b2f2498f6e"
               + "adf7fb3575d71115e7a5");
 
-  final PublicKey DSA_PUBLIC_KEY_2048_BITS;
-  final PrivateKey DSA_PRIVATE_KEY_2048_BITS;
+  final PublicKey DSA_PUBLIC_KEY_2048_BITS = toPublicKey(DSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, DSA);
+  final PrivateKey DSA_PRIVATE_KEY_2048_BITS = toPrivateKey(DSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, DSA);
 
   final byte[] SIGNATURE_SHA1_WITH_DSA =
       HexUtil.decodeHex(
@@ -130,16 +129,6 @@ class JCADSASignatureServiceTest {
       HexUtil.decodeHex(
           "30440220094d640b5afe56c331fc9ff3c2c06241f2320a592a37b7d7ff65a45b639913e002206a"
               + "b5a85e136ed7b8cde27a9f26e9132f1b134b6523b00ec2310dddf96899cc70");
-
-  JCADSASignatureServiceTest() throws Exception {
-    final var keyFactory = KeyFactory.getInstance(DSA);
-
-    final var x509EncodedKeySpec = new X509EncodedKeySpec(DSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY);
-    DSA_PUBLIC_KEY_2048_BITS = keyFactory.generatePublic(x509EncodedKeySpec);
-
-    final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(DSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY);
-    DSA_PRIVATE_KEY_2048_BITS = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-  }
 
   @ParameterizedTest
   @EnumSource(DSASignatureAlgorithm.class)

@@ -15,6 +15,8 @@
  */
 package com.theicenet.cryptography.signature.ecdsa;
 
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPrivateKey;
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPublicKey;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.CombinableMatcher.both;
@@ -25,18 +27,13 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 
-import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
-import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -45,7 +42,7 @@ import org.junit.jupiter.params.provider.EnumSource;
  * @author Juan Fidalgo
  */
 class JCAECDSASignatureServiceTest {
-  final ECCKeyAlgorithm ECDSA = ECCKeyAlgorithm.ECDSA;
+  final String ECDSA = "ECDSA";
 
   final byte[] CONTENT =
       "Content to be signed to test correctness of the ECDSA sign implementation."
@@ -68,8 +65,10 @@ class JCAECDSASignatureServiceTest {
               + "03420004276492e8990f82e5b31d4931a35591756eb24db1534fae485e0e62a2a218"
               + "8c6da2896928c35032e1b664125225559865b03bf436fe1ccf368443bb7397dfc39e");
 
-  final PublicKey ECDSA_PUBLIC_KEY_BRAINPOOLP256R1;
-  final PrivateKey ECDSA_PRIVATE_KEY_BRAINPOOLP256R1;
+  final PublicKey ECDSA_PUBLIC_KEY_BRAINPOOLP256R1 =
+      toPublicKey(ECDSA_PUBLIC_KEY_BRAINPOOLP256R1_BYTE_ARRAY, ECDSA);
+  final PrivateKey ECDSA_PRIVATE_KEY_BRAINPOOLP256R1 =
+      toPrivateKey(ECDSA_PRIVATE_KEY_BRAINPOOLP256R1_BYTE_ARRAY, ECDSA);
 
   final byte[] SIGNATURE_SHA1_WITH_ECDSA =
       HexUtil.decodeHex(
@@ -85,21 +84,6 @@ class JCAECDSASignatureServiceTest {
       HexUtil.decodeHex(
           "304402202be4286aa2daf28ef992e52f360888987df981da2495553c49510358d84b6198022078f"
               + "bc3d6a0037c682454e908f463997a094222687af9232204f05d0001951291");
-
-  JCAECDSASignatureServiceTest() throws Exception {
-    // Bouncy Castle is required for ECDSA key factory
-    CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
-
-    final var keyFactory = KeyFactory.getInstance(ECDSA.toString());
-
-    final var x509EncodedKeySpec = new X509EncodedKeySpec(
-        ECDSA_PUBLIC_KEY_BRAINPOOLP256R1_BYTE_ARRAY);
-    ECDSA_PUBLIC_KEY_BRAINPOOLP256R1 = keyFactory.generatePublic(x509EncodedKeySpec);
-
-    final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
-        ECDSA_PRIVATE_KEY_BRAINPOOLP256R1_BYTE_ARRAY);
-    ECDSA_PRIVATE_KEY_BRAINPOOLP256R1 = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-  }
 
   @ParameterizedTest
   @EnumSource(ECDSASignatureAlgorithm.class)

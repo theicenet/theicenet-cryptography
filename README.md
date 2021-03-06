@@ -291,11 +291,11 @@ TheIceNet Cryptography library uses Maven as building tool. To build the library
 
 -  Clone the repository
 -  Change to the library root folder 
-```shell script
+```shell
 cd theicenet-cryptography
 ```
 - Build the library
-```shell script
+```shell
 mvn clean install
 ```
 
@@ -1267,6 +1267,8 @@ cryptography:
 SignatureService rsaSignatureService;
 ```
 
+The @Qualifier is required even if one single `algorithm` is specified.
+
 If multiple `algorithms` are specified in the `application.yml`, then the signer for each specific `algorithm` can be injected by,
 
 ```java
@@ -1719,6 +1721,7 @@ Supported `digest algorithms` are,
 import com.theicenet.cryptography.mac.MacService;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -1727,7 +1730,8 @@ public class MyComponent {
   private final MacService macService;
 
   @Autowired
-  public MyComponent(MacService macService) {
+  public MyComponent(
+      @Qualifier("MAC_HmacSHA1") MacService macService) {
     this.macService = macService;
   }
 
@@ -1737,7 +1741,7 @@ public class MyComponent {
 }
 ```
 
-The default `mac` algorithm used is `HmacSHA256`, but you can override this default value in the `application.yml`. 
+The `algorithm` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -1745,7 +1749,65 @@ cryptography:
     algorithm: HmacSHA1
 ```
 
-Supported `mac` algorithms are,
+Multiple MAC calculators for different `algorithms` can be created in the same Spring Boot context.
+Just specify the `algorithms` you wish to create a calculator for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  mac:
+    algorithm: 
+      HmacSHA1,
+      HmacSHA256,
+      HmacSHA512
+```
+
+If only one single `algorithm` is specified in the `application.yml`, then the MAC calculator can be just injected by,
+
+```yaml
+cryptography:
+  mac:
+    algorithm: HmacSHA1
+```
+
+```java
+@Autowired
+MacService macService;
+```
+
+If multiple `algorithms` are specified in the `application.yml`, then the calculator for each specific `algorithm` can be injected by,
+
+```java
+@Autowired
+@Qualifier("MAC_${algorithm}") 
+MacService macService;
+```
+
+Where `${algorithm}` must be replaced by the MAC `algorithm` to inject,
+
+```yaml
+cryptography:
+  mac:
+    algorithm:
+      HmacSHA1,
+      HmacSHA256,
+      HmacSHA512
+```
+
+```java
+@Autowired
+@Qualifier("MAC_HmacSHA1") 
+MacService sha1Service;
+
+@Autowired
+@Qualifier("MAC_HmacSHA256") 
+MacService sha256Service;
+
+@Autowired
+@Qualifier("MAC_HmacSHA512") 
+MacService sha512Service;
+```
+
+Supported MAC `algorithms` are,
 
     - HmacSHA1
     - HmacSHA224

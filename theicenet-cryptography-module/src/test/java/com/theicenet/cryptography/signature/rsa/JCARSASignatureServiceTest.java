@@ -15,6 +15,8 @@
  */
 package com.theicenet.cryptography.signature.rsa;
 
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPrivateKey;
+import static com.theicenet.cryptography.test.support.KeyPairUtil.toPublicKey;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -30,9 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -106,8 +106,8 @@ class JCARSASignatureServiceTest {
               + "5665d74c109c84e02ef91191fd3561f3363cd2a5d9dbc622dfb35e4fa9b9a5bce"
               + "0f4d3349d127f4902bfc2d8b1e980");
 
-  final PublicKey RSA_PUBLIC_KEY_2048_BITS;
-  final PrivateKey RSA_PRIVATE_KEY_2048_BITS;
+  final PublicKey RSA_PUBLIC_KEY_2048_BITS = toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, RSA);
+  final PrivateKey RSA_PRIVATE_KEY_2048_BITS = toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, RSA);
 
   final byte[] SIGNATURE_SHA1_WITH_RSA =
       HexUtil.decodeHex(
@@ -141,16 +141,6 @@ class JCARSASignatureServiceTest {
               + "9c9b93992efa24d7f1a1a5dcf01e094e1d9c3ffd7c7553fc90ee869cc67378f2fb23282"
               + "595215699180f14bbc9fd24be404daae53afb334585260c612cd1e7e51b5111c951a7f8"
               + "42f1b644d");
-
-  JCARSASignatureServiceTest() throws Exception {
-    final var keyFactory = KeyFactory.getInstance(RSA);
-
-    final var x509EncodedKeySpec = new X509EncodedKeySpec(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY);
-    RSA_PUBLIC_KEY_2048_BITS = keyFactory.generatePublic(x509EncodedKeySpec);
-
-    final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY);
-    RSA_PRIVATE_KEY_2048_BITS = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
-  }
 
   @ParameterizedTest
   @EnumSource(RSASignatureAlgorithm.class)

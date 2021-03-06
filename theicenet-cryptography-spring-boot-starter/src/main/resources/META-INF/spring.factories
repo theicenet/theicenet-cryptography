@@ -8,7 +8,8 @@ org.springframework.context.ApplicationContextInitializer=\
   com.theicenet.cryptography.ECDSAKeyDynamicContextInitializer,\
   com.theicenet.cryptography.ECDHKeyDynamicContextInitializer,\
   com.theicenet.cryptography.ECDSASignatureDynamicContextInitializer,\
-  com.theicenet.cryptography.DigestDynamicContextInitializer
+  com.theicenet.cryptography.DigestDynamicContextInitializer,\
+  com.theicenet.cryptography.MacDynamicContextInitializer
 
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\

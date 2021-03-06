@@ -25,9 +25,6 @@ import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
 import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
-import com.theicenet.cryptography.mac.MacService;
-import com.theicenet.cryptography.mac.hmac.HmacAlgorithm;
-import com.theicenet.cryptography.mac.hmac.JCAHmacService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Configuration;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Type;
@@ -49,8 +46,9 @@ import org.springframework.context.annotation.Lazy;
 /**
  * IMPORTANT:
  *  Please note that SecureRandom bean is defined in SecureRandomDynamicContextInitializer
- *  as it's required in some other Context initializers, which are run earlier than this Auto
- *  Configuration. Please ignore any IDE warning on this matter.
+ *  as it's required in some other Context initializers, which are run before than this Auto
+ *  Configuration during the Spring Boot context initialisation process.
+ *  Please ignore any IDE warning on this matter.
  *
  * @author Juan Fidalgo
  * @since 1.0.0
@@ -125,13 +123,5 @@ public class StaticAutoConfiguration {
   @Bean("SecureRandomData")
   public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
     return new JCASecureRandomDataService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("Hmac")
-  public MacService hmacService(
-      @Value("${cryptography.mac.algorithm:HmacSHA256}") HmacAlgorithm algorithm) {
-
-    return new JCAHmacService(algorithm);
   }
 }
