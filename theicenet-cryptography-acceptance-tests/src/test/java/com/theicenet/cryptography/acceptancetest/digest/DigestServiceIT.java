@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -40,27 +41,50 @@ class DigestServiceIT {
   final byte[] SHA_1_HASH =
       HexUtil.decodeHex("cc0639f168304020f9e8ab80961cf41c3b877d16");
 
+  final byte[] SHA_256_HASH =
+      HexUtil.decodeHex("e0fb432ace777040cca88f0213580f1f7e602928eb5c71097dbde1dc389a7ca7");
+
+  final byte[] SHA_512_HASH =
+      HexUtil.decodeHex(
+          "4034a6bc9c9a4d719e97ff8f27f266efbdad94e54fe27758ad5a096862bdbea569e6b1b4d74e1d"
+              + "1d5de68e66058a714e133bbb911819fb199e6174240ebdb860");
+
   @Autowired
-  DigestService digestService;
+  @Qualifier("Digest_SHA_1")
+  DigestService sha1DigestService;
+
+  @Autowired
+  @Qualifier("Digest_SHA_256")
+  DigestService sha256DigestService;
+
+  @Autowired
+  @Qualifier("Digest_SHA_512")
+  DigestService sha512DigestService;
 
   @Test
-  void producesTheRightHashWhenDigestingByteArray() {
+  void producesTheRightHashWhenDigestingSha1() {
     // When
-    final var hash = digestService.digest(CONTENT);
+    final var hash = sha1DigestService.digest(CONTENT);
 
     // Then
     assertThat(hash, is(equalTo(SHA_1_HASH)));
   }
 
   @Test
-  void producesTheRightHashWhenDigestingStream() {
-    // Given
-    final var contentInputStream = new ByteArrayInputStream(CONTENT);
-
+  void producesTheRightHashWhenDigestingSha256() {
     // When
-    final var hash = digestService.digest(contentInputStream);
+    final var hash = sha256DigestService.digest(CONTENT);
 
     // Then
-    assertThat(hash, is(equalTo(SHA_1_HASH)));
+    assertThat(hash, is(equalTo(SHA_256_HASH)));
+  }
+
+  @Test
+  void producesTheRightHashWhenDigestingSha512() {
+    // When
+    final var hash = sha512DigestService.digest(CONTENT);
+
+    // Then
+    assertThat(hash, is(equalTo(SHA_512_HASH)));
   }
 }

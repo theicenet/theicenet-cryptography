@@ -73,8 +73,8 @@ public class ECDSASignatureServiceIT {
 
   final byte[] SIGNATURE_SHA1_WITH_ECDSA =
       HexUtil.decodeHex(
-          "304402206a2d12c6d68a10d93226fd858217077ce9eaa3c0a46ca6f8d89d411f5b69d865022060"
-              + "865ee94b85228f4a19e492817d633717bb9a8fb9b78ecd67365918c1050848");
+          "30450221008481268c784b069e6f3f6413c24404c17ed4d53ebc34f43e2d38938cd4c30a55"
+              + "02200d35c055e574d335bcf8f4664f4c88d8d3ccd4834cd76cdd901937012a9dc67c");
 
   @Autowired
   @Qualifier("ECDSASignature_SHA1withECDSA")

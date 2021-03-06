@@ -18,9 +18,6 @@ package com.theicenet.cryptography;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVCipherService;
-import com.theicenet.cryptography.digest.DigestAlgorithm;
-import com.theicenet.cryptography.digest.DigestService;
-import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
@@ -128,14 +125,6 @@ public class StaticAutoConfiguration {
   @Bean("SecureRandomData")
   public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
     return new JCASecureRandomDataService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("Digest")
-  public DigestService digestService(
-      @Value("${cryptography.digest.algorithm:SHA_256}") DigestAlgorithm algorithm) {
-
-    return new JCADigestService(algorithm);
   }
 
   @Lazy

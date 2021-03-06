@@ -15,12 +15,9 @@
  */
 package com.theicenet.cryptography;
 
-import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
-import com.theicenet.cryptography.key.asymmetric.ecc.ecdsa.JCAECDSAKeyService;
-import com.theicenet.cryptography.signature.rsa.JCARSASignatureService;
-import com.theicenet.cryptography.signature.rsa.RSASignatureAlgorithm;
+import com.theicenet.cryptography.digest.DigestAlgorithm;
+import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.util.PropertiesUtil;
-import java.security.SecureRandom;
 import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
@@ -31,31 +28,29 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public class ECDSAKeyDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class DigestDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
 
     final ConfigurableEnvironment environment = applicationContext.getEnvironment();
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
-    final SecureRandom secureRandom = beanFactory.getBean(SecureRandom.class);
 
-    final Set<ECCCurve> curves =
+    final Set<DigestAlgorithm> algorithms =
         PropertiesUtil.getProperty(
             environment,
-            "cryptography.key.asymmetric.ecc.ecdsa.curve",
-            ECCCurve.class);
+            "cryptography.digest.algorithm",
+            DigestAlgorithm.class);
 
-    curves.forEach(curve -> registerBean(beanFactory, curve, secureRandom));
+    algorithms.forEach(algorithm -> registerBean(beanFactory, algorithm));
   }
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
-      ECCCurve eccCurve,
-      SecureRandom secureRandom) {
+      DigestAlgorithm algorithm) {
 
     beanFactory.registerSingleton(
-        String.format("%s_%s", "ECDSAKey", eccCurve),
-        new JCAECDSAKeyService(eccCurve, secureRandom));
+        String.format("%s_%s", "Digest", algorithm.name()),
+        new JCADigestService(algorithm));
   }
 }

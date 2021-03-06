@@ -44,7 +44,7 @@ public class ECDHKeyDynamicContextInitializer implements ApplicationContextIniti
             "cryptography.key.asymmetric.ecc.ecdh.curve",
             ECCCurve.class);
 
-    curves.forEach(algorithm -> registerBean(beanFactory, algorithm, secureRandom));
+    curves.forEach(curve -> registerBean(beanFactory, curve, secureRandom));
   }
 
   private void registerBean(

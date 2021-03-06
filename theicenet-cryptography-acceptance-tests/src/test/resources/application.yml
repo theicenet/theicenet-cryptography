@@ -38,7 +38,10 @@ cryptography:
       parallelism: 2
 
   digest:
-    algorithm: SHA-1
+    algorithm:
+      SHA_1,
+      SHA_256,
+      SHA_512
 
   mac:
     algorithm: HmacSHA1

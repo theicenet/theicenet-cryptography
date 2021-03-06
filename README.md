@@ -1601,6 +1601,7 @@ Supported `algorithm` are,
 import com.theicenet.cryptography.digest.DigestService;
 import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -1609,7 +1610,8 @@ public class MyComponent {
   private final DigestService digestService;
 
   @Autowired
-  public MyComponent(DigestService digestService) {
+  public MyComponent(
+      @Qualifier("Digest_SHA_1") DigestService digestService) {
     this.digestService = digestService;
   }
 
@@ -1624,15 +1626,73 @@ public class MyComponent {
 }
 ```
 
-The default `digest` algorithm used is `SHA_256`, but you can override this default value in the `application.yml`. 
+The `digest algorithm` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
   digest:
-    algorithm: SHA-1
+    algorithm: SHA_1
 ```
 
-Supported `digest` algorithms are,
+Multiple digesters for different `digest algorithms` can be created in the same Spring Boot context.
+Just specify the `digest algorithms` you wish to create a digester for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  digest:
+    algorithm:
+      SHA_1,
+      SHA_256,
+      SHA_512
+```
+
+If only one single `digest algorithm` is specified in the `application.yml`, then the digester can be just injected by,
+
+```yaml
+cryptography:
+  digest:
+    algorithm: SHA_1
+```
+
+```java
+@Autowired
+DigestService digestService;
+```
+
+If multiple `digest algorithms` are specified in the `application.yml`, then the digester for each specific `digest algorithm` can be injected by,
+
+```java
+@Autowired
+@Qualifier("Digest_${algorithm}")
+DigestService digestService;
+```
+
+Where `${algorithm}` must be replaced by the `digest algorithm` to inject,
+
+```yaml
+cryptography:
+  digest:
+    algorithm:
+      SHA_1,
+      SHA_256,
+      SHA_512
+```
+
+```java
+@Autowired
+@Qualifier("Digest_SHA_1")
+DigestService sha1DigestService;
+
+@Autowired
+@Qualifier("Digest_SHA_256")
+DigestService sha256DigestService;
+
+@Autowired
+@Qualifier("Digest_SHA_512")
+DigestService sha512DigestService;
+```
+
+Supported `digest algorithms` are,
 
     - MD5
     - SHA_1
