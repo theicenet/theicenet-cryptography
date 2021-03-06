@@ -34,7 +34,7 @@ class ECDHKeyServiceIT {
   final int KEY_LENGTH_256_BITS = 256;
 
   @Autowired
-  @Qualifier("ECDHKey")
+  @Qualifier("ECDHKey_secpXXXk1")
   AsymmetricKeyService ecdhKeyService;
 
   @Test

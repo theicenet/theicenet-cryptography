@@ -99,15 +99,6 @@ public class StaticAutoConfiguration {
   }
 
   @Lazy
-  @Bean("ECDHKey")
-  public AsymmetricKeyService ecdhKeyService(
-      @Value("${cryptography.key.asymmetric.ecc.ecdh.curve:brainpoolpXXXt1}") ECCCurve curve,
-      SecureRandom secureRandom) {
-
-    return new JCAECDHKeyService(curve, secureRandom);
-  }
-
-  @Lazy
   @Bean("ECDHKeyAgreement")
   public KeyAgreementService ecdhKeyAgreementService() {
     return new JCACEDHKeyAgreementService();

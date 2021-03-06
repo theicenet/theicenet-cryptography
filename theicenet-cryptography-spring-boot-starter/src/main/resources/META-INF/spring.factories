@@ -5,7 +5,8 @@ org.springframework.context.ApplicationContextInitializer=\
   com.theicenet.cryptography.RSACipherDynamicContextInitializer,\
   com.theicenet.cryptography.RSASignatureDynamicContextInitializer,\
   com.theicenet.cryptography.DSASignatureDynamicContextInitializer,\
-  com.theicenet.cryptography.ECDSAKeyDynamicContextInitializer
+  com.theicenet.cryptography.ECDSAKeyDynamicContextInitializer,\
+  com.theicenet.cryptography.ECDHKeyDynamicContextInitializer
 
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\

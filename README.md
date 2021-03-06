@@ -544,16 +544,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyComponent {
 
-  private final AsymmetricKeyService asymmetricKeyService;
+  private final AsymmetricKeyService ecdhKeyService;
 
   @Autowired
-  public MyComponent(@Qualifier("ECDHKey") AsymmetricKeyService asymmetricKeyService) {
-    this.asymmetricKeyService = asymmetricKeyService;
+  public MyComponent(@Qualifier("ECDHKey_secpXXXk1") AsymmetricKeyService ecdhKeyService) {
+    this.ecdhKeyService = ecdhKeyService;
   }
 
   public void generateRandomKeyPair() {
     // Generate a key with 256 bits length
-    KeyPair keyPair = asymmetricKeyService.generateKey(256);
+    KeyPair keyPair = ecdhKeyService.generateKey(256);
 
     PublicKey publicKey = keyPair.getPublic(); // X.509 format publicKey
     PrivateKey privateKey = keyPair.getPrivate(); // PKCS#8 format privateKey
@@ -561,7 +561,7 @@ public class MyComponent {
 }
 ```
 
-The default curve used is `brainpoolpXXXt1`, but you can override this default value in the `application.yml`. 
+The `curve` to be used must be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -570,6 +570,76 @@ cryptography:
       ecc:
         ecdh:
           curve: secpXXXk1
+```
+
+Multiple ECDH key generators for different `curves` can be created in the same Spring Boot context.
+Just specify the `curves` you wish to create ciphers for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  key:
+    asymmetric:
+      ecc:
+        ecdh:
+          curve: 
+            secpXXXk1,
+            P_XXX,
+            brainpoolpXXXr1
+```
+
+If only one single `curve` is specified in the `application.yml`, then the ECDH key generator must be injected by,
+
+```yaml
+cryptography:
+  key:
+    asymmetric:
+      ecc:
+        ecdh:
+          curve: secpXXXk1
+```
+
+```java
+@Autowired
+@Qualifier("ECDHKey_secpXXXk1")
+AsymmetricKeyService ecdhKeyService;
+```
+
+The @Qualifier is required even if one single `curve` is specified.
+
+If multiple `curves` are specified in the `application.yml`, then the key generator for each specific `curve` can be injected by,
+
+```java
+@Autowired
+@Qualifier("ECDHKey_${curve}")
+AsymmetricKeyService ecdhKeyService;
+```
+
+Where `${curve}` must be replaced by the `curve` to inject,
+
+```yaml
+cryptography:
+  key:
+    asymmetric:
+      ecc:
+        ecdh:
+          curve:
+            secpXXXk1,
+            P_XXX,
+            brainpoolpXXXr1
+```
+
+```java
+@Autowired
+@Qualifier("ECDHKey_secpXXXk1")
+AsymmetricKeyService ecdhSecpXXXk1KeyService;
+
+@Autowired
+@Qualifier("ECDHKey_P_XXX")
+AsymmetricKeyService ecdhPXXXKeyService;
+
+@Autowired
+@Qualifier("ECDHKey_brainpoolpXXXr1")
+AsymmetricKeyService ecdhBrainpoolpXXXr1KeyService;
 ```
 
 The supported curves and their provided key lengths are,
