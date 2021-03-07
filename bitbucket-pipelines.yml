@@ -1,17 +1,26 @@
 image: maven:3.6.3-jdk-11
 
 pipelines:
-  default:
-    - step:
-        name: Build TheIceNet Cryptography
-        caches:
-          - maven
-        script:
-          - mvn -V -B clean verify
-  branches:
-    release-*:
+  pull-requests:
+    '**':
       - step:
-          name: Release TheIceNet Cryptography to Maven Central
+          name: Build PR
+          caches:
+            - maven
+          script:
+            - mvn -V -B clean verify
+  branches:
+    master:
+      - step:
+          name: Build master
+          caches:
+            - maven
+          script:
+            - mvn -V -B clean verify
+  custom:
+    release-to-maven-central:
+      - step:
+          name: Release to Maven Central
           deployment: maven-central
           caches:
             - maven
@@ -21,3 +30,4 @@ pipelines:
             - mvn -V -B release:clean -Prelease
             - mvn -V -B release:prepare -Prelease
             - mvn -V -B -s settings.xml release:perform -Prelease
+
