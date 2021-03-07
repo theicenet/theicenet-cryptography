@@ -3,6 +3,7 @@ image: maven:3.6.3-jdk-11
 pipelines:
   default:
     - step:
+        name: Build TheIceNet Cryptography
         caches:
           - maven
         script:
@@ -10,6 +11,8 @@ pipelines:
   branches:
     release-*:
       - step:
+          name: Release TheIceNet Cryptography to Maven Central
+          deployment: maven-central
           caches:
             - maven
           script:
