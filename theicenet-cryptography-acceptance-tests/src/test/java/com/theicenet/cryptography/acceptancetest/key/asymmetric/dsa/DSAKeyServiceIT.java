@@ -38,7 +38,7 @@ class DSAKeyServiceIT {
   AsymmetricKeyService dsaKeyService;
 
   @Test
-  public void producesDSAKeyWhenGeneratingKey() {
+  void producesDSAKeyWhenGeneratingKey() {
     // When
     final var generatedKeyPair = dsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.theicenet.cryptography.signature;
 
+import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.PrivateKey;
@@ -25,12 +26,49 @@ import org.apache.commons.lang.Validate;
 
 /**
  * @author Juan Fidalgo
- * @since 1.0.0
+ * @since 1.1.0
  */
-public final class JCASignatureUtil {
-  private JCASignatureUtil() {}
+public class JCASignatureService<T extends Enum<T>> implements SignatureService {
 
-  public static byte[] sign(PrivateKey privateKey, byte[] content, String algorithm) {
+  private final T algorithm;
+
+  public JCASignatureService(T algorithm) {
+    Validate.notNull(algorithm);
+    this.algorithm = algorithm;
+
+    // For some sign/verify algorithms it's required Bouncy Castle
+    CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
+  }
+
+  @Override
+  public byte[] sign(PrivateKey privateKey, byte[] content) {
+    return sign(privateKey, content, algorithm.toString());
+  }
+
+  @Override
+  public boolean verify(PublicKey publicKey, byte[] content, byte[] signature) {
+    return verify(publicKey, content, signature, algorithm.toString());
+  }
+
+  /**
+   * @implNote Once this method returns the input stream has been closed as requested
+   *           in the API interface.
+   */
+  @Override
+  public byte[] sign(PrivateKey privateKey, InputStream contentInputStream) {
+    return sign(privateKey, contentInputStream, algorithm.toString());
+  }
+
+  /**
+   * @implNote Once this method returns the input stream has been closed as requested
+   *           in the API interface.
+   */
+  @Override
+  public boolean verify(PublicKey publicKey, InputStream contentInputStream, byte[] signature) {
+    return verify(publicKey, contentInputStream, signature, algorithm.toString());
+  }
+
+  private byte[] sign(PrivateKey privateKey, byte[] content, String algorithm) {
     Validate.notNull(privateKey);
     Validate.notNull(content);
     Validate.notNull(algorithm);
@@ -46,7 +84,7 @@ public final class JCASignatureUtil {
     }
   }
 
-  public static boolean verify(
+  private boolean verify(
       PublicKey publicKey,
       byte[] content,
       byte[] signature,
@@ -68,7 +106,7 @@ public final class JCASignatureUtil {
     }
   }
 
-  public static byte[] sign(PrivateKey privateKey, InputStream contentInputStream, String algorithm) {
+  private byte[] sign(PrivateKey privateKey, InputStream contentInputStream, String algorithm) {
     Validate.notNull(privateKey);
     Validate.notNull(contentInputStream);
     Validate.notNull(algorithm);
@@ -90,7 +128,7 @@ public final class JCASignatureUtil {
     }
   }
 
-  public static boolean verify(
+  private boolean verify(
       PublicKey publicKey,
       InputStream contentInputStream,
       byte[] signature,
@@ -118,7 +156,7 @@ public final class JCASignatureUtil {
     }
   }
 
-  static OutputStream buildSignatureOutputStream(Signature signer) {
+  private OutputStream buildSignatureOutputStream(Signature signer) {
     return new OutputStream() {
       @Override
       public void write(int b) {

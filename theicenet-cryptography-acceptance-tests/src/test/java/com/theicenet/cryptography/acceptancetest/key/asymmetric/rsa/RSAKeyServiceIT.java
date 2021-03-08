@@ -38,7 +38,7 @@ class RSAKeyServiceIT {
   AsymmetricKeyService rsaKeyService;
 
   @Test
-  public void producesRSAKeyWhenGeneratingKey() {
+  void producesRSAKeyWhenGeneratingKey() {
     // When
     final var generatedKeyPair = rsaKeyService.generateKey(KEY_LENGTH_1024_BITS);
 

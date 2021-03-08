@@ -38,7 +38,7 @@ class ECDSAKeyServiceIT {
   AsymmetricKeyService ecdsaKeyService;
 
   @Test
-  public void producesECDSAKeyWhenGeneratingKey() {
+  void producesECDSAKeyWhenGeneratingKey() {
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(KEY_LENGTH_256_BITS);
 

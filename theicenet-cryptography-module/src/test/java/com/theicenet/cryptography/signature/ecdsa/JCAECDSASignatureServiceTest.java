@@ -30,6 +30,7 @@ import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 import com.theicenet.cryptography.signature.SignatureService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
+import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
@@ -42,6 +43,11 @@ import org.junit.jupiter.params.provider.EnumSource;
  * @author Juan Fidalgo
  */
 class JCAECDSASignatureServiceTest {
+  static {
+    // Bouncy Castle is required to reformat the ECDSA public and private keys
+    CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
+  }
+
   final String ECDSA = "ECDSA";
 
   final byte[] CONTENT =

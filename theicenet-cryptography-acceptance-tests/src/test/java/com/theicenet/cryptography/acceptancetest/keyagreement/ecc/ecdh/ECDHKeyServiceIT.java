@@ -75,7 +75,7 @@ class ECDHKeyServiceIT {
   KeyAgreementService ecdhKeyAgreementService;
 
   @Test
-  public void producesECDHSecretKeyWhenGeneratingSecretKey() {
+  void producesECDHSecretKeyWhenGeneratingSecretKey() {
     // When
     final var generatedSecretKey =
         ecdhKeyAgreementService.generateSecretKey(

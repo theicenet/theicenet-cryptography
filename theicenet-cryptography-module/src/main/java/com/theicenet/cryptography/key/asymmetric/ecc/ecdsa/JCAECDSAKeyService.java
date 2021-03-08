@@ -15,14 +15,10 @@
  */
 package com.theicenet.cryptography.key.asymmetric.ecc.ecdsa;
 
-import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
-import com.theicenet.cryptography.key.asymmetric.ecc.JCAECCKeyUtil;
-import com.theicenet.cryptography.util.CryptographyProviderUtil;
-import java.security.KeyPair;
+import com.theicenet.cryptography.key.asymmetric.ecc.JCAECCKeyService;
 import java.security.SecureRandom;
-import org.apache.commons.lang.Validate;
 
 /**
  * Java Cryptography Architecture (JCA) based component which generates ECDSA key pairs.
@@ -35,30 +31,11 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCAECDSAKeyService implements AsymmetricKeyService {
+public class JCAECDSAKeyService extends JCAECCKeyService {
 
   private static final ECCKeyAlgorithm ECDSA = ECCKeyAlgorithm.ECDSA;
 
-  private final ECCCurve curve;
-  private final SecureRandom secureRandom;
-
   public JCAECDSAKeyService(ECCCurve curve, SecureRandom secureRandom) {
-    Validate.notNull(curve);
-    Validate.notNull(secureRandom);
-
-    this.curve = curve;
-    this.secureRandom = secureRandom;
-
-    // Bouncy Castle is required for most of the ECC curves
-    CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
-  }
-
-  /**
-   * @implNote Generated private key is <b>PKCS #8</b> format as required by the API interface.
-   * @implNote Generate public key is <b>X.509</b> format as required by the API interface.
-   */
-  @Override
-  public KeyPair generateKey(int keyLengthInBits) {
-    return JCAECCKeyUtil.generateKey(keyLengthInBits, curve, ECDSA, secureRandom);
+    super(ECDSA, curve, secureRandom);
   }
 }

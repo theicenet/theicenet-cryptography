@@ -35,7 +35,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author Juan Fidalgo
  */
 @SpringBootTest
-public class DSASignatureServiceIT {
+class DSASignatureServiceIT {
 
   final String DSA = "DSA";
 

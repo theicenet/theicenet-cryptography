@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.theicenet.cryptography.key.asymmetric.ecc;
 
+import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyServiceException;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.KeyPair;
@@ -25,20 +26,39 @@ import org.apache.commons.lang.Validate;
 
 /**
  * @author Juan Fidalgo
- * @since 1.0.0
+ * @since 1.1.0
  */
-public final class JCAECCKeyUtil {
+public class JCAECCKeyService implements AsymmetricKeyService {
 
   private static final String CURVE_LENGTH_PLACE_HOLDER = "XXX";
 
-  static {
+  private final ECCKeyAlgorithm algorithm;
+  private final ECCCurve curve;
+  private final SecureRandom secureRandom;
+
+  public JCAECCKeyService(ECCKeyAlgorithm algorithm, ECCCurve curve, SecureRandom secureRandom) {
+    Validate.notNull(algorithm);
+    Validate.notNull(curve);
+    Validate.notNull(secureRandom);
+
+    this.algorithm = algorithm;
+    this.curve = curve;
+    this.secureRandom = secureRandom;
+
     // Bouncy Castle is required for most of the ECC curves
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
   }
 
-  private JCAECCKeyUtil() {}
+  /**
+   * @implNote Generated private key is <b>PKCS #8</b> format as required by the API interface.
+   * @implNote Generate public key is <b>X.509</b> format as required by the API interface.
+   */
+  @Override
+  public KeyPair generateKey(int keyLengthInBits) {
+    return generateKey(keyLengthInBits, curve, algorithm, secureRandom);
+  }
 
-  public static KeyPair generateKey(
+  private KeyPair generateKey(
       int keyLengthInBits,
       ECCCurve curve,
       ECCKeyAlgorithm eccKeyAlgorithm,

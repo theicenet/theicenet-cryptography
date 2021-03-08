@@ -38,7 +38,7 @@ class ECDHKeyServiceIT {
   AsymmetricKeyService ecdhKeyService;
 
   @Test
-  public void producesECDHKeyWhenGeneratingKey() {
+  void producesECDHKeyWhenGeneratingKey() {
     // When
     final var generatedKeyPair = ecdhKeyService.generateKey(KEY_LENGTH_256_BITS);
 

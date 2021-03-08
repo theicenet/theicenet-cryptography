@@ -36,7 +36,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author Juan Fidalgo
  */
 @SpringBootTest
-public class ECDSASignatureServiceIT {
+class ECDSASignatureServiceIT {
 
   static {
     // Bouncy Castle is required to reformat the ECDSA public and private keys

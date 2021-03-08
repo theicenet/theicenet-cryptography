@@ -35,7 +35,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author Juan Fidalgo
  */
 @SpringBootTest
-public class RSASignatureServiceIT {
+class RSASignatureServiceIT {
 
   final String RSA = "RSA";
 
