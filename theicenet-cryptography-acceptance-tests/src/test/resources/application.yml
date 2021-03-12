@@ -54,4 +54,11 @@ cryptography:
         ecdh:
           curve: secpXXXk1
 
+  pake:
+    srp:
+      v6a:
+        standardGroup: SG_2048
+        digest:
+          algorithm: SHA_256
+
 

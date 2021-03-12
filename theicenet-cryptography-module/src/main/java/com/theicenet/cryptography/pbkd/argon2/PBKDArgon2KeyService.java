@@ -40,6 +40,7 @@ public class PBKDArgon2KeyService implements PBKDKeyService {
   private final Argon2Configuration argon2Configuration;
 
   public PBKDArgon2KeyService(Argon2Configuration argon2Configuration) {
+    Validate.notNull(argon2Configuration);
     this.argon2Configuration = argon2Configuration;
   }
 

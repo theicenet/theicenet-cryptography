@@ -41,6 +41,7 @@ public class JCARSACipherService implements AsymmetricCipherService {
   private final RSAPadding padding;
 
   public JCARSACipherService(RSAPadding padding) {
+    Validate.notNull(padding);
     this.padding = padding;
 
     // For RSA/NONE/OAEP* it's required Bouncy Castle

@@ -18,6 +18,7 @@ package com.theicenet.cryptography;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVCipherService;
+import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
 import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
@@ -25,6 +26,9 @@ import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
 import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6VerifierService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Configuration;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Type;
@@ -89,11 +93,11 @@ public class StaticAutoConfiguration {
   @Lazy
   @Bean("PBKDArgon2")
   public PBKDKeyService pbkdArgon2KeyService(
-      @Value("${cryptography.keyDerivationFunction.argon2.type:ARGON2_ID}") Argon2Type type,
-      @Value("${cryptography.keyDerivationFunction.argon2.version:ARGON2_VERSION_13}") Argon2Version version,
-      @Value("${cryptography.keyDerivationFunction.argon2.iterations:3}") Integer iterations,
-      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo:18}") Integer memoryPowOfTwo,
-      @Value("${cryptography.keyDerivationFunction.argon2.parallelism:4}") Integer parallelism) {
+      @Value("${cryptography.keyDerivationFunction.argon2.type}") Argon2Type type,
+      @Value("${cryptography.keyDerivationFunction.argon2.version}") Argon2Version version,
+      @Value("${cryptography.keyDerivationFunction.argon2.iterations}") Integer iterations,
+      @Value("${cryptography.keyDerivationFunction.argon2.memoryPowOfTwo}") Integer memoryPowOfTwo,
+      @Value("${cryptography.keyDerivationFunction.argon2.parallelism}") Integer parallelism) {
 
     return new PBKDArgon2KeyService(
         new Argon2Configuration(type, version, iterations, memoryPowOfTwo, parallelism));
@@ -102,8 +106,8 @@ public class StaticAutoConfiguration {
   @Lazy
   @Bean("PBKDF2")
   public PBKDKeyService pbkdF2KeyService(
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm:SHA512}") PBKDF2ShaAlgorithm shaAlgorithm,
-      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations:131070}") Integer iterations) {
+      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.shaAlgorithm}") PBKDF2ShaAlgorithm shaAlgorithm,
+      @Value("${cryptography.keyDerivationFunction.pbkdF2WithHmacSHA.iterations}") Integer iterations) {
 
     return new JCAPBKDF2WithHmacSHAKeyService(new PBKDF2Configuration(shaAlgorithm, iterations));
   }
@@ -111,12 +115,21 @@ public class StaticAutoConfiguration {
   @Lazy
   @Bean("PBKDSCrypt")
   public PBKDKeyService pbkdSCryptKeyService(
-      @Value("${cryptography.keyDerivationFunction.scrypt.cpuMemoryCost:1048576}") Integer cpuMemoryCost,
-      @Value("${cryptography.keyDerivationFunction.scrypt.blockSize:8}") Integer blockSize,
-      @Value("${cryptography.keyDerivationFunction.scrypt.parallelization:1}") Integer parallelization) {
+      @Value("${cryptography.keyDerivationFunction.scrypt.cpuMemoryCost}") Integer cpuMemoryCost,
+      @Value("${cryptography.keyDerivationFunction.scrypt.blockSize}") Integer blockSize,
+      @Value("${cryptography.keyDerivationFunction.scrypt.parallelization}") Integer parallelization) {
 
     return new PBKDSCryptKeyService(
         new SCryptConfiguration(cpuMemoryCost, blockSize, parallelization));
+  }
+
+  @Lazy
+  @Bean("SRP6VerifierService")
+  public SRP6VerifierService srp6VerifierService(
+      @Value("${cryptography.pake.srp.v6a.standardGroup}") SRP6StandardGroup standardGroup,
+      @Value("${cryptography.pake.srp.v6a.digest.algorithm}")DigestAlgorithm digestAlgorithm) {
+
+    return new RFC5054SRP6VerifierService(standardGroup, digestAlgorithm);
   }
 
   @Lazy

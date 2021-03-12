@@ -34,6 +34,7 @@ public class JCASecureRandomDataService implements SecureRandomDataService {
   private final SecureRandom secureRandom;
 
   public JCASecureRandomDataService(SecureRandom secureRandom) {
+    Validate.notNull(secureRandom);
     this.secureRandom = secureRandom;
   }
 

@@ -37,6 +37,7 @@ public class JCADigestService implements DigestService {
   private final DigestAlgorithm algorithm;
 
   public JCADigestService(DigestAlgorithm algorithm) {
+    Validate.notNull(algorithm);
     this.algorithm = algorithm;
 
     // Some of the digest algorithms require bouncy castle

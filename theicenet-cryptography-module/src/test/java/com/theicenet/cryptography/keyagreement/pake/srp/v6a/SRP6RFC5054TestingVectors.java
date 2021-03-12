@@ -42,8 +42,9 @@ interface SRP6RFC5054TestingVectors {
 
   byte[] SALT = decodeHex("BEB25379D1A8581EB5A727673A2441EE");
 
-  BigInteger N = SRP6StandardGroup.SG_1024.getN();
-  BigInteger g = SRP6StandardGroup.SG_1024.getG();
+  SRP6StandardGroup SG_1024 = SRP6StandardGroup.SG_1024;
+  BigInteger N = SG_1024.getN();
+  BigInteger g = SG_1024.getG();
 
   DigestAlgorithm HASH_SHA_1 = DigestAlgorithm.SHA_1;
 

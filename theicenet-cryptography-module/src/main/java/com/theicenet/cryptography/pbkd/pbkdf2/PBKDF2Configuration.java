@@ -15,6 +15,8 @@
  */
 package com.theicenet.cryptography.pbkd.pbkdf2;
 
+import org.apache.commons.lang.Validate;
+
 /**
  * @author Juan Fidalgo
  * @since 1.0.0
@@ -26,6 +28,8 @@ public final class PBKDF2Configuration {
   private final Integer iterations;
 
   public PBKDF2Configuration(PBKDF2ShaAlgorithm shaAlgorithm, Integer iterations) {
+    Validate.notNull(shaAlgorithm);
+    Validate.notNull(iterations);
 
     this.algorithm = String.format("%s%s", PBKDF2_WITH_HMAC, shaAlgorithm.toString());
     this.iterations = iterations;

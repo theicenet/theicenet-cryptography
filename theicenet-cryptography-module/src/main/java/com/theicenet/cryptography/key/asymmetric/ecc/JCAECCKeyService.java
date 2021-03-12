@@ -64,6 +64,9 @@ public class JCAECCKeyService implements AsymmetricKeyService {
       ECCKeyAlgorithm eccKeyAlgorithm,
       SecureRandom secureRandom) {
 
+    Validate.notNull(curve);
+    Validate.notNull(eccKeyAlgorithm);
+    Validate.notNull(secureRandom);
     Validate.isTrue(
         curve.getKeyLengths().contains(keyLengthInBits),
         String.format(
@@ -71,9 +74,6 @@ public class JCAECCKeyService implements AsymmetricKeyService {
             keyLengthInBits,
             curve,
             curve.getKeyLengths()));
-    Validate.notNull(curve);
-    Validate.notNull(eccKeyAlgorithm);
-    Validate.notNull(secureRandom);
 
     KeyPairGenerator generator;
     try {

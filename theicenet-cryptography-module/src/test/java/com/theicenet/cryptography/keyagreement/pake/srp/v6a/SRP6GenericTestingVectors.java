@@ -16,7 +16,6 @@
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toBigInteger;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup.SG_2048;
 import static com.theicenet.cryptography.test.support.HexUtil.decodeHex;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
@@ -36,6 +35,7 @@ interface SRP6GenericTestingVectors {
 
   byte[] SALT = decodeHex("73FDFC0AEA06935D2C8C28354B9A1125");
 
+  SRP6StandardGroup SG_2048 = SRP6StandardGroup.SG_2048;
   BigInteger N = SG_2048.getN();
   BigInteger g = SG_2048.getG();
 

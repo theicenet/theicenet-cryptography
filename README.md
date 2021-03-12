@@ -18,6 +18,7 @@ The main cryptographic modules `theicenet-cryptography-module` is 100% Spring ag
     * [Asymmetric cryptography supported algorithms](#asymmetric-cryptography-supported-algorithms)
     * [Hashing supported algorithms](#hashing-supported-algorithms)
     * [Password Based Key Derivation (PBKD) supported algorithms](#password-based-key-derivation-supported-algorithms)
+    * [Password Authenticated Key Exchange (PAKE) supported algorithms](#password-authenticated-key-exchange-supported-algorithms)
     * [Random data generation support](#random-data-generation-support)
 * Getting Started
     * [TheIceNet Cryptography library requirements](#theicenet-cryptography-library-requirements)
@@ -39,6 +40,8 @@ The main cryptographic modules `theicenet-cryptography-module` is 100% Spring ag
         * [Password based key derivation with PBKDF2 from string/byte array](#password-based-key-derivation-with-pbkdf2-from-string-or-byte-array)
         * [Password based key derivation with Scrypt from string/byte array](#password-based-key-derivation-with-scrypt-from-string-or-byte-array)
         * [Password based key derivation with Argon2 from string/byte array](#password-based-key-derivation-with-argon2-from-string-or-byte-array)
+    * Password Authenticated Key Exchange (PAKE)
+        * [Password authenticated key exchange with SRP6 version 6a](#password-authenticated-key-exchange-with-srp6-version-6a)
     * Encrypt / Decrypt
         * Symmetric cryptography
             * [Encrypt/Decrypt byte array/stream with AES and ECB block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-ecb-block-mode-of-operation)
@@ -250,7 +253,14 @@ TheIceNet Cryptography library can work with the next PBKD algorithms,
         - Version
             - ARGON2_VERSION_10
             - ARGON2_VERSION_13
-    
+
+## Password Authenticated Key Exchange supported algorithms
+
+TheIceNet Cryptography library can work with the next PAKE algorithms,
+
+- **Augmented PAKE**
+    - Secure Remote Password Protocol (SRP) version 6a (as described in the RFC 5054 specification)
+ 
 ## Random data generation support
 
 TheIceNet Cryptography library can generate the next type of random data,
@@ -731,7 +741,7 @@ public class MyComponent {
 }
 ```
 
-To derivate a PBKDF2 key, the default `shaAlgorithm` algorithm used is `SHA512` and the default `iterations` is `131070`, but you can override this default value in the `application.yml`. 
+The configuration to derive a PBKDF2 key, can be set in the `application.yml`. 
 
 ```yaml
 cryptography:
@@ -779,8 +789,7 @@ public class MyComponent {
   }
 }
 ```
-
-To derivate a Scrypt key, the default `cpuMemoryCost` used is `1048576`, the default `blockSize` used is `8` and the default `parallelization` used is `1`, but you can override this default value in the `application.yml`. 
+The configuration to derive a Scrypt key, can be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -822,7 +831,7 @@ public class MyComponent {
 }
 ```
 
-To derivate a Argon2 key, the default argon2's `type` used is `ARGON2_ID`, the default argon2's `version` used is `ARGON2_VERSION_13`, the default `iterations` are `3`, the default `memoryPowOfTwo` used is `18` and the default `parallelism` used is `4`, but you can override this default value in the `application.yml`. 
+The configuration to derive a Argon2 key, can be set in the `application.yml`.
 
 ```yaml
 cryptography:
@@ -845,6 +854,61 @@ The supported argon2's `versions` are,
 
     - ARGON2_VERSION_10
     - ARGON2_VERSION_13
+
+### Password Authenticated Key Exchange with SRP6 version 6a
+
+```java
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyComponent {
+
+  private final SRP6VerifierService srp6VerifierService;
+
+  @Autowired
+  public MyComponent(@Qualifier("SRP6VerifierService") SRP6VerifierService srp6VerifierService) {
+    this.srp6VerifierService = srp6VerifierService;
+  }
+
+  public void generateSRP6Verifier(byte[] salt, byte[] identity, byte[] password) {
+    byte[] srp6Verifier = srp6VerifierService.generateVerifier(salt, identity, password);
+  }
+}
+```
+
+The `standard group (N,g)` and `hashing` algorithm to use for the SRP6 can be set in the `application.yml`.
+
+```yaml
+cryptography:
+  pake:
+    srp:
+      v6a:
+        standardGroup: SG_2048
+        digest:
+          algorithm: SHA_256
+```
+
+For SRP6 injection can be simplified to just,
+
+```java
+@Autowired
+SRP6VerifierService srp6VerifierService;
+```
+
+The SRP6's supported `standard groups (N, g)` are,
+
+    - SG_1024   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
+    - SG_1536   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
+    - SG_2048   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
+    - SG_3072   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
+    - SG_4096   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
+    - SG_6144   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
+    - SG_8192   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
+
+The SRP6's supported `hashing` algorithms are [any of the supported by the library](#hashing-supported-algorithms)
 
 ### Encrypt and decrypt byte array or stream with AES and ECB block mode of operation
 

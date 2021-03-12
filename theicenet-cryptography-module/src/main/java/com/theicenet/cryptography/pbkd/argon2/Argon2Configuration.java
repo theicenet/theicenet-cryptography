@@ -15,6 +15,8 @@
  */
 package com.theicenet.cryptography.pbkd.argon2;
 
+import org.apache.commons.lang.Validate;
+
 /**
  * @author Juan Fidalgo
  * @since 1.0.0
@@ -32,7 +34,14 @@ public final class Argon2Configuration {
       Integer iterations,
       Integer memoryPowOfTwo,
       Integer parallelism) {
-    
+
+    Validate.notNull(type);
+    Validate.notNull(version);
+    Validate.notNull(iterations);
+    Validate.notNull(memoryPowOfTwo);
+    Validate.notNull(parallelism);
+    Validate.notNull(parallelism );
+
     this.type = type;
     this.version = version;
     this.iterations = iterations;

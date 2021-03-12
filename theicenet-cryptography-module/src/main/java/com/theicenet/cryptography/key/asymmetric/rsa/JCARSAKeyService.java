@@ -41,6 +41,7 @@ public class JCARSAKeyService implements AsymmetricKeyService {
   private final SecureRandom secureRandom;
 
   public JCARSAKeyService(SecureRandom secureRandom) {
+    Validate.notNull(secureRandom);
     this.secureRandom = secureRandom;
   }
 

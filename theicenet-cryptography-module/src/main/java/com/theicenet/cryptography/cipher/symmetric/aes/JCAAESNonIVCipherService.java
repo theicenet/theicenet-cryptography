@@ -45,6 +45,7 @@ public class JCAAESNonIVCipherService implements SymmetricNonIVCipherService {
 
   public JCAAESNonIVCipherService(
       BlockCipherNonIVModeOfOperation blockMode) {
+    Validate.notNull(blockMode);
     this.blockMode = blockMode;
   }
 

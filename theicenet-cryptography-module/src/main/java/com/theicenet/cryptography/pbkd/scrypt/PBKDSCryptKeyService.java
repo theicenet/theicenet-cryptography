@@ -41,6 +41,7 @@ public class PBKDSCryptKeyService implements PBKDKeyService {
   private final SCryptConfiguration sCryptConfiguration;
 
   public PBKDSCryptKeyService(SCryptConfiguration sCryptConfiguration) {
+    Validate.notNull(sCryptConfiguration);
     this.sCryptConfiguration = sCryptConfiguration;
   }
 

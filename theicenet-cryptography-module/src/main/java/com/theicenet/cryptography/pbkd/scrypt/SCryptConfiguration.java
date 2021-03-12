@@ -15,6 +15,8 @@
  */
 package com.theicenet.cryptography.pbkd.scrypt;
 
+import org.apache.commons.lang.Validate;
+
 /**
  * @author Juan Fidalgo
  * @since 1.0.0
@@ -25,6 +27,9 @@ public final class SCryptConfiguration {
   private final Integer parallelization;
 
   public SCryptConfiguration(Integer cpuMemoryCost, Integer blockSize, Integer parallelization) {
+    Validate.notNull(cpuMemoryCost);
+    Validate.notNull(blockSize);
+    Validate.notNull(parallelization);
 
     this.cpuMemoryCost = cpuMemoryCost;
     this.blockSize = blockSize;

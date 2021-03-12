@@ -42,6 +42,7 @@ public class JCAAESKeyService implements SymmetricKeyService {
   private final SecureRandom secureRandom;
 
   public JCAAESKeyService(SecureRandom secureRandom) {
+    Validate.notNull(secureRandom);
     this.secureRandom = secureRandom;
   }
 

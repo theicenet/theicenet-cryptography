@@ -41,6 +41,7 @@ public class JCAHmacService implements MacService {
   private final HmacAlgorithm algorithm;
 
   public JCAHmacService(HmacAlgorithm algorithm) {
+    Validate.notNull(algorithm);
     this.algorithm = algorithm;
   }
 

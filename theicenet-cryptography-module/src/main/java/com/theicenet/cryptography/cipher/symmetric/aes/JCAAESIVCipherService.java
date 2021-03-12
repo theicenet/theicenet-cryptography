@@ -46,9 +46,15 @@ public class JCAAESIVCipherService implements SymmetricIVCipherService {
   private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
       "IV's size must be equals to AES cipher block size = %s bytes";
 
+  private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_16_BYTES =
+      String.format(
+          IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES,
+          AES_CIPHER_BLOCK_SIZE_16_BYTES);
+
   private final BlockCipherIVModeOfOperation blockMode;
 
   public JCAAESIVCipherService(BlockCipherIVModeOfOperation blockMode) {
+    Validate.notNull(blockMode);
     this.blockMode = blockMode;
   }
 
@@ -155,27 +161,15 @@ public class JCAAESIVCipherService implements SymmetricIVCipherService {
     }
   }
 
-  private void validateCipherParameters(
-      BlockCipherIVModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv) {
-
-    Validate.notNull(blockMode);
-    Validate.notNull(secretKey);
-    Validate.notNull(iv);
-    Validate.isTrue(
-        iv.length == AES_CIPHER_BLOCK_SIZE_16_BYTES,
-        String.format(
-            IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES,
-            AES_CIPHER_BLOCK_SIZE_16_BYTES));
-  }
-
   private Cipher createCipher(
       Integer operationMode,
       BlockCipherIVModeOfOperation blockMode,
       SecretKey secretKey,
       byte[] iv,
       AESPadding padding) {
+
+    validateCipherParameters(blockMode, secretKey, iv);
+    Validate.notNull(padding);
 
     final Cipher cipher;
     try {
@@ -188,7 +182,21 @@ public class JCAAESIVCipherService implements SymmetricIVCipherService {
     return cipher;
   }
 
+  private void validateCipherParameters(
+      BlockCipherIVModeOfOperation blockMode,
+      SecretKey secretKey,
+      byte[] iv) {
+
+    Validate.notNull(blockMode);
+    Validate.notNull(secretKey);
+    Validate.notNull(iv);
+    Validate.isTrue(
+        iv.length == AES_CIPHER_BLOCK_SIZE_16_BYTES,
+        IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_16_BYTES);
+  }
+
   private AESPadding paddingForBlockMode(BlockCipherIVModeOfOperation mode) {
+    Validate.notNull(mode);
 
     final AESPadding padding;
     switch (mode) {

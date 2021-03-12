@@ -42,6 +42,7 @@ public class JCAPBKDF2WithHmacSHAKeyService implements PBKDKeyService {
   private final PBKDF2Configuration pbkdf2Configuration;
 
   public JCAPBKDF2WithHmacSHAKeyService(PBKDF2Configuration pbkdf2Configuration) {
+    Validate.notNull(pbkdf2Configuration);
     this.pbkdf2Configuration = pbkdf2Configuration;
 
     // For PBKDF2WithHmacSHA3-XXX it's required Bouncy Castle
