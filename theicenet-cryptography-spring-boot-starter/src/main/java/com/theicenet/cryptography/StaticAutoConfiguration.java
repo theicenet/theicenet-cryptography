@@ -26,7 +26,9 @@ import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
 import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6ClientService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6VerifierService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
@@ -59,6 +61,12 @@ import org.springframework.context.annotation.Lazy;
  */
 @Configuration
 public class StaticAutoConfiguration {
+
+  @Lazy
+  @Bean("SecureRandomData")
+  public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
+    return new JCASecureRandomDataService(secureRandom);
+  }
 
   @Lazy
   @Bean("AESKey")
@@ -124,7 +132,7 @@ public class StaticAutoConfiguration {
   }
 
   @Lazy
-  @Bean("SRP6VerifierService")
+  @Bean("SRP6Verifier")
   public SRP6VerifierService srp6VerifierService(
       @Value("${cryptography.pake.srp.v6a.standardGroup}") SRP6StandardGroup standardGroup,
       @Value("${cryptography.pake.srp.v6a.digest.algorithm}")DigestAlgorithm digestAlgorithm) {
@@ -133,8 +141,12 @@ public class StaticAutoConfiguration {
   }
 
   @Lazy
-  @Bean("SecureRandomData")
-  public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
-    return new JCASecureRandomDataService(secureRandom);
+  @Bean("SRP6Client")
+  public SRP6ClientService srp6ClientService(
+      @Value("${cryptography.pake.srp.v6a.standardGroup}") SRP6StandardGroup standardGroup,
+      @Value("${cryptography.pake.srp.v6a.digest.algorithm}")DigestAlgorithm digestAlgorithm,
+      SecureRandomDataService secureRandomDataService) {
+
+    return new RFC5054SRP6ClientService(standardGroup, digestAlgorithm, secureRandomDataService);
   }
 }

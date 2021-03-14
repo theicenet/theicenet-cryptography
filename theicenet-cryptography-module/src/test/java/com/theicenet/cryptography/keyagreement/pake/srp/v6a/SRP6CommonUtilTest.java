@@ -24,8 +24,10 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTe
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_S;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_SESSION_KEY;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_U;
+import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_X;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.HASH_SHA_256;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.N;
+import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.a;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.g;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1024;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1536;
@@ -160,6 +162,28 @@ class SRP6CommonUtilTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> SRP6CommonUtil.computeU(sha256Digest, N, EXPECTED_A, NULL_PUBLIC_VALUE_B)); // When
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenComputingUAndInvalidPublicValueA() {
+    // Given
+    final BigInteger INVALID_PUBLIC_VALUE_A = N.multiply(BigInteger.TEN);
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> SRP6CommonUtil.computeU(sha256Digest, N, INVALID_PUBLIC_VALUE_A, EXPECTED_B)); // When
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenComputingUAndInvalidPublicValueB() {
+    // Given
+    final BigInteger INVALID_PUBLIC_VALUE_B = N.multiply(BigInteger.TEN);
+
+    // Then
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> SRP6CommonUtil.computeU(sha256Digest, N, EXPECTED_A, INVALID_PUBLIC_VALUE_B)); // When
   }
 
   @Test

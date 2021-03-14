@@ -21,10 +21,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -118,7 +118,7 @@ class RFC5054SRP6VerifierServiceTest {
   }
 
   @Test
-  void producesTheSameVerifierWhenGeneratingTwoConsecutiveVerifiers() {
+  void producesTheSameVerifierWhenGeneratingTwoConsecutiveVerifiersAndSameInputData() {
     // When
     final var generatedVerifier_1 =
         srp6VerifierService.generateVerifier(
@@ -137,14 +137,33 @@ class RFC5054SRP6VerifierServiceTest {
   }
 
   @Test
-  void producesTheSameVerifierWhenGeneratingManyConsecutiveVerifiers() {
+  void producesDifferentVerifierWhenGeneratingTwoConsecutiveVerifiersAndDifferentInputData() {
+    // When
+    final var generatedVerifier_1 =
+        srp6VerifierService.generateVerifier(
+            SRP6RFC5054TestingVectors.SALT,
+            SRP6RFC5054TestingVectors.IDENTITY,
+            SRP6RFC5054TestingVectors.PASSWORD);
+
+    final var generatedVerifier_2 =
+        srp6VerifierService.generateVerifier(
+            SRP6GenericTestingVectors.SALT,
+            SRP6GenericTestingVectors.IDENTITY,
+            SRP6GenericTestingVectors.PASSWORD);
+
+    // Then
+    assertThat(generatedVerifier_1, is(not(equalTo(generatedVerifier_2))));
+  }
+
+  @Test
+  void producesTheSameVerifierWhenGeneratingManyConsecutiveVerifiersAndSameInputData() {
     // Given
-    final var _500 = 100;
+    final var _100 = 100;
 
     // When
     final var generatedVerifiers =
         RunnerUtil.runConsecutivelyToSet(
-            _500,
+            _100,
             () ->
                 encodeHex(
                     srp6VerifierService.generateVerifier(
@@ -157,14 +176,14 @@ class RFC5054SRP6VerifierServiceTest {
   }
 
   @Test
-  void producesTheRightVerifierWhenGeneratingManyConsecutiveVerifiers() {
+  void producesTheRightVerifierWhenGeneratingManyConsecutiveVerifiersAndSameInputData() {
     // Given
-    final var _500 = 100;
+    final var _100 = 100;
 
     // When
     final var generatedVerifiers =
         RunnerUtil.runConsecutivelyToSet(
-            _500,
+            _100,
             () ->
                 encodeHex(
                     srp6VerifierService.generateVerifier(
@@ -179,7 +198,7 @@ class RFC5054SRP6VerifierServiceTest {
   }
 
   @Test
-  void producesTheSameVerifierWhenGeneratingConcurrentlyManyConsecutiveVerifiers() {
+  void producesTheSameVerifierWhenGeneratingConcurrentlyManyVerifiersAndSameInputData() {
     // Given
     final var _500 = 500;
 
@@ -199,7 +218,7 @@ class RFC5054SRP6VerifierServiceTest {
   }
 
   @Test
-  void producesTheRightVerifierWhenGeneratingConcurrentlyManyConsecutiveVerifiers() {
+  void producesTheRightVerifierWhenGeneratingConcurrentlyManyVerifiersAndSameInputData() {
     // Given
     final var _500 = 500;
 

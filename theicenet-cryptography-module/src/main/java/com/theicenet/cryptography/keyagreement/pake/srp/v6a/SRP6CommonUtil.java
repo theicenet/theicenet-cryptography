@@ -71,8 +71,8 @@ final class SRP6CommonUtil {
    *
    * @param digest The Digest used as the hashing function 'H'
    * @param N The safe prime parameter 'N' (a prime of the form N=2q+1, where q is also prime)
-   * @param A The client's public value
-   * @param B The server's public value
+   * @param A The client's public value. A mod N must be != 0 (according to specification)
+   * @param B The server's public value. B mod N must be != 0 (according to specification)
    * @return the resulting client and server common 'U' value
    */
   static BigInteger computeU(DigestService digest, BigInteger N, BigInteger A, BigInteger B) {
@@ -80,6 +80,8 @@ final class SRP6CommonUtil {
     Validate.notNull(N);
     Validate.notNull(A);
     Validate.notNull(B);
+    Validate.isTrue(isValidPublicValue(N, A));
+    Validate.isTrue(isValidPublicValue(N, B));
 
     final int pathLength = calculatePadLength(N);
 

@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
@@ -49,8 +50,12 @@ class SRP6ServiceIT {
               + "52D232E38AF953");
 
   @Autowired
-  @Qualifier("SRP6VerifierService")
+  @Qualifier("SRP6Verifier")
   SRP6VerifierService srp6VerifierService;
+
+  @Autowired
+  @Qualifier("SRP6Client")
+  SRP6ClientService srp6ClientService;
 
   @Test
   void producesSRP6VerifierWhenGeneratingVerifier() {

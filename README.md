@@ -869,7 +869,7 @@ public class MyComponent {
   private final SRP6VerifierService srp6VerifierService;
 
   @Autowired
-  public MyComponent(@Qualifier("SRP6VerifierService") SRP6VerifierService srp6VerifierService) {
+  public MyComponent(@Qualifier("SRP6Verifier") SRP6VerifierService srp6VerifierService) {
     this.srp6VerifierService = srp6VerifierService;
   }
 

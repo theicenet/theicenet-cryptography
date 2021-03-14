@@ -21,6 +21,7 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTe
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_S;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_U;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_VERIFIER;
+import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_X;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.HASH_SHA_256;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.IDENTITY;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.N;
@@ -28,12 +29,11 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTe
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.SALT;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.a;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.g;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_X;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
