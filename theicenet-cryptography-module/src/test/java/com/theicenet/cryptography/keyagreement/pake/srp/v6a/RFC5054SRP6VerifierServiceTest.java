@@ -16,6 +16,7 @@
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toUnsignedByteArray;
+import static com.theicenet.cryptography.test.support.HexUtil.encodeHex;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -138,14 +139,14 @@ class RFC5054SRP6VerifierServiceTest {
   @Test
   void producesTheSameVerifierWhenGeneratingManyConsecutiveVerifiers() {
     // Given
-    final var _1_000 = 1_000;
+    final var _500 = 100;
 
     // When
     final var generatedVerifiers =
         RunnerUtil.runConsecutivelyToSet(
-            _1_000,
+            _500,
             () ->
-                HexUtil.encodeHex(
+                encodeHex(
                     srp6VerifierService.generateVerifier(
                       SRP6RFC5054TestingVectors.SALT,
                       SRP6RFC5054TestingVectors.IDENTITY,
@@ -153,6 +154,28 @@ class RFC5054SRP6VerifierServiceTest {
 
     // Then
     assertThat(generatedVerifiers, hasSize(1));
+  }
+
+  @Test
+  void producesTheRightVerifierWhenGeneratingManyConsecutiveVerifiers() {
+    // Given
+    final var _500 = 100;
+
+    // When
+    final var generatedVerifiers =
+        RunnerUtil.runConsecutivelyToSet(
+            _500,
+            () ->
+                encodeHex(
+                    srp6VerifierService.generateVerifier(
+                        SRP6RFC5054TestingVectors.SALT,
+                        SRP6RFC5054TestingVectors.IDENTITY,
+                        SRP6RFC5054TestingVectors.PASSWORD)));
+
+    // Then
+    assertThat(
+        generatedVerifiers.iterator().next(),
+        is(equalTo(encodeHex(toUnsignedByteArray(SRP6RFC5054TestingVectors.EXPECTED_VERIFIER)))));
   }
 
   @Test
@@ -165,7 +188,7 @@ class RFC5054SRP6VerifierServiceTest {
         RunnerUtil.runConcurrentlyToSet(
             _500,
             () ->
-                HexUtil.encodeHex(
+                encodeHex(
                     srp6VerifierService.generateVerifier(
                         SRP6RFC5054TestingVectors.SALT,
                         SRP6RFC5054TestingVectors.IDENTITY,
@@ -173,5 +196,27 @@ class RFC5054SRP6VerifierServiceTest {
 
     // Then
     assertThat(generatedVerifiers, hasSize(1));
+  }
+
+  @Test
+  void producesTheRightVerifierWhenGeneratingConcurrentlyManyConsecutiveVerifiers() {
+    // Given
+    final var _500 = 500;
+
+    // When
+    final var generatedVerifiers =
+        RunnerUtil.runConcurrentlyToSet(
+            _500,
+            () ->
+                encodeHex(
+                    srp6VerifierService.generateVerifier(
+                        SRP6RFC5054TestingVectors.SALT,
+                        SRP6RFC5054TestingVectors.IDENTITY,
+                        SRP6RFC5054TestingVectors.PASSWORD)));
+
+    // Then
+    assertThat(
+        generatedVerifiers.iterator().next(),
+        is(equalTo(encodeHex(toUnsignedByteArray(SRP6RFC5054TestingVectors.EXPECTED_VERIFIER)))));
   }
 }
