@@ -15,7 +15,6 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import java.util.Arrays;
 import org.apache.commons.lang.Validate;
 
 /**

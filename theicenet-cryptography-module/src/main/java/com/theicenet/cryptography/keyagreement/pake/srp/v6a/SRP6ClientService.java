@@ -16,7 +16,7 @@
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 /**
- * A `SRP6ClientService` instance is a component which implements the required to support to
+ * A SRP6ClientService instance is a component which implements the required to support to
  * the client end to sign in using SRP6 v6a protocol
  *
  * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>

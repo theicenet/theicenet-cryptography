@@ -21,11 +21,12 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -34,37 +35,90 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class SRP6ServiceIT {
 
-  byte[] IDENTITY = "testIdentity".getBytes(StandardCharsets.UTF_8);
-  byte[] PASSWORD = "testPassword123".getBytes(StandardCharsets.UTF_8);
-
-  byte[] SALT = decodeHex("73FDFC0AEA06935D2C8C28354B9A1125");
-
-  byte[] EXPECTED_VERIFIER =
-      decodeHex(
-          "9649D745C12451E7B652BE86FC9C24597881D56231709E5F9197E998FBD7BB6A5A44F1FDFA20A110CABF61E9"
-              + "5A4D46BE3699E09791F2346B61CBF8A1B3DC1E91178A52F1A6B6FE6EDA63C68566B7020BB1871D7544"
-              + "E4F6F3C4526149258B5B8EDBB4EE0DDB52563ADD314A952DDD8CD4AF7A9E31E8A0738BC310EC6CCA9E"
-              + "16003A70947FB9C2C7D4C20806A9D44EE4CBD126A189B4F2906845EDFB3CFEB7794488712B44DB3EFE"
-              + "FD47339898653682E95F2B70A38C1F678C90B19579FBC7CE048727B4269B40CC4773FD3324BBB30744"
-              + "9EC8E25E52925DF8254AF5B9116A93401263FA451407ECD6F0846423A9531CCFB205A031C4049877FB"
-              + "52D232E38AF953");
+  byte[] IDENTITY = "acceptanceTestIdentity".getBytes(StandardCharsets.UTF_8);
+  byte[] PASSWORD = "acceptanceTestPassword123789$%&".getBytes(StandardCharsets.UTF_8);
 
   @Autowired
-  @Qualifier("SRP6Verifier")
   SRP6VerifierService srp6VerifierService;
 
   @Autowired
-  @Qualifier("SRP6Client")
   SRP6ClientService srp6ClientService;
 
+  @Autowired
+  SRP6ServerService srp6ServerService;
+
+  @Autowired
+  SecureRandomDataService secureRandomDataService;
+
   @Test
-  void producesSRP6VerifierWhenGeneratingVerifier() {
-    // When
-    final var generatedVerifier =
-        srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD);
+  void producesAValidSRP6ClientServerSignUpAndSignIn() {
+    // Given the client generates salt
+    final var salt = secureRandomDataService.generateSecureRandomData(16);
 
-    // The
-    assertThat(generatedVerifier, is(equalTo(EXPECTED_VERIFIER)));
+    // And Given the client generates verifier and signs up into the server
+    final var signUpVerifier =
+        srp6VerifierService.generateVerifier(salt, IDENTITY, PASSWORD);
+
+    // When client and server go throw the singing in process to generate shared S
+    final var clientValuesA = srp6ClientService.computeValuesA();
+    final var serverValuesB = srp6ServerService.computeValuesB(signUpVerifier);
+
+    final var clientS =
+        srp6ClientService.computeS(
+            salt,
+            IDENTITY,
+            PASSWORD,
+            clientValuesA.getClientPrivateValueA(),
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPublicValueB());
+
+    final var serverS =
+        srp6ServerService.computeS(
+            signUpVerifier,
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPrivateValueB(),
+            serverValuesB.getServerPublicValueB());
+
+    // Then client and server have generated the same shared S
+    assertThat(clientS, is(equalTo(serverS)));
+
+    // When client generates client's M1
+    final var clientM1 =
+        srp6ClientService.computeM1(
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPublicValueB(),
+            clientS);
+
+    // Then the server should validate client's M1 as valid
+    assertThat(
+        srp6ServerService.isValidReceivedM1(
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPublicValueB(),
+            serverS,
+            clientM1),
+        is(true));
+
+    // When server generates server's M2
+    final var serverM2 =
+        srp6ServerService.computeM2(
+            clientValuesA.getClientPublicValueA(),
+            serverS,
+            clientM1);
+
+    // Then the client should validate the server's M2 as valid
+    assertThat(
+        srp6ClientService.isValidReceivedM2(
+            clientValuesA.getClientPublicValueA(),
+            clientS,
+            clientM1,
+            serverM2),
+        is(true));
+
+    // When client and server generate the session key
+    final var clientSessionKey = srp6ClientService.computeSessionKey(clientS);
+    final var serverSessionKey = srp6ServerService.computeSessionKey(serverS);
+
+    // Then the generated client and server session keys are both identical
+    assertThat(clientSessionKey, is(equalTo(serverSessionKey)));
   }
-
 }

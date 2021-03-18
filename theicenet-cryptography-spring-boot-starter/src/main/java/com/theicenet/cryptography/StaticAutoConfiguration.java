@@ -27,8 +27,10 @@ import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
 import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6VerifierService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
@@ -148,5 +150,15 @@ public class StaticAutoConfiguration {
       SecureRandomDataService secureRandomDataService) {
 
     return new RFC5054SRP6ClientService(standardGroup, digestAlgorithm, secureRandomDataService);
+  }
+
+  @Lazy
+  @Bean("SRP6Server")
+  public SRP6ServerService srp6ServerService(
+      @Value("${cryptography.pake.srp.v6a.standardGroup}") SRP6StandardGroup standardGroup,
+      @Value("${cryptography.pake.srp.v6a.digest.algorithm}")DigestAlgorithm digestAlgorithm,
+      SecureRandomDataService secureRandomDataService) {
+
+    return new RFC5054SRP6ServerService(standardGroup, digestAlgorithm, secureRandomDataService);
   }
 }

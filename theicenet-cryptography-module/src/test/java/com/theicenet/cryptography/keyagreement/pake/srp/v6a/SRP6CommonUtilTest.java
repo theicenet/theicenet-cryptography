@@ -24,10 +24,8 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTe
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_S;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_SESSION_KEY;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_U;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_X;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.HASH_SHA_256;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.N;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.a;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.g;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1024;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1536;

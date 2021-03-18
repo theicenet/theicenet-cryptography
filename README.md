@@ -858,7 +858,12 @@ The supported argon2's `versions` are,
 ### Password Authenticated Key Exchange with SRP6 version 6a
 
 ```java
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientValuesA;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerService;
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerValuesB;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -867,14 +872,109 @@ import org.springframework.stereotype.Component;
 public class MyComponent {
 
   private final SRP6VerifierService srp6VerifierService;
+  private final SRP6ClientService srp6ClientService;
+  private final SRP6ServerService srp6ServerService;
+  private final SecureRandomDataService secureRandomDataService;
 
   @Autowired
-  public MyComponent(@Qualifier("SRP6Verifier") SRP6VerifierService srp6VerifierService) {
+  public MyComponent(
+      @Qualifier("SRP6Verifier") SRP6VerifierService srp6VerifierService,
+      @Qualifier("SRP6Client") SRP6ClientService srp6ClientService,
+      @Qualifier("SRP6Server") SRP6ServerService srp6ServerService,
+      @Qualifier("SecureRandomData") SecureRandomDataService secureRandomDataService) {
+
     this.srp6VerifierService = srp6VerifierService;
+    this.srp6ClientService = srp6ClientService;
+    this.srp6ServerService = srp6ServerService;
+    this.secureRandomDataService = secureRandomDataService;
   }
 
-  public void generateSRP6Verifier(byte[] salt, byte[] identity, byte[] password) {
-    byte[] srp6Verifier = srp6VerifierService.generateVerifier(salt, identity, password);
+  public void singsUpAndSignsInUsingSRP6(byte[] identity, byte[] password) {
+    /********************* SIGN UP PROCESS ****************************/
+
+    // Clients generates a salt
+    final byte[] salt = secureRandomDataService.generateSecureRandomData(16);
+
+    // Client produces the verifier.
+    final byte[] signUpVerifier =
+        srp6VerifierService.generateVerifier(salt, identity, password);
+
+    // Client signs up into the server by sending (signUpVerifier, identity, salt) to the server
+    // which stores (signUpVerifier, salt) indexed by identity
+
+
+    /********************* SIGN IN PROCESS ****************************/
+
+    // The client sends to the server identity which is attempting to sign in
+
+    // The server fetches the verifier & salt (by identity) and generates the server's b and B values
+    final SRP6ServerValuesB serverValuesB = srp6ServerService.computeValuesB(signUpVerifier);
+
+    // The server sends to the client (serverValuesB#serverPublicValueB, salt)
+
+    // Client generates the client's a and A values
+    final SRP6ClientValuesA clientValuesA = srp6ClientService.computeValuesA();
+
+    // The client generates the client's pre-master secret S
+    final byte[] clientS =
+        srp6ClientService.computeS(
+            salt,
+            identity,
+            password,
+            clientValuesA.getClientPrivateValueA(),
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPublicValueB());
+
+    // Client generates client's M1
+    final byte[] clientM1 =
+        srp6ClientService.computeM1(
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPublicValueB(),
+            clientS);
+
+    // Client sends (clientValuesA#clientPublicValueA, M1) to the server
+
+    // Server generates the server's pre-master secret S
+    final byte[] serverS =
+        srp6ServerService.computeS(
+            signUpVerifier,
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPrivateValueB(),
+            serverValuesB.getServerPublicValueB());
+
+    // Server validates the received client's M1
+    final boolean isClientM1Valid =
+        srp6ServerService.isValidReceivedM1(
+            clientValuesA.getClientPublicValueA(),
+            serverValuesB.getServerPublicValueB(),
+            serverS,
+            clientM1);
+
+    // If received client's M1 is invalid then the server will abort the singing in process at this point
+
+    // If received client's M1 is valid then the server generates the server's M2
+    final byte[] serverM2 =
+        srp6ServerService.computeM2(
+            clientValuesA.getClientPublicValueA(),
+            serverS,
+            clientM1);
+
+    // The server sends the server's M2 to the client
+
+    // Client validates the received server's M2
+    final boolean isServerM2Valid =
+        srp6ClientService.isValidReceivedM2(
+            clientValuesA.getClientPublicValueA(),
+            clientS,
+            clientM1,
+            serverM2);
+
+    // If received server's M2 is invalid then client will abort the singing in process at this point
+
+    // If received client's M1 and server's M2 are both valid, then the SRP6 authentication has been
+    // successful and the client and server can generate the shared session key
+    final byte[] clientSessionKey = srp6ClientService.computeSessionKey(clientS);
+    final byte[] serverSessionKey = srp6ServerService.computeSessionKey(serverS);
   }
 }
 ```
@@ -896,6 +996,12 @@ For SRP6 injection can be simplified to just,
 ```java
 @Autowired
 SRP6VerifierService srp6VerifierService;
+
+@Autowired
+SRP6ClientService srp6ClientService;
+
+@Autowired
+SRP6ServerService srp6ServerService;
 ```
 
 The SRP6's supported `standard groups (N, g)` are,
@@ -1815,7 +1921,7 @@ cryptography:
 
 Multiple MAC calculators for different `algorithms` can be created in the same Spring Boot context.
 Just specify the `algorithms` you wish to create a calculator for into the Spring Context, separated by a comma,
-
+RFC5054SRP6ServerService
 ```yaml
 cryptography:
   mac:
@@ -1884,6 +1990,7 @@ Supported MAC `algorithms` are,
 ```java
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -1892,7 +1999,8 @@ public class MyComponent {
   private final SecureRandomDataService secureRandomDataService;
 
   @Autowired
-  public MyComponent(SecureRandomDataService secureRandomDataService) {
+  public MyComponent(
+      @Qualifier("SecureRandomData") SecureRandomDataService secureRandomDataService) {
     this.secureRandomDataService = secureRandomDataService;
   }
 
@@ -1901,4 +2009,11 @@ public class MyComponent {
     byte[] secureRandomData = secureRandomDataService.generateSecureRandomData(32);
   }
 }
+```
+
+The secure random data service can be just injected by,
+
+```java
+@Autowired
+SecureRandomDataService secureRandomDataService;
 ```

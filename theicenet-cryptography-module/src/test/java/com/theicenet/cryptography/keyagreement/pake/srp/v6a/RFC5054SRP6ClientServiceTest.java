@@ -85,14 +85,14 @@ class RFC5054SRP6ClientServiceTest {
     final var computedValuesA = srp6ClientService.computeValuesA();
 
     // Then
-    final byte[] EXPECTED_CLIENT_PUBLIC_VALUE =
+    final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
         toUnsignedByteArray(
             computeA(
                 SRP6GenericTestingVectors.SG_2048.getN(),
                 SRP6GenericTestingVectors.SG_2048.getG(),
                 toBigInteger(computedValuesA.getClientPrivateValueA())));
 
-    assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE)));
+    assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
   }
 
   @Test
@@ -145,14 +145,14 @@ class RFC5054SRP6ClientServiceTest {
 
     // Then
     computedValuesAs.forEach(computedValuesA -> {
-      final byte[] EXPECTED_CLIENT_PUBLIC_VALUE =
+      final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
           toUnsignedByteArray(
               computeA(
                   SRP6GenericTestingVectors.SG_2048.getN(),
                   SRP6GenericTestingVectors.SG_2048.getG(),
                   toBigInteger(computedValuesA.getClientPrivateValueA())));
 
-      assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE)));
+      assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
     });
   }
 
@@ -196,14 +196,14 @@ class RFC5054SRP6ClientServiceTest {
 
     // Then
     computedValuesAs.forEach(computedValuesA -> {
-      final byte[] EXPECTED_CLIENT_PUBLIC_VALUE =
+      final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
           toUnsignedByteArray(
               computeA(
                   SRP6GenericTestingVectors.SG_2048.getN(),
                   SRP6GenericTestingVectors.SG_2048.getG(),
                   toBigInteger(computedValuesA.getClientPrivateValueA())));
 
-      assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE)));
+      assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
     });
   }
 
@@ -215,13 +215,14 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeS( // When
-            NULL_SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () ->
+            srp6ClientService.computeS( // When
+              NULL_SALT,
+              SRP6GenericTestingVectors.IDENTITY,
+              SRP6GenericTestingVectors.PASSWORD,
+              toUnsignedByteArray(SRP6GenericTestingVectors.a),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
   }
 
   @Test
@@ -232,13 +233,14 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeS( // When
-            SRP6GenericTestingVectors.SALT,
-            NULL_IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () ->
+            srp6ClientService.computeS( // When
+              SRP6GenericTestingVectors.SALT,
+              NULL_IDENTITY,
+              SRP6GenericTestingVectors.PASSWORD,
+              toUnsignedByteArray(SRP6GenericTestingVectors.a),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
   }
 
   @Test
@@ -249,13 +251,14 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeS( // When
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            NULL_PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () ->
+            srp6ClientService.computeS( // When
+              SRP6GenericTestingVectors.SALT,
+              SRP6GenericTestingVectors.IDENTITY,
+              NULL_PASSWORD,
+              toUnsignedByteArray(SRP6GenericTestingVectors.a),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
   }
 
   @Test
@@ -266,13 +269,14 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeS( // When
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            NULL_CLIENT_PRIVATE_VALUE_A,
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () ->
+            srp6ClientService.computeS( // When
+              SRP6GenericTestingVectors.SALT,
+              SRP6GenericTestingVectors.IDENTITY,
+              SRP6GenericTestingVectors.PASSWORD,
+              NULL_CLIENT_PRIVATE_VALUE_A,
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
   }
 
   @Test
@@ -283,30 +287,32 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeS( // When
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            NULL_CLIENT_PUBLIC_VALUE_A,
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () ->
+            srp6ClientService.computeS( // When
+              SRP6GenericTestingVectors.SALT,
+              SRP6GenericTestingVectors.IDENTITY,
+              SRP6GenericTestingVectors.PASSWORD,
+              toUnsignedByteArray(SRP6GenericTestingVectors.a),
+              NULL_CLIENT_PUBLIC_VALUE_A,
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullServersPublicValueB() {
+  void throwsIllegalArgumentExceptionWhenComputingSAndNullServerPublicValueB() {
     // Given
     final byte[] NULL_SERVERS_PUBLIC_VALUE_B = null;
 
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeS( // When
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            NULL_SERVERS_PUBLIC_VALUE_B));
+        () ->
+            srp6ClientService.computeS( // When
+              SRP6GenericTestingVectors.SALT,
+              SRP6GenericTestingVectors.IDENTITY,
+              SRP6GenericTestingVectors.PASSWORD,
+              toUnsignedByteArray(SRP6GenericTestingVectors.a),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
+              NULL_SERVERS_PUBLIC_VALUE_B));
   }
 
   @Test
@@ -495,10 +501,11 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeM1( // When
-            NULL_CLIENT_PUBLIC_VALUE_A,
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)));
+        () ->
+            srp6ClientService.computeM1( // When
+              NULL_CLIENT_PUBLIC_VALUE_A,
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)));
   }
 
   @Test
@@ -509,10 +516,11 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeM1( // When
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            NULL_SERVER_PUBLIC_VALUE_B,
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)));
+        () ->
+            srp6ClientService.computeM1( // When
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
+              NULL_SERVER_PUBLIC_VALUE_B,
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)));
   }
 
   @Test
@@ -523,10 +531,11 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> srp6ClientService.computeM1( // When
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-            NULL_S));
+        () ->
+            srp6ClientService.computeM1( // When
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
+              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
+              NULL_S));
   }
   
   @Test

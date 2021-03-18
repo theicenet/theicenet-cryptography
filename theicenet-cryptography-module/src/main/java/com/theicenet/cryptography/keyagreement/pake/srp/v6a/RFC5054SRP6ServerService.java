@@ -17,13 +17,12 @@ package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toBigInteger;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toUnsignedByteArray;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientUtil.computeA;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientUtil.computeX;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.computeK;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.computeM2;
+import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.computeM1;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.computeU;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.generatePrivateValue;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.isValidPublicValue;
+import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerUtil.computeB;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
@@ -33,7 +32,7 @@ import java.math.BigInteger;
 import org.apache.commons.lang.Validate;
 
 /**
- * Implementation for SRP6 v6a `client` service according to Specification RFC 5054.
+ * Implementation for SRP6 v6a `server` service according to Specification RFC 5054.
  *
  * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
  * @see <a href="https://tools.ietf.org/html/rfc2945">Specification: RFC 2945</a>
@@ -44,7 +43,7 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public class RFC5054SRP6ClientService implements SRP6ClientService {
+public class RFC5054SRP6ServerService implements SRP6ServerService {
 
   private final SRP6StandardGroup standardGroup;
   private final DigestService digestService;
@@ -55,7 +54,7 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
    * @param digestAlgorithm hashing algorithm to use for this SRP6 RFC 5054 specification instance
    * @param secureRandomDataService service to generate secure random data
    */
-  public RFC5054SRP6ClientService(
+  public RFC5054SRP6ServerService(
       SRP6StandardGroup standardGroup,
       DigestAlgorithm digestAlgorithm,
       SecureRandomDataService secureRandomDataService) {
@@ -70,49 +69,49 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
   }
 
   @Override
-  public SRP6ClientValuesA computeValuesA() {
-    BigInteger clientPrivateValueA;
-    BigInteger clientPublicValueA;
+  public SRP6ServerValuesB computeValuesB(byte[] verifier) {
+    Validate.notNull(verifier);
+
+    final BigInteger k = computeK(digestService, standardGroup.getN(), standardGroup.getG());
+
+    BigInteger serverPrivateValueB;
+    BigInteger serverPublicValueB;
 
     do {
-      // Generate client's private value a
-      clientPrivateValueA =
+      // Generate server's private value b
+      serverPrivateValueB =
           generatePrivateValue(
               standardGroup.getN(),
               secureRandomDataService);
 
-      // Generate client's public value A
-      clientPublicValueA =
-          computeA(
+      // Generate server's public value B
+      serverPublicValueB =
+          computeB(
               standardGroup.getN(),
               standardGroup.getG(),
-              clientPrivateValueA);
-    } while (!isValidPublicValue(standardGroup.getN(), clientPublicValueA)); // loop till the client's public value A is valid
+              k,
+              toBigInteger(verifier),
+              serverPrivateValueB);
+    } while (!isValidPublicValue(standardGroup.getN(), serverPublicValueB)); // loop till the server's public value B is valid
 
     return
-        new SRP6ClientValuesA(
-            toUnsignedByteArray(clientPrivateValueA),
-            toUnsignedByteArray(clientPublicValueA));
+        new SRP6ServerValuesB(
+            toUnsignedByteArray(serverPrivateValueB),
+            toUnsignedByteArray(serverPublicValueB));
   }
 
   @Override
   public byte[] computeS(
-      byte[] salt,
-      byte[] identity,
-      byte[] password,
-      byte[] clientPrivateValueA,
+      byte[] verifier,
       byte[] clientPublicValueA,
+      byte[] serverPrivateValueB,
       byte[] serverPublicValueB) {
 
-    Validate.notNull(salt);
-    Validate.notNull(identity);
-    Validate.notNull(password);
-    Validate.notNull(clientPrivateValueA);
+    Validate.notNull(verifier);
     Validate.notNull(clientPublicValueA);
+    Validate.notNull(serverPrivateValueB);
     Validate.notNull(serverPublicValueB);
 
-    final BigInteger k = computeK(digestService, standardGroup.getN(), standardGroup.getG());
-    final BigInteger x = computeX(digestService, salt, identity, password);
     final BigInteger u =
         computeU(
             digestService,
@@ -122,53 +121,55 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
 
     return
         toUnsignedByteArray(
-            SRP6ClientUtil.computeS(
+            SRP6ServerUtil.computeS(
                 standardGroup.getN(),
-                standardGroup.getG(),
-                k,
-                x,
+                toBigInteger(verifier),
                 u,
-                toBigInteger(clientPrivateValueA),
-                toBigInteger(serverPublicValueB)));
+                toBigInteger(serverPrivateValueB),
+                toBigInteger(clientPublicValueA)));
   }
 
   @Override
-  public byte[] computeM1(byte[] clientPublicValueA, byte[] serverPublicValueB, byte[] s) {
+  public boolean isValidReceivedM1(
+      byte[] clientPublicValueA,
+      byte[] serverPublicValueB,
+      byte[] s,
+      byte[] receivedM1) {
+
     Validate.notNull(clientPublicValueA);
     Validate.notNull(serverPublicValueB);
     Validate.notNull(s);
+    Validate.notNull(receivedM1);
 
-    return
-        toUnsignedByteArray(
-            SRP6CommonUtil.computeM1(
-                digestService,
-                standardGroup.getN(),
-                toBigInteger(clientPublicValueA),
-                toBigInteger(serverPublicValueB),
-                toBigInteger(s)));
-  }
-
-  @Override
-  public boolean isValidReceivedM2(
-      byte[] clientPublicValueA,
-      byte[] s,
-      byte[] m1,
-      byte[] receivedM2) {
-
-    Validate.notNull(clientPublicValueA);
-    Validate.notNull(s);
-    Validate.notNull(m1);
-    Validate.notNull(receivedM2);
-
-    final BigInteger m2 =
-        computeM2(
+    final BigInteger m1 =
+        computeM1(
             digestService,
             standardGroup.getN(),
             toBigInteger(clientPublicValueA),
-            toBigInteger(m1),
+            toBigInteger(serverPublicValueB),
             toBigInteger(s));
 
-    return m2.equals(toBigInteger(receivedM2));
+    return m1.equals(toBigInteger(receivedM1));
+  }
+
+  @Override
+  public byte[] computeM2(
+      byte[] clientPublicValueA,
+      byte[] s,
+      byte[] receivedM1) {
+
+    Validate.notNull(clientPublicValueA);
+    Validate.notNull(s);
+    Validate.notNull(receivedM1);
+
+    return
+        toUnsignedByteArray(
+            SRP6CommonUtil.computeM2(
+                digestService,
+                standardGroup.getN(),
+                toBigInteger(clientPublicValueA),
+                toBigInteger(receivedM1),
+                toBigInteger(s)));
   }
 
   @Override

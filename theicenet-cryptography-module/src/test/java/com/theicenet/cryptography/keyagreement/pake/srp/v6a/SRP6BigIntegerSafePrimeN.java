@@ -16,7 +16,6 @@
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
 
 /**
  * These are manual BigInteger representation of the safe prime numbers defined in

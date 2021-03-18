@@ -16,7 +16,7 @@
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 /**
- * A `SRP6VerifierService` instance is a component which implements the required to generate a
+ * A SRP6VerifierService instance is a component which implements the required to generate a
  * SRP6 v6a verifier
  *
  * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>

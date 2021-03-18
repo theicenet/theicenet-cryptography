@@ -16,7 +16,7 @@
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
 /**
- * A `SRP6ServerService` instance is a component which implements the required to support to
+ * A SRP6ServerService instance is a component which implements the required to support to
  * the server end to verify a sign in using SRP6 v6a protocol
  *
  * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
@@ -30,7 +30,7 @@ package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
  */
 public interface SRP6ServerService {
 
-  SRP6ServerValuesB computeServerValuesB(byte[] verifier);
+  SRP6ServerValuesB computeValuesB(byte[] verifier);
 
   byte[] computeS(
       byte[] verifier,
