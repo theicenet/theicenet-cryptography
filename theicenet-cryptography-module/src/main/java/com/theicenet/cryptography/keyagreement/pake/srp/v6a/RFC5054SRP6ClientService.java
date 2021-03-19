@@ -69,6 +69,21 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
     this.secureRandomDataService = secureRandomDataService;
   }
 
+  /**
+   * Generates a random SRP client's private value 'a' which is, according to the specification,
+   * of at least 256 bits in length.
+   *
+   * Based on the generated client's private value 'a' it computes the client's public value 'A'
+   * according to the standard routine:
+   *
+   *    A = (g^a) mod N
+   *
+   * @implNote This implementation ensures that the produced 'A' satisfies that
+   *
+   *    A mod N != 0
+   *
+   * as required by the API interface.
+   */
   @Override
   public SRP6ClientValuesA computeValuesA() {
     BigInteger clientPrivateValueA;
@@ -95,6 +110,11 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
             toUnsignedByteArray(clientPublicValueA));
   }
 
+  /**
+   * Computes the client's pre-master secret 'S' according to the standard routine:
+   *
+   *    S = ((B - (k * (g^x))) ^ (a + (u * x))) mod N
+   */
   @Override
   public byte[] computeS(
       byte[] salt,
@@ -132,6 +152,11 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
                 toBigInteger(serverPublicValueB)));
   }
 
+  /**
+   * Computes the client's evidence message 'M1' according to the standard routine:
+   *
+   *    M1 = H( A | B | S )
+   */
   @Override
   public byte[] computeM1(byte[] clientPublicValueA, byte[] serverPublicValueB, byte[] s) {
     Validate.notNull(clientPublicValueA);
@@ -148,6 +173,14 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
                 toBigInteger(s)));
   }
 
+  /**
+   * Computes the server's evidence message 'M2' according to the standard routine:
+   *
+   *    M2 = H( A | M1 | S )
+   *
+   * and compares the resulting value with what is passed in `receivedM2` to determine if the
+   * received server's evidence message 'M2' is valid or not
+   */
   @Override
   public boolean isValidReceivedM2(
       byte[] clientPublicValueA,
@@ -171,6 +204,11 @@ public class RFC5054SRP6ClientService implements SRP6ClientService {
     return m2.equals(toBigInteger(receivedM2));
   }
 
+  /**
+   * Computes the common session 'Key' according to the standard routine:
+   *
+   *    Key = H(S)
+   */
   @Override
   public byte[] computeSessionKey(byte[] s) {
     Validate.notNull(s);

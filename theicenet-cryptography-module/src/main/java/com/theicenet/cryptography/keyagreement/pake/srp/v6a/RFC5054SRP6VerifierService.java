@@ -57,11 +57,6 @@ public class RFC5054SRP6VerifierService implements SRP6VerifierService {
    *
    *    verifier = (g^x) mod N
    *    x = H(salt | H ( identity | ":" | password) )
-   *
-   * @param salt random 'salt' common to client and server
-   * @param identity client's 'identity'
-   * @param password client's 'password'
-   * @return The generated SRP6 v6a `verifier` as big-endian unsigned binary representation
    */
   @Override
   public byte[] generateVerifier(byte[] salt, byte[] identity, byte[] password) {

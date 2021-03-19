@@ -81,7 +81,7 @@ final class SRP6ClientUtil {
   }
 
   /**
-   * Computes the client's public value 'A' according to the standard routine: x = (g^a) mod N
+   * Computes the client's public value 'A' according to the standard routine: A = (g^a) mod N
    *
    * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
    * @see <a href="https://tools.ietf.org/html/rfc2945">Specification: RFC 2945</a>
