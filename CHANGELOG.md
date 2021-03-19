@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2021‑03‑19
+
+### Added
+
+### Changed
+
+- Updated CHANGELOG.md [@jjfidalgo]
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
 ## [1.1.0] - 2021‑03‑19
 
 ### Added
@@ -78,7 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Random data generation for Initialization Vector (IV) and Salt [@jjfidalgo]
 - Bitbucket pipeline with the CI & release process to Maven's Central [@jjfidalgo]
 
-[unreleased]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.0...HEAD
+[unreleased]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.1...HEAD
+[1.1.1]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.0...theicenet-cryptography-1.1.1
 [1.1.0]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.3...theicenet-cryptography-1.1.0
 [1.0.3]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.2...theicenet-cryptography-1.0.3
 [1.0.2]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.0.1...theicenet-cryptography-1.0.2
