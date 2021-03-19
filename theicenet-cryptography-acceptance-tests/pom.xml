@@ -6,7 +6,7 @@
   <parent>
     <artifactId>theicenet-cryptography</artifactId>
     <groupId>com.theicenet</groupId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>theicenet-cryptography-acceptance-tests</artifactId>
