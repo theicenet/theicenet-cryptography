@@ -25,6 +25,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,14 +35,21 @@ import org.junit.jupiter.api.Test;
  */
 class RFC5054SRP6VerifierServiceTest {
 
+  final SRP6StandardGroup SG_2048 = SRP6GenericTestingVectors.SG_2048;
+  final DigestAlgorithm HASH_SHA_256 = SRP6GenericTestingVectors.HASH_SHA_256;
+
+  final byte[] IDENTITY = SRP6GenericTestingVectors.IDENTITY;
+  final byte[] PASSWORD = SRP6GenericTestingVectors.PASSWORD;
+
+  final byte[] SALT = SRP6GenericTestingVectors.SALT;
+
+  final byte[] VERIFIER = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_VERIFIER);
+
   SRP6VerifierService srp6VerifierService;
 
   @BeforeEach
   void setUp() {
-    srp6VerifierService =
-        new RFC5054SRP6VerifierService(
-            SRP6RFC5054TestingVectors.SG_1024,
-            SRP6RFC5054TestingVectors.HASH_SHA_1);
+    srp6VerifierService = new RFC5054SRP6VerifierService(SG_2048, HASH_SHA_256);
   }
 
   @Test
@@ -52,11 +60,7 @@ class RFC5054SRP6VerifierServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6VerifierService.generateVerifier( // When
-              NULL_SALT,
-              SRP6RFC5054TestingVectors.IDENTITY,
-              SRP6RFC5054TestingVectors.PASSWORD));
+        () -> srp6VerifierService.generateVerifier(NULL_SALT, IDENTITY, PASSWORD)); // When
   }
 
   @Test
@@ -67,11 +71,7 @@ class RFC5054SRP6VerifierServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6VerifierService.generateVerifier( // When
-                SRP6RFC5054TestingVectors.SALT,
-                NULL_IDENTITY,
-                SRP6RFC5054TestingVectors.PASSWORD));
+        () -> srp6VerifierService.generateVerifier(SALT, NULL_IDENTITY, PASSWORD)); // When
   }
 
   @Test
@@ -82,21 +82,14 @@ class RFC5054SRP6VerifierServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6VerifierService.generateVerifier( // When
-                SRP6RFC5054TestingVectors.SALT,
-                SRP6RFC5054TestingVectors.IDENTITY,
-                NULL_PASSWORD));
+        () -> srp6VerifierService.generateVerifier(SALT, IDENTITY, NULL_PASSWORD)); // When
   }
 
   @Test
   void producesNotNullWhenGeneratingVerifier() {
     // When
     final var generatedVerifier =
-        srp6VerifierService.generateVerifier(
-            SRP6RFC5054TestingVectors.SALT,
-            SRP6RFC5054TestingVectors.IDENTITY,
-            SRP6RFC5054TestingVectors.PASSWORD);
+        srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD);
 
     // The
     assertThat(generatedVerifier, is(notNullValue()));
@@ -106,31 +99,20 @@ class RFC5054SRP6VerifierServiceTest {
   void producesTheRightVerifiedWhenGeneratingVerifier() {
     // When
     final var generatedVerifier =
-        srp6VerifierService.generateVerifier(
-            SRP6RFC5054TestingVectors.SALT,
-            SRP6RFC5054TestingVectors.IDENTITY,
-            SRP6RFC5054TestingVectors.PASSWORD);
+        srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD);
 
     // The
-    assertThat(
-        generatedVerifier,
-        is(equalTo(toUnsignedByteArray(SRP6RFC5054TestingVectors.EXPECTED_VERIFIER))));
+    assertThat(generatedVerifier, is(equalTo(VERIFIER)));
   }
 
   @Test
   void producesTheSameVerifierWhenGeneratingTwoConsecutiveVerifiersAndSameInputData() {
     // When
     final var generatedVerifier_1 =
-        srp6VerifierService.generateVerifier(
-            SRP6RFC5054TestingVectors.SALT,
-            SRP6RFC5054TestingVectors.IDENTITY,
-            SRP6RFC5054TestingVectors.PASSWORD);
+        srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD);
 
     final var generatedVerifier_2 =
-        srp6VerifierService.generateVerifier(
-            SRP6RFC5054TestingVectors.SALT,
-            SRP6RFC5054TestingVectors.IDENTITY,
-            SRP6RFC5054TestingVectors.PASSWORD);
+        srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD);
 
     // Then
     assertThat(generatedVerifier_1, is(equalTo(generatedVerifier_2)));
@@ -140,16 +122,13 @@ class RFC5054SRP6VerifierServiceTest {
   void producesDifferentVerifierWhenGeneratingTwoConsecutiveVerifiersAndDifferentInputData() {
     // When
     final var generatedVerifier_1 =
+        srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD);
+
+    final var generatedVerifier_2 =
         srp6VerifierService.generateVerifier(
             SRP6RFC5054TestingVectors.SALT,
             SRP6RFC5054TestingVectors.IDENTITY,
             SRP6RFC5054TestingVectors.PASSWORD);
-
-    final var generatedVerifier_2 =
-        srp6VerifierService.generateVerifier(
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD);
 
     // Then
     assertThat(generatedVerifier_1, is(not(equalTo(generatedVerifier_2))));
@@ -164,12 +143,7 @@ class RFC5054SRP6VerifierServiceTest {
     final var generatedVerifiers =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6VerifierService.generateVerifier(
-                      SRP6RFC5054TestingVectors.SALT,
-                      SRP6RFC5054TestingVectors.IDENTITY,
-                      SRP6RFC5054TestingVectors.PASSWORD)));
+            () -> encodeHex(srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD)));
 
     // Then
     assertThat(generatedVerifiers, hasSize(1));
@@ -184,17 +158,10 @@ class RFC5054SRP6VerifierServiceTest {
     final var generatedVerifiers =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6VerifierService.generateVerifier(
-                        SRP6RFC5054TestingVectors.SALT,
-                        SRP6RFC5054TestingVectors.IDENTITY,
-                        SRP6RFC5054TestingVectors.PASSWORD)));
+            () -> encodeHex(srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD)));
 
     // Then
-    assertThat(
-        generatedVerifiers.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6RFC5054TestingVectors.EXPECTED_VERIFIER)))));
+    assertThat(generatedVerifiers.iterator().next(), is(equalTo(encodeHex(VERIFIER))));
   }
 
   @Test
@@ -206,12 +173,7 @@ class RFC5054SRP6VerifierServiceTest {
     final var generatedVerifiers =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6VerifierService.generateVerifier(
-                        SRP6RFC5054TestingVectors.SALT,
-                        SRP6RFC5054TestingVectors.IDENTITY,
-                        SRP6RFC5054TestingVectors.PASSWORD)));
+            () -> encodeHex(srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD)));
 
     // Then
     assertThat(generatedVerifiers, hasSize(1));
@@ -226,16 +188,9 @@ class RFC5054SRP6VerifierServiceTest {
     final var generatedVerifiers =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6VerifierService.generateVerifier(
-                        SRP6RFC5054TestingVectors.SALT,
-                        SRP6RFC5054TestingVectors.IDENTITY,
-                        SRP6RFC5054TestingVectors.PASSWORD)));
+            () -> encodeHex(srp6VerifierService.generateVerifier(SALT, IDENTITY, PASSWORD)));
 
     // Then
-    assertThat(
-        generatedVerifiers.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6RFC5054TestingVectors.EXPECTED_VERIFIER)))));
+    assertThat(generatedVerifiers.iterator().next(), is(equalTo(encodeHex(VERIFIER))));
   }
 }

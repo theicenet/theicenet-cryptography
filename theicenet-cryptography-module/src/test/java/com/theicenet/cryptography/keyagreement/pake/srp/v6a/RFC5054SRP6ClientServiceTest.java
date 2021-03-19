@@ -28,9 +28,11 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.random.JCASecureRandomDataService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,14 +43,34 @@ import org.junit.jupiter.api.Test;
  */
 class RFC5054SRP6ClientServiceTest {
 
+  final SRP6StandardGroup SG_2048 = SRP6GenericTestingVectors.SG_2048;
+  final DigestAlgorithm HASH_SHA_256 = SRP6GenericTestingVectors.HASH_SHA_256;
+
+  final BigInteger N = SG_2048.getN();
+  final BigInteger g = SG_2048.getG();
+
+  final byte[] IDENTITY = SRP6GenericTestingVectors.IDENTITY;
+  final byte[] PASSWORD = SRP6GenericTestingVectors.PASSWORD;
+
+  final byte[] SALT = SRP6GenericTestingVectors.SALT;
+
+  final byte[] a = toUnsignedByteArray(SRP6GenericTestingVectors.a);
+  final byte[] A = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A);
+  final byte[] B = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B);
+  final byte[] S = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S);
+  final byte[] M1 = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1);
+  final byte[] M2 = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2);
+
+  final byte[] SESSION_KEY = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_SESSION_KEY);
+
   SRP6ClientService srp6ClientService;
 
   @BeforeEach
   void setUp() {
     srp6ClientService =
         new RFC5054SRP6ClientService(
-            SRP6GenericTestingVectors.SG_2048,
-            SRP6GenericTestingVectors.HASH_SHA_256,
+            SG_2048,
+            HASH_SHA_256,
             new JCASecureRandomDataService(new SecureRandom()));
   }
 
@@ -88,11 +110,13 @@ class RFC5054SRP6ClientServiceTest {
     final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
         toUnsignedByteArray(
             computeA(
-                SRP6GenericTestingVectors.SG_2048.getN(),
-                SRP6GenericTestingVectors.SG_2048.getG(),
+                N,
+                g,
                 toBigInteger(computedValuesA.getClientPrivateValueA())));
 
-    assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
+    assertThat(
+        computedValuesA.getClientPublicValueA(),
+        is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
   }
 
   @Test
@@ -148,11 +172,13 @@ class RFC5054SRP6ClientServiceTest {
       final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
           toUnsignedByteArray(
               computeA(
-                  SRP6GenericTestingVectors.SG_2048.getN(),
-                  SRP6GenericTestingVectors.SG_2048.getG(),
+                  N,
+                  g,
                   toBigInteger(computedValuesA.getClientPrivateValueA())));
 
-      assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
+      assertThat(
+          computedValuesA.getClientPublicValueA(),
+          is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
     });
   }
 
@@ -199,11 +225,12 @@ class RFC5054SRP6ClientServiceTest {
       final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
           toUnsignedByteArray(
               computeA(
-                  SRP6GenericTestingVectors.SG_2048.getN(),
-                  SRP6GenericTestingVectors.SG_2048.getG(),
+                  N,
+                  g,
                   toBigInteger(computedValuesA.getClientPrivateValueA())));
 
-      assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
+      assertThat(computedValuesA.getClientPublicValueA(),
+          is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
     });
   }
 
@@ -215,14 +242,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.computeS( // When
-              NULL_SALT,
-              SRP6GenericTestingVectors.IDENTITY,
-              SRP6GenericTestingVectors.PASSWORD,
-              toUnsignedByteArray(SRP6GenericTestingVectors.a),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () -> srp6ClientService.computeS(NULL_SALT, IDENTITY, PASSWORD, a, A, B)); // When
   }
 
   @Test
@@ -233,14 +253,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.computeS( // When
-              SRP6GenericTestingVectors.SALT,
-              NULL_IDENTITY,
-              SRP6GenericTestingVectors.PASSWORD,
-              toUnsignedByteArray(SRP6GenericTestingVectors.a),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () -> srp6ClientService.computeS(SALT, NULL_IDENTITY, PASSWORD, a, A, B)); // When
   }
 
   @Test
@@ -251,14 +264,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.computeS( // When
-              SRP6GenericTestingVectors.SALT,
-              SRP6GenericTestingVectors.IDENTITY,
-              NULL_PASSWORD,
-              toUnsignedByteArray(SRP6GenericTestingVectors.a),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+        () -> srp6ClientService.computeS(SALT, IDENTITY, NULL_PASSWORD, a, A, B)); // When
   }
 
   @Test
@@ -270,13 +276,7 @@ class RFC5054SRP6ClientServiceTest {
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            srp6ClientService.computeS( // When
-              SRP6GenericTestingVectors.SALT,
-              SRP6GenericTestingVectors.IDENTITY,
-              SRP6GenericTestingVectors.PASSWORD,
-              NULL_CLIENT_PRIVATE_VALUE_A,
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+            srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, NULL_CLIENT_PRIVATE_VALUE_A, A, B)); // When
   }
 
   @Test
@@ -288,13 +288,7 @@ class RFC5054SRP6ClientServiceTest {
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            srp6ClientService.computeS( // When
-              SRP6GenericTestingVectors.SALT,
-              SRP6GenericTestingVectors.IDENTITY,
-              SRP6GenericTestingVectors.PASSWORD,
-              toUnsignedByteArray(SRP6GenericTestingVectors.a),
-              NULL_CLIENT_PUBLIC_VALUE_A,
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B)));
+            srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, NULL_CLIENT_PUBLIC_VALUE_A, B)); // When
   }
 
   @Test
@@ -306,26 +300,13 @@ class RFC5054SRP6ClientServiceTest {
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            srp6ClientService.computeS( // When
-              SRP6GenericTestingVectors.SALT,
-              SRP6GenericTestingVectors.IDENTITY,
-              SRP6GenericTestingVectors.PASSWORD,
-              toUnsignedByteArray(SRP6GenericTestingVectors.a),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-              NULL_SERVERS_PUBLIC_VALUE_B));
+            srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, NULL_SERVERS_PUBLIC_VALUE_B)); // When
   }
 
   @Test
   void producesNotNullWhenComputingS() {
     // When
-    final var computedS =
-        srp6ClientService.computeS(
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B));
+    final var computedS = srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B);
 
     // Then
     assertThat(computedS, is(notNullValue()));
@@ -334,39 +315,17 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesTheRightValueWhenComputingS() {
     // When
-    final var computedS =
-        srp6ClientService.computeS(
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B));
+    final var computedS = srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B);
 
     // Then
-    assertThat(computedS, is(equalTo(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+    assertThat(computedS, is(equalTo(S)));
   }
 
   @Test
   void producesTheSameValueWhenComputingTwoConsecutiveSAndTheSameInputData() {
     // When
-    final var computedS_1 =
-        srp6ClientService.computeS(
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B));
-
-    final var computedS_2 =
-        srp6ClientService.computeS(
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B));
+    final var computedS_1 = srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B);
+    final var computedS_2 = srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B);
 
     // Then
     assertThat(computedS_1, is(equalTo(computedS_2)));
@@ -375,14 +334,7 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesDifferentValuesWhenComputingTwoConsecutiveSAndDifferentInputData() {
     // When
-    final var computedS_1 =
-        srp6ClientService.computeS(
-            SRP6GenericTestingVectors.SALT,
-            SRP6GenericTestingVectors.IDENTITY,
-            SRP6GenericTestingVectors.PASSWORD,
-            toUnsignedByteArray(SRP6GenericTestingVectors.a),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B));
+    final var computedS_1 = srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B);
 
     final var computedS_2 =
         srp6ClientService.computeS(
@@ -406,15 +358,7 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSs =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeS(
-                        SRP6GenericTestingVectors.SALT,
-                        SRP6GenericTestingVectors.IDENTITY,
-                        SRP6GenericTestingVectors.PASSWORD,
-                        toUnsignedByteArray(SRP6GenericTestingVectors.a),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B))));
+            () -> encodeHex(srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B)));
 
     // Then
     assertThat(computedSs, hasSize(1));
@@ -429,20 +373,12 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSs =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeS(
-                        SRP6GenericTestingVectors.SALT,
-                        SRP6GenericTestingVectors.IDENTITY,
-                        SRP6GenericTestingVectors.PASSWORD,
-                        toUnsignedByteArray(SRP6GenericTestingVectors.a),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B))));
+            () -> encodeHex(srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B)));
 
     // Then
     assertThat(
         computedSs.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)))));
+        is(equalTo(encodeHex(S))));
   }
 
   @Test
@@ -454,15 +390,7 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSs =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeS(
-                        SRP6GenericTestingVectors.SALT,
-                        SRP6GenericTestingVectors.IDENTITY,
-                        SRP6GenericTestingVectors.PASSWORD,
-                        toUnsignedByteArray(SRP6GenericTestingVectors.a),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B))));
+            () -> encodeHex(srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B)));
 
     // Then
     assertThat(computedSs, hasSize(1));
@@ -477,20 +405,10 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSs =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeS(
-                        SRP6GenericTestingVectors.SALT,
-                        SRP6GenericTestingVectors.IDENTITY,
-                        SRP6GenericTestingVectors.PASSWORD,
-                        toUnsignedByteArray(SRP6GenericTestingVectors.a),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B))));
+            () -> encodeHex(srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, B)));
 
     // Then
-    assertThat(
-        computedSs.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)))));
+    assertThat(computedSs.iterator().next(), is(equalTo(encodeHex(S))));
   }
 
   @Test
@@ -501,11 +419,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.computeM1( // When
-              NULL_CLIENT_PUBLIC_VALUE_A,
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)));
+        () -> srp6ClientService.computeM1(NULL_CLIENT_PUBLIC_VALUE_A, B, S)); // When
   }
 
   @Test
@@ -516,11 +430,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.computeM1( // When
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-              NULL_SERVER_PUBLIC_VALUE_B,
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S)));
+        () -> srp6ClientService.computeM1(A, NULL_SERVER_PUBLIC_VALUE_B, S)); // When
   }
 
   @Test
@@ -531,21 +441,13 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.computeM1( // When
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-              toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-              NULL_S));
+        () -> srp6ClientService.computeM1(A, B, NULL_S)); // When
   }
-  
+
   @Test
   void producesNotNullWhenComputingM1() {
     // When
-    final var computedM1 =
-        srp6ClientService.computeM1(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedM1 = srp6ClientService.computeM1(A, B, S);
 
     // Then
     assertThat(computedM1, is(notNullValue()));
@@ -554,30 +456,17 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesTheRightValueWhenComputingM1() {
     // When
-    final var computedM1 =
-        srp6ClientService.computeM1(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedM1 = srp6ClientService.computeM1(A, B, S);
 
     // Then
-    assertThat(computedM1, is(equalTo(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1))));
+    assertThat(computedM1, is(equalTo(M1)));
   }
 
   @Test
   void producesTheSameValueWhenComputingTwoConsecutiveM1AndTheSameInputData() {
     // When
-    final var computedM1_1 =
-        srp6ClientService.computeM1(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
-
-    final var computedM1_2 =
-        srp6ClientService.computeM1(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedM1_1 = srp6ClientService.computeM1(A, B, S);
+    final var computedM1_2 = srp6ClientService.computeM1(A, B, S);
 
     // Then
     assertThat(computedM1_1, is(equalTo(computedM1_2)));
@@ -586,11 +475,7 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesDifferentValuesWhenComputingTwoConsecutiveM1AndDifferentInputData() {
     // When
-    final var computedM1_1 =
-        srp6ClientService.computeM1(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedM1_1 = srp6ClientService.computeM1(A, B, S);
 
     final var computedM2_2 =
         srp6ClientService.computeM1(
@@ -611,12 +496,7 @@ class RFC5054SRP6ClientServiceTest {
     final var computedM1s =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeM1(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeM1(A, B, S)));
 
     // Then
     assertThat(computedM1s, hasSize(1));
@@ -631,17 +511,10 @@ class RFC5054SRP6ClientServiceTest {
     final var computedM1s =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeM1(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeM1(A, B, S)));
 
     // Then
-    assertThat(
-        computedM1s.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1)))));
+    assertThat(computedM1s.iterator().next(), is(equalTo(encodeHex(M1))));
   }
 
   @Test
@@ -653,12 +526,7 @@ class RFC5054SRP6ClientServiceTest {
     final var computedM1s =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeM1(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeM1(A, B, S)));
 
     // Then
     assertThat(computedM1s, hasSize(1));
@@ -673,17 +541,10 @@ class RFC5054SRP6ClientServiceTest {
     final var computedM1s =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeM1(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_B),
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeM1(A, B, S)));
 
     // Then
-    assertThat(
-        computedM1s.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1)))));
+    assertThat(computedM1s.iterator().next(), is(equalTo(encodeHex(M1))));
   }
 
   @Test
@@ -694,12 +555,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.isValidReceivedM2( // When
-                NULL_CLIENT_PUBLIC_VALUE_A,
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2)));
+        () -> srp6ClientService.isValidReceivedM2(NULL_CLIENT_PUBLIC_VALUE_A, S, M1, M2)); // When
   }
 
   @Test
@@ -710,12 +566,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.isValidReceivedM2( // When
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                NULL_S,
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2)));
+        () -> srp6ClientService.isValidReceivedM2(A, NULL_S, M1, M2)); // When
   }
 
   @Test
@@ -726,12 +577,7 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.isValidReceivedM2( // When
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                NULL_M1,
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2)));
+        () -> srp6ClientService.isValidReceivedM2(A, S, NULL_M1, M2)); // When
   }
 
   @Test
@@ -742,23 +588,13 @@ class RFC5054SRP6ClientServiceTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            srp6ClientService.isValidReceivedM2( // When
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                NULL_RECEIVED_M2));
+        () -> srp6ClientService.isValidReceivedM2(A, S, M1, NULL_RECEIVED_M2)); // When
   }
-  
+
   @Test
   void producesTheRightValueWhenValidatingReceivedM2AndValidM2() {
     // When
-    final var isValidReceivedM2 =
-        srp6ClientService.isValidReceivedM2(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2));
+    final var isValidReceivedM2 = srp6ClientService.isValidReceivedM2(A, S, M1, M2);
 
     // Then
     assertThat(isValidReceivedM2, is(true));
@@ -771,11 +607,7 @@ class RFC5054SRP6ClientServiceTest {
 
     // When
     final var isValidReceivedM2 =
-        srp6ClientService.isValidReceivedM2(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-            INVALID_RECEIVED_M2);
+        srp6ClientService.isValidReceivedM2(A, S, M1, INVALID_RECEIVED_M2);
 
     // Then
     assertThat(isValidReceivedM2, is(false));
@@ -784,19 +616,8 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesTheSameValueWhenValidatingTwoReceivedM2AndValidM2() {
     // When
-    final var isValidReceivedM2_1 =
-        srp6ClientService.isValidReceivedM2(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2));
-
-    final var isValidReceivedM2_2 =
-        srp6ClientService.isValidReceivedM2(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2));
+    final var isValidReceivedM2_1 = srp6ClientService.isValidReceivedM2(A, S, M1, M2);
+    final var isValidReceivedM2_2 = srp6ClientService.isValidReceivedM2(A, S, M1, M2);
 
     // Then
     assertThat(isValidReceivedM2_1, is(equalTo(isValidReceivedM2_2)));
@@ -809,18 +630,10 @@ class RFC5054SRP6ClientServiceTest {
 
     // When
     final var isValidReceivedM2_1 =
-        srp6ClientService.isValidReceivedM2(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-            INVALID_RECEIVED_M2);
+        srp6ClientService.isValidReceivedM2(A, S, M1, INVALID_RECEIVED_M2);
 
     final var isValidReceivedM2_2 =
-        srp6ClientService.isValidReceivedM2(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-            INVALID_RECEIVED_M2);
+        srp6ClientService.isValidReceivedM2(A, S, M1, INVALID_RECEIVED_M2);
 
     // Then
     assertThat(isValidReceivedM2_1, is(equalTo(isValidReceivedM2_2)));
@@ -835,12 +648,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2)));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, M2));
 
     // Then
     assertThat(isValidReceivedM2s, hasSize(1));
@@ -856,12 +664,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    INVALID_RECEIVED_M2));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, INVALID_RECEIVED_M2));
 
     // Then
     assertThat(isValidReceivedM2s, hasSize(1));
@@ -876,12 +679,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2)));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, M2));
 
     // Then
     assertThat(isValidReceivedM2s.iterator().next(), is(true));
@@ -897,12 +695,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    INVALID_RECEIVED_M2));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, INVALID_RECEIVED_M2));
 
     // Then
     assertThat(isValidReceivedM2s.iterator().next(), is(false));
@@ -917,12 +710,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2)));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, M2));
 
     // Then
     assertThat(isValidReceivedM2s, hasSize(1));
@@ -938,12 +726,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    INVALID_RECEIVED_M2));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, INVALID_RECEIVED_M2));
 
     // Then
     assertThat(isValidReceivedM2s, hasSize(1));
@@ -958,12 +741,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M2)));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, M2));
 
     // Then
     assertThat(isValidReceivedM2s.iterator().next(), is(true));
@@ -979,12 +757,7 @@ class RFC5054SRP6ClientServiceTest {
     final var isValidReceivedM2s =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                srp6ClientService.isValidReceivedM2(
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_A),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S),
-                    toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_M1),
-                    INVALID_RECEIVED_M2));
+            () -> srp6ClientService.isValidReceivedM2(A, S, M1, INVALID_RECEIVED_M2));
 
     // Then
     assertThat(isValidReceivedM2s.iterator().next(), is(false));
@@ -1005,9 +778,7 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesNotNullWhenComputingSessionKey() {
     // When
-    final var computedSessionKey =
-        srp6ClientService.computeSessionKey(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedSessionKey = srp6ClientService.computeSessionKey(S);
 
     // Then
     assertThat(computedSessionKey, is(notNullValue()));
@@ -1016,26 +787,17 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesTheRightValueWhenComputingSessionKey() {
     // When
-    final var computedSessionKey =
-        srp6ClientService.computeSessionKey(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedSessionKey = srp6ClientService.computeSessionKey(S);
 
     // Then
-    assertThat(
-        computedSessionKey,
-        is(equalTo(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_SESSION_KEY))));
+    assertThat(computedSessionKey, is(equalTo(SESSION_KEY)));
   }
 
   @Test
   void producesTheSameValueWhenComputingTwoConsecutiveSessionKeyAndTheSameInputData() {
     // When
-    final var computedSessionKey_1 =
-        srp6ClientService.computeSessionKey(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
-
-    final var computedSessionKey_2 =
-        srp6ClientService.computeSessionKey(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedSessionKey_1 = srp6ClientService.computeSessionKey(S);
+    final var computedSessionKey_2 = srp6ClientService.computeSessionKey(S);
 
     // Then
     assertThat(computedSessionKey_1, is(equalTo(computedSessionKey_2)));
@@ -1044,9 +806,7 @@ class RFC5054SRP6ClientServiceTest {
   @Test
   void producesDifferentValuesWhenComputingTwoConsecutiveSessionKeyAndDifferentInputData() {
     // When
-    final var computedSessionKey_1 =
-        srp6ClientService.computeSessionKey(
-            toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S));
+    final var computedSessionKey_1 = srp6ClientService.computeSessionKey(S);
 
     final var computedSessionKey_2 =
         srp6ClientService.computeSessionKey(
@@ -1065,10 +825,7 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSessionKeys =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeSessionKey(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeSessionKey(S)));
 
     // Then
     assertThat(computedSessionKeys, hasSize(1));
@@ -1083,15 +840,10 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSessionKeys =
         RunnerUtil.runConsecutivelyToSet(
             _100,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeSessionKey(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeSessionKey(S)));
 
     // Then
-    assertThat(
-        computedSessionKeys.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_SESSION_KEY)))));
+    assertThat(computedSessionKeys.iterator().next(), is(equalTo(encodeHex(SESSION_KEY))));
   }
 
   @Test
@@ -1103,10 +855,7 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSessionKeys =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeSessionKey(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeSessionKey(S)));
 
     // Then
     assertThat(computedSessionKeys, hasSize(1));
@@ -1121,14 +870,9 @@ class RFC5054SRP6ClientServiceTest {
     final var computedSessionKeys =
         RunnerUtil.runConcurrentlyToSet(
             _500,
-            () ->
-                encodeHex(
-                    srp6ClientService.computeSessionKey(
-                        toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_S))));
+            () -> encodeHex(srp6ClientService.computeSessionKey(S)));
 
     // Then
-    assertThat(
-        computedSessionKeys.iterator().next(),
-        is(equalTo(encodeHex(toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_SESSION_KEY)))));
+    assertThat(computedSessionKeys.iterator().next(), is(equalTo(encodeHex(SESSION_KEY))));
   }
 }
