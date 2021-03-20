@@ -20,8 +20,10 @@ import java.security.PublicKey;
 
 /**
  * A KeyAgreementService instance is a component which implements a cryptographic
- * key-agreement protocol for <b>two parties</b> agree on a secret shared key in such a way
- * that both influence the outcome. Instances of KeyAgreementService are valid to be used for
+ * unauthenticated key-agreement protocol for <b>two parties</b> agree on a secret shared key
+ * in such a way that both influence the outcome.
+ *
+ * Instances of KeyAgreementService are valid to be used for unauthenticated
  * <b>securely exchanging cryptographic keys</b> over a public channel.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Key-agreement_protocol">Key-agreement protocol</a>

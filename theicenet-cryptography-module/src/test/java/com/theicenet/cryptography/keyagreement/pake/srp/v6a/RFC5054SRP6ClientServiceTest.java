@@ -29,6 +29,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
+import com.theicenet.cryptography.keyagreement.SRP6ClientService;
 import com.theicenet.cryptography.random.JCASecureRandomDataService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;

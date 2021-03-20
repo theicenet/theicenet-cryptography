@@ -285,14 +285,14 @@ In Maven:
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.1.1</version>
+      <version>1.1.2</version>
     </dependency>
 ```
 
 In Gradle
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.1.1'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.1.2'
 ```
 
 ## Building TheIceNet Cryptography library
@@ -858,11 +858,11 @@ The supported argon2's `versions` are,
 ### Password Authenticated Key Exchange with SRP6 version 6a
 
 ```java
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.SRP6ClientService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientValuesA;
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerService;
+import com.theicenet.cryptography.keyagreement.SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerValuesB;
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
+import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

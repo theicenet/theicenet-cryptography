@@ -15,14 +15,13 @@
  */
 package com.theicenet.cryptography.acceptancetest.keyagreement.pake.srp.v6a;
 
-import static com.theicenet.cryptography.test.support.HexUtil.decodeHex;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerService;
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
+import com.theicenet.cryptography.keyagreement.SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.SRP6ServerService;
+import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;

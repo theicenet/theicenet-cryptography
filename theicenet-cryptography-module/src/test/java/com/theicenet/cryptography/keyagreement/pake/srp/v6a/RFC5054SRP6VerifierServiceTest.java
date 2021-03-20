@@ -26,6 +26,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
+import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

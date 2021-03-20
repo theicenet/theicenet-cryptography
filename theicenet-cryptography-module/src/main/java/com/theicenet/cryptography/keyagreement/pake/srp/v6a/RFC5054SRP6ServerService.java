@@ -27,6 +27,7 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerUti
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
+import com.theicenet.cryptography.keyagreement.SRP6ServerService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.math.BigInteger;
 import org.apache.commons.lang.Validate;

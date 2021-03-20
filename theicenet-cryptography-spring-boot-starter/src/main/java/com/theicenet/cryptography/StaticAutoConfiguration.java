@@ -29,10 +29,10 @@ import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementServi
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6ClientService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6VerifierService;
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientService;
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerService;
+import com.theicenet.cryptography.keyagreement.SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup;
-import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6VerifierService;
+import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Configuration;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Type;

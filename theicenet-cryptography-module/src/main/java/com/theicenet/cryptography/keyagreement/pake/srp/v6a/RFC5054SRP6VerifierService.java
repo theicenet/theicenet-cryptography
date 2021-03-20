@@ -21,6 +21,7 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientUti
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
+import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import org.apache.commons.lang.Validate;
 
 /**

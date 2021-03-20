@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
+package com.theicenet.cryptography.keyagreement;
+
+import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientValuesA;
 
 /**
  * A SRP6ClientService instance is a component which implements the required to support
