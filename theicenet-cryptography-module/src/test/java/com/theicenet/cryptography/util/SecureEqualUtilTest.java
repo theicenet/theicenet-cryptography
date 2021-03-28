@@ -122,7 +122,7 @@ class SecureEqualUtilTest {
   }
 
   @Test
-  void takesSimilarTimeWhenAreEqualsInBothPossibleResultsAndSameArrayLength() {
+  void takesSimilarTimeInEqualAndDifferentPathsWhenAreEqualsAndSameArrayLength() {
     // When same value
     final long initWhenEqual = System.currentTimeMillis();
     for (int count = 0; count < ITERATIONS; count++) {
@@ -142,7 +142,7 @@ class SecureEqualUtilTest {
     final long timeWhenDifferent = endWhenDifferent - initWhenDifferent;
 
     // Then times in equal and different path will be similar
-    assertThat(Math.abs(timeWhenEqual - timeWhenDifferent), is(lessThan(2000L)));
+    assertThat(Math.abs(timeWhenEqual - timeWhenDifferent), is(lessThan(10_000L))); // Each path takes around 30sec, so 10sec diff in 100 million iterations is OK to prevent this test becoming flaky. CI environment can be quite unpredictable, so, some extra tolerance is required in this assertion
   }
 
   @Test
