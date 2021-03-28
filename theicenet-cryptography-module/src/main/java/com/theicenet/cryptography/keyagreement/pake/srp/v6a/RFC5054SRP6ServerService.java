@@ -23,6 +23,7 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUti
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.generatePrivateValue;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.isValidPublicValue;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerUtil.computeB;
+import static com.theicenet.cryptography.util.SecureEqualUtil.areEqual;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.digest.DigestService;
@@ -178,7 +179,7 @@ public class RFC5054SRP6ServerService implements SRP6ServerService {
             toBigInteger(serverPublicValueB),
             toBigInteger(s));
 
-    return m1.equals(toBigInteger(receivedM1));
+    return areEqual(toUnsignedByteArray(m1), receivedM1);
   }
 
   /**
