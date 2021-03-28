@@ -37,7 +37,19 @@ public enum DigestAlgorithm {
   KECCAK_512,
   Whirlpool,
   Tiger,
-  SM3;
+  SM3,
+  Blake2b_160,
+  Blake2b_256,
+  Blake2b_384,
+  Blake2b_512,
+  Blake2s_128,
+  Blake2s_160,
+  Blake2s_224,
+  Blake2s_256,
+  RIPEMD128,
+  RIPEMD160,
+  RIPEMD256,
+  RIPEMD320;
 
   @Override
   public String toString() {

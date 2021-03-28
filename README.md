@@ -230,7 +230,19 @@ TheIceNet Cryptography library can work with the next hashing algorithms,
     - KECCAK_512
     - Whirlpool
     - Tiger
-    - SM3
+    - SM3 
+    - Blake2b_160
+    - Blake2b_256
+    - Blake2b_384
+    - Blake2b_512
+    - Blake2s_128
+    - Blake2s_160
+    - Blake2s_224
+    - Blake2s_256
+    - RIPEMD128
+    - RIPEMD160
+    - RIPEMD256
+    - RIPEMD320
       
 ## Password Based Key Derivation supported algorithms 
        
@@ -285,14 +297,14 @@ In Maven:
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.1.2</version>
+      <version>1.1.3</version>
     </dependency>
 ```
 
 In Gradle
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.1.2'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.1.3'
 ```
 
 ## Building TheIceNet Cryptography library
@@ -1884,6 +1896,18 @@ Supported `digest algorithms` are,
     - Whirlpool
     - Tiger
     - SM3
+    - Blake2b_160
+    - Blake2b_256
+    - Blake2b_384
+    - Blake2b_512
+    - Blake2s_128
+    - Blake2s_160
+    - Blake2s_224
+    - Blake2s_256
+    - RIPEMD128
+    - RIPEMD160
+    - RIPEMD256
+    - RIPEMD320
 
 ### MAC generation
 

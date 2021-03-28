@@ -120,7 +120,19 @@ class JCADigestServiceTest {
         Arguments.of(DigestAlgorithm.KECCAK_512, 512),
         Arguments.of(DigestAlgorithm.Whirlpool, 512),
         Arguments.of(DigestAlgorithm.Tiger, 192),
-        Arguments.of(DigestAlgorithm.SM3, 256)
+        Arguments.of(DigestAlgorithm.SM3, 256),
+        Arguments.of(DigestAlgorithm.Blake2b_160, 160),
+        Arguments.of(DigestAlgorithm.Blake2b_256, 256),
+        Arguments.of(DigestAlgorithm.Blake2b_384, 384),
+        Arguments.of(DigestAlgorithm.Blake2b_512, 512),
+        Arguments.of(DigestAlgorithm.Blake2s_128, 128),
+        Arguments.of(DigestAlgorithm.Blake2s_160, 160),
+        Arguments.of(DigestAlgorithm.Blake2s_224, 224),
+        Arguments.of(DigestAlgorithm.Blake2s_256, 256),
+        Arguments.of(DigestAlgorithm.RIPEMD128, 128),
+        Arguments.of(DigestAlgorithm.RIPEMD160, 160),
+        Arguments.of(DigestAlgorithm.RIPEMD256, 256),
+        Arguments.of(DigestAlgorithm.RIPEMD320, 320)
     );
   }
 
@@ -251,7 +263,49 @@ class JCADigestServiceTest {
             HexUtil.decodeHex("fec60ff87160a26c38b2d861db002fd117fe3f14e14f13c1")),
         Arguments.of(
             DigestAlgorithm.SM3,
-            HexUtil.decodeHex("4ec89f55f5008b83d97be9df51e2126b56344bcb2806ec8131d6b0d17faa17f3"))
+            HexUtil.decodeHex("4ec89f55f5008b83d97be9df51e2126b56344bcb2806ec8131d6b0d17faa17f3")),
+        Arguments.of(
+            DigestAlgorithm.Blake2b_160,
+            HexUtil.decodeHex("ce5b9a5c1aba46ba8b1a897b6ec1af74e17129d7")),
+        Arguments.of(
+            DigestAlgorithm.Blake2b_256,
+            HexUtil.decodeHex("7706d287ba7de9254569ad83d77775ea6ac086c9ce90ecaa78b0f168924e18f9")),
+        Arguments.of(
+            DigestAlgorithm.Blake2b_384,
+            HexUtil.decodeHex(
+                "2e32b4341519c8068d90068fa63aeb86ed5a0ce8944b0027be45"
+                    + "bb70bf5ab178c2162c49a958374314004ccf95e315bf")),
+        Arguments.of(
+            DigestAlgorithm.Blake2b_512,
+            HexUtil.decodeHex(
+                "3e1aae8dc72aeff050031322fd56c0186dff13903689b5287c4fc"
+                    + "f4aa49a85b297612ee5e30d6ca34b2df79bdb366fc8f5f7"
+                    + "38993ddda294f44bdab12996da12")),
+        Arguments.of(
+            DigestAlgorithm.Blake2s_128,
+            HexUtil.decodeHex("6b080a8e4886a7258450e856b70e2252")),
+        Arguments.of(
+            DigestAlgorithm.Blake2s_160,
+            HexUtil.decodeHex("c69197c364b9df5c07794045a290452274368971")),
+        Arguments.of(
+            DigestAlgorithm.Blake2s_224,
+            HexUtil.decodeHex("e6b933abf2b89eed3c8ede8e0f6f32f157a17365df40f97b69e9cc28")),
+        Arguments.of(
+            DigestAlgorithm.Blake2s_256,
+            HexUtil.decodeHex("0ddefeefec4afde7a9182f28c926422d67fd3c8354f74d91ade79f9b46df9f69")),
+        Arguments.of(
+            DigestAlgorithm.RIPEMD128,
+            HexUtil.decodeHex("7efc6cbbf0d830b1bc7204d2a17cbecb")),
+        Arguments.of(
+            DigestAlgorithm.RIPEMD160,
+            HexUtil.decodeHex("01c55ed18714db242f0f6d3fbdc97aa543b4504c")),
+        Arguments.of(
+            DigestAlgorithm.RIPEMD256,
+            HexUtil.decodeHex("d5fa0394ab96e28399c452b786756bc70eb847efdf200a018010710dcdd95398")),
+        Arguments.of(
+            DigestAlgorithm.RIPEMD320,
+            HexUtil.decodeHex(
+                "c37b169220deb85784de2f5f9881bd83ad59db759ed573979d52e40d7e117447e67567f5df7105ac"))
     );
   }
 

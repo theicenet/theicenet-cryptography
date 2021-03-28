@@ -75,7 +75,7 @@ public class JCAHmacService implements MacService {
   }
 
   private Mac buildMacCalculator(SecretKey secretKey, HmacAlgorithm algorithm) {
-    final SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), algorithm.toString());
+    final SecretKey secretKeySpec = new SecretKeySpec(secretKey.getEncoded(), algorithm.toString());
 
     final Mac macCalculator;
     try {
