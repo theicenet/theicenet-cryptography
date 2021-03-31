@@ -17,12 +17,11 @@ package com.theicenet.cryptography.cipher.symmetric;
 
 /**
  * @author Juan Fidalgo
- * @since 1.0.0
+ * @since 1.1.5
  */
-public enum BlockCipherIVModeOfOperation {
-  CBC,
-  CFB,
-  OFB,
-  CTR,
-  GCM
+public class InvalidAuthenticationTagException extends RuntimeException {
+
+  public InvalidAuthenticationTagException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

@@ -25,6 +25,7 @@ import com.theicenet.cryptography.test.support.HexUtil;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -87,6 +88,17 @@ class AESCipherServiceIT {
               + "d9a1689666ce4189cb6194e1ac20e0ea5e2e60ec7"
               + "0b0f31255a4dc6cf304edb4192d28c725751474");
 
+  static final byte[] AUTHENTICATION_TAG_GCM =
+      HexUtil.decodeHex("ed7f1709863b083e6a7346320f8a5ca9");
+
+  static final byte[] ENCRYPTED_CONTENT_AES_GCM =
+      HexUtil.decodeHex(
+          "868b0a81b19cc4392191909c349d722395c713a4d3ed3"
+              + "5f88b323e5257182434d9c3689057800c25e15b"
+              + "143e73ba69fccdc25902183db754e0417928895"
+              + "4a78d6a21eb25ca6b5f33054ce19671b7150c9c"
+              + "0ea1ea");
+
   @Autowired
   @Qualifier("AESNonIVCipher_ECB")
   SymmetricNonIVCipherService aesECBNonIVCipherService;
@@ -106,6 +118,10 @@ class AESCipherServiceIT {
   @Autowired
   @Qualifier("AESIVCipher_OFB")
   SymmetricIVCipherService aesOFBIVCipherService;
+
+  @Autowired
+  @Qualifier("AESIVCipher_GCM")
+  SymmetricIVCipherService aesGCMAuthenticatedIVCipherService;
 
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithECB() {
@@ -172,6 +188,21 @@ class AESCipherServiceIT {
   }
 
   @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithGCM() {
+    // When
+    final var encrypted =
+        aesGCMAuthenticatedIVCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(
+        encrypted,
+        is(equalTo(ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM))));
+  }
+
+  @Test
   void producesTheRightDecryptedResultWhenDecryptingWithECB() {
     // When
     final var decrypted =
@@ -230,6 +261,19 @@ class AESCipherServiceIT {
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             ENCRYPTED_CONTENT_AES_CTR);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithGCM() {
+    // When
+    final var decrypted =
+        aesGCMAuthenticatedIVCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM));
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));

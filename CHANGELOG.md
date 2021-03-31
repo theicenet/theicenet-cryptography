@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.5] - 2021‑03‑31
+
+### Added
+
+- Added authenticated block mode of operation Galois/Counter Mode (GCM) to AES cipher [@jjfidalgo]
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
 ## [1.1.4] - 2021‑03‑28
 
 ### Added
@@ -145,7 +161,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Random data generation for Initialization Vector (IV) and Salt [@jjfidalgo]
 - Bitbucket pipeline with the CI & release process to Maven's Central [@jjfidalgo]
 
-[unreleased]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.4...HEAD
+[unreleased]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.5...HEAD
+[1.1.4]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.4...theicenet-cryptography-1.1.5
 [1.1.4]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.3...theicenet-cryptography-1.1.4
 [1.1.3]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.2...theicenet-cryptography-1.1.3
 [1.1.2]: https://github.com/theicenet/theicenet-cryptography/compare/theicenet-cryptography-1.1.1...theicenet-cryptography-1.1.2

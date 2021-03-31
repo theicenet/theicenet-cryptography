@@ -81,7 +81,8 @@ TheIceNet Cryptography library can work with the next symmetric cryptography alg
 - **Encrypt / Decrypt**
     - AES
         - Block Modes of Operation (non IV based): ECB
-        - Block Modes of Operation (IV based): CBC, CFB, OFB, CTR 
+        - Block Modes of Operation (IV based): CBC, CFB, OFB, CTR
+        - Block Modes of Operation (Authenticated & IV based): GCM
   
 - **MAC generation**
     - HMAC
@@ -297,14 +298,14 @@ In Maven:
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.5</version>
     </dependency>
 ```
 
 In Gradle
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.1.4'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.1.5'
 ```
 
 ## Building TheIceNet Cryptography library
@@ -1243,6 +1244,7 @@ Supported `blockModes` of operation are,
     - CFB 
     - OFB 
     - CTR
+    - GCM
 
 ### Encrypt and decrypt with RSA
 

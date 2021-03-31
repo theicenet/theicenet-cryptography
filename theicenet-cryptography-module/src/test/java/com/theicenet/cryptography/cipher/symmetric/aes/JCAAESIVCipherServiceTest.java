@@ -21,18 +21,22 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.InvalidAuthenticationTagException;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -50,6 +54,9 @@ class JCAAESIVCipherServiceTest {
   static final BlockCipherIVModeOfOperation CFB = BlockCipherIVModeOfOperation.CFB;
   static final BlockCipherIVModeOfOperation OFB = BlockCipherIVModeOfOperation.OFB;
   static final BlockCipherIVModeOfOperation CTR = BlockCipherIVModeOfOperation.CTR;
+  static final BlockCipherIVModeOfOperation GCM = BlockCipherIVModeOfOperation.GCM;
+
+  final int AUTHENTICATION_TAG_SIZE_128_BITS = 128;
 
   static final byte[] CLEAR_CONTENT =
       "Content to encrypt with AES and different options for block cipher mode of operation"
@@ -93,6 +100,18 @@ class JCAAESIVCipherServiceTest {
               + "65217d86aa55d9a1689666ce4189cb6194e1ac"
               + "20e0ea5e2e60ec70b0f31255a4dc6cf304edb41"
               + "92d28c725751474");
+
+  static final byte[] AUTHENTICATION_TAG_GCM =
+      HexUtil.decodeHex("ed7f1709863b083e6a7346320f8a5ca9");
+
+  static final byte[] ENCRYPTED_CONTENT_AES_GCM =
+      HexUtil.decodeHex(
+          "868b0a81b19cc4392191909c349d722395c713a4d3ed3"
+              + "5f88b323e5257182434d9c3689057800c25e15b"
+              + "143e73ba69fccdc25902183db754e0417928895"
+              + "4a78d6a21eb25ca6b5f33054ce19671b7150c9c"
+              + "0ea1ea");
+
 
   @ParameterizedTest
   @EnumSource(BlockCipherIVModeOfOperation.class)
@@ -211,7 +230,7 @@ class JCAAESIVCipherServiceTest {
   @ParameterizedTest
   @EnumSource(
       value = BlockCipherIVModeOfOperation.class,
-      names = {"CBC"},
+      names = {"CBC", "GCM"},
       mode = EnumSource.Mode.EXCLUDE)
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingByteArray(
       BlockCipherIVModeOfOperation blockMode) {
@@ -232,8 +251,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingByteArrayWithBlockModeCBC() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CBC);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CBC);
 
     // When
     final var encrypted =
@@ -248,10 +266,28 @@ class JCAAESIVCipherServiceTest {
         is(equalTo(CLEAR_CONTENT.length + (16 - CLEAR_CONTENT.length % 16))));
   }
 
+  @Test
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusAuthenticationTagWhenEncryptingByteArrayWithBlockModeGCM() {
+    // Given
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
+
+    // When
+    final var encrypted =
+        aesCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(
+        encrypted.length,
+        is(equalTo(CLEAR_CONTENT.length + AUTHENTICATION_TAG_SIZE_128_BITS / 8)));
+  }
+
   @ParameterizedTest
   @EnumSource(
       value = BlockCipherIVModeOfOperation.class,
-      names = {"CBC"},
+      names = {"CBC", "GCM"},
       mode = EnumSource.Mode.EXCLUDE)
   void producesSizeOfEncryptedEqualsToSizeOfClearContentWhenEncryptingStream(
       BlockCipherIVModeOfOperation blockMode) {
@@ -275,8 +311,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusPaddingWhenEncryptingStreamWithBlockModeCBC() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CBC);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CBC);
 
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
@@ -292,6 +327,27 @@ class JCAAESIVCipherServiceTest {
     assertThat(
         encryptedOutputStream.toByteArray().length,
         is(equalTo(CLEAR_CONTENT.length + (16 - CLEAR_CONTENT.length % 16))));
+  }
+
+  @Test
+  void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusAuthenticationTagWhenEncryptingStreamWithBlockModeGCM() {
+    // Given
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
+
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
+
+    // Then
+    assertThat(
+        encryptedOutputStream.toByteArray().length,
+        is(equalTo(CLEAR_CONTENT.length + AUTHENTICATION_TAG_SIZE_128_BITS / 8)));
   }
 
   @ParameterizedTest
@@ -368,15 +424,20 @@ class JCAAESIVCipherServiceTest {
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CTR,
-            ENCRYPTED_CONTENT_AES_CTR)
+            ENCRYPTED_CONTENT_AES_CTR),
+        Arguments.of(
+            CLEAR_CONTENT,
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            GCM,
+            ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM))
     );
   }
 
   @Test
   void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     // When
     final var encrypted_1 =
@@ -398,8 +459,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     // When
     final var clearInputStream_1 = new ByteArrayInputStream(CLEAR_CONTENT);
@@ -425,8 +485,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _100 = 100;
 
@@ -448,8 +507,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _100 = 100;
 
@@ -477,8 +535,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _500 = 500;
 
@@ -499,8 +556,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _500 = 500;
 
@@ -790,15 +846,110 @@ class JCAAESIVCipherServiceTest {
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CTR,
+            CLEAR_CONTENT),
+        Arguments.of(
+            ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM),
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            GCM,
             CLEAR_CONTENT)
     );
   }
 
   @Test
+  void throwsExceptionWhenDecryptingByteArrayAndBlockModeGCMAndTagHasBeenManipulated() {
+    // Given
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
+
+    byte[] MANIPULATED_AUTHENTICATION_TAG = AUTHENTICATION_TAG_GCM.clone();
+    MANIPULATED_AUTHENTICATION_TAG[0] += 1;
+
+    // Then
+    assertThrows(
+        InvalidAuthenticationTagException.class,
+        () ->
+            aesCipherService.decrypt(
+                SECRET_KEY_1234567890123456_128_BITS,
+                INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, MANIPULATED_AUTHENTICATION_TAG)));
+  }
+
+  @Test
+  void producesEmptyToOutputWhenDecryptingStreamAndBlockModeGCMAndTagHasBeenManipulated() {
+    // Given
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
+
+    byte[] MANIPULATED_AUTHENTICATION_TAG = AUTHENTICATION_TAG_GCM.clone();
+    MANIPULATED_AUTHENTICATION_TAG[0] += 1;
+
+    final var encryptedInputStream =
+        new ByteArrayInputStream(
+            ArrayUtils.addAll(
+                ENCRYPTED_CONTENT_AES_GCM,
+                MANIPULATED_AUTHENTICATION_TAG));
+
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray().length, is(equalTo(0)));
+  }
+
+  @Test
+  void throwsExceptionWhenDecryptingByteArrayAndBlockModeGCMAndEncryptedHasBeenManipulated() {
+    // Given
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
+
+    byte[] MANIPULATED_ENCRYPTED = ENCRYPTED_CONTENT_AES_GCM.clone();
+    MANIPULATED_ENCRYPTED[0] += 1;
+
+    // Then
+    assertThrows(
+        InvalidAuthenticationTagException.class,
+        () ->
+            aesCipherService.decrypt(
+                SECRET_KEY_1234567890123456_128_BITS,
+                INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                ArrayUtils.addAll(MANIPULATED_ENCRYPTED, AUTHENTICATION_TAG_GCM)));
+  }
+
+  @Test
+  void producesEmptyToOutputWhenDecryptingStreamAndBlockModeGCMAndEncryptedHasBeenManipulated() {
+    // Given
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
+
+    byte[] MANIPULATED_ENCRYPTED = ENCRYPTED_CONTENT_AES_GCM.clone();
+    MANIPULATED_ENCRYPTED[0] += 1;
+
+    final var encryptedInputStream =
+        new ByteArrayInputStream(
+            ArrayUtils.addAll(
+                MANIPULATED_ENCRYPTED,
+                AUTHENTICATION_TAG_GCM));
+
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray().length, is(equalTo(0)));
+  }
+
+  @Test
   void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     // When
     final var decrypted_1 =
@@ -820,8 +971,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     // When
     final var encryptedInputStream_1 = new ByteArrayInputStream(ENCRYPTED_CONTENT_AES_CTR);
@@ -850,8 +1000,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _100 = 100;
 
@@ -873,8 +1022,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _100 = 100;
 
@@ -902,8 +1050,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVForByteArray() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _500 = 500;
 
@@ -924,8 +1071,7 @@ class JCAAESIVCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVForStream() {
     // Given
-    final SymmetricIVCipherService aesCipherService =
-        new JCAAESIVCipherService(BlockCipherIVModeOfOperation.CTR);
+    final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(CTR);
 
     final var _500 = 500;
 

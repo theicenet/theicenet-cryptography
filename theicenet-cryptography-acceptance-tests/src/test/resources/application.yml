@@ -6,7 +6,8 @@ cryptography:
           CBC,
           CFB,
           OFB,
-          CTR
+          CTR,
+          GCM
     asymmetric:
       rsa:
         padding:
