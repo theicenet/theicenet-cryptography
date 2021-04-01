@@ -1083,6 +1083,16 @@ public class MyComponent {
 }
 ```
 
+The `ECB blockMode` of operation to be used must be set in the `application.yml` for the cipher to be available.
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: ECB
+```
+
 For AES with ECB block mode of operation, injection can be simplified to just,
 
 ```java

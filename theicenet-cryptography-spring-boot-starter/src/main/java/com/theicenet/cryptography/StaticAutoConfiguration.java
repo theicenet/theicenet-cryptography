@@ -15,9 +15,6 @@
  */
 package com.theicenet.cryptography;
 
-import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
-import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVCipherService;
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.dsa.JCADSAKeyService;
@@ -25,14 +22,14 @@ import com.theicenet.cryptography.key.asymmetric.rsa.JCARSAKeyService;
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.aes.JCAAESKeyService;
 import com.theicenet.cryptography.keyagreement.KeyAgreementService;
+import com.theicenet.cryptography.keyagreement.SRP6ClientService;
+import com.theicenet.cryptography.keyagreement.SRP6ServerService;
+import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import com.theicenet.cryptography.keyagreement.ecc.ecdh.JCACEDHKeyAgreementService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6ClientService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.RFC5054SRP6VerifierService;
-import com.theicenet.cryptography.keyagreement.SRP6ClientService;
-import com.theicenet.cryptography.keyagreement.SRP6ServerService;
 import com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup;
-import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import com.theicenet.cryptography.pbkd.PBKDKeyService;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Configuration;
 import com.theicenet.cryptography.pbkd.argon2.Argon2Type;
@@ -74,12 +71,6 @@ public class StaticAutoConfiguration {
   @Bean("AESKey")
   public SymmetricKeyService aesKeyService(SecureRandom secureRandom) {
     return new JCAAESKeyService(secureRandom);
-  }
-
-  @Lazy
-  @Bean("AESNonIVCipher_ECB")
-  public SymmetricNonIVCipherService aesCipherService() {
-    return new JCAAESNonIVCipherService(BlockCipherNonIVModeOfOperation.ECB);
   }
 
   @Lazy

@@ -1,7 +1,7 @@
 # Initializers
 org.springframework.context.ApplicationContextInitializer=\
   com.theicenet.cryptography.SecureRandomDynamicContextInitializer,\
-  com.theicenet.cryptography.AESIVCipherDynamicContextInitializer,\
+  com.theicenet.cryptography.AESCipherDynamicContextInitializer,\
   com.theicenet.cryptography.RSACipherDynamicContextInitializer,\
   com.theicenet.cryptography.RSASignatureDynamicContextInitializer,\
   com.theicenet.cryptography.DSASignatureDynamicContextInitializer,\

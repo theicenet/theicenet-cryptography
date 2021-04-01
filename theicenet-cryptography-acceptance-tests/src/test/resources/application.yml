@@ -3,6 +3,7 @@ cryptography:
     symmetric:
       aes:
         blockMode:
+          ECB,
           CBC,
           CFB,
           OFB,
