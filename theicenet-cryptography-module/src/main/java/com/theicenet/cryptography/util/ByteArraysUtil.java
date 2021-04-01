@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
+package com.theicenet.cryptography.util;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-final class ByteArraysUtil {
+public final class ByteArraysUtil {
   private ByteArraysUtil() {}
 
   /**
@@ -35,7 +35,7 @@ final class ByteArraysUtil {
    * @param value the value to be converted.
    * @return a byte array without a leading zero byte if present in the signed encoding.
    */
-  static byte[] toUnsignedByteArray(BigInteger value) {
+  public static byte[] toUnsignedByteArray(BigInteger value) {
     Validate.notNull(value);
 
     final byte[] bytes = value.toByteArray();
@@ -53,7 +53,7 @@ final class ByteArraysUtil {
    * @param byteArray the unsigned byte array to be converted
    * @return a positive BigInteger for the decimal representation of the byteArray
    */
-  static BigInteger toBigInteger(byte[] byteArray) {
+  public static BigInteger toBigInteger(byte[] byteArray) {
     Validate.notNull(byteArray);
 
     return new BigInteger(1, byteArray);
@@ -65,7 +65,7 @@ final class ByteArraysUtil {
    * @param hex the unsigned hexadecimal to be converted
    * @return a positive BigInteger for the decimal representation of the hex
    */
-  static BigInteger toBigInteger(String hex) {
+  public static BigInteger toBigInteger(String hex) {
     Validate.notNull(hex);
 
     try {
@@ -85,7 +85,7 @@ final class ByteArraysUtil {
    *  - padded left array if paddedLength > byteArray.length
    *  - the same array if paddedLength <= byteArray.length
    */
-  static byte[] padLeft(byte[] byteArray, int paddedLength, byte paddingValue) {
+  public static byte[] padLeft(byte[] byteArray, int paddedLength, byte paddingValue) {
     Validate.notNull(byteArray);
 
     final int byteArrayLength = byteArray.length;
@@ -111,7 +111,7 @@ final class ByteArraysUtil {
    *  passed in
    *
    */
-  static byte[] concat(byte[]... byteArrays) {
+  public static byte[] concat(byte[]... byteArrays) {
     byte[] concatenated = new byte[0];
     for (byte[] byteArray : byteArrays) {
       concatenated = ArrayUtils.addAll(concatenated, byteArray);

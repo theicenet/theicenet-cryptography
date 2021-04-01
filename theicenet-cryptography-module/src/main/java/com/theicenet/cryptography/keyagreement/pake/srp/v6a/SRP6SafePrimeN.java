@@ -23,7 +23,7 @@ package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-interface SRP6SafePrimeN {
+public interface SRP6SafePrimeN {
   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
   String N_1024 =
       "EEAF0AB9ADB38DD69C33F80AFA8FC5E86072618775FF3C0B9EA2314C9C256576D674DF7496EA81D3383B4813D692"

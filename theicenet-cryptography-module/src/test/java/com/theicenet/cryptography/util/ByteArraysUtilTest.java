@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
+package com.theicenet.cryptography.util;
 
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6BigIntegerSafePrimeN.N_1024_BIG_INTEGER;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6BigIntegerSafePrimeN.N_1536_BIG_INTEGER;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6BigIntegerSafePrimeN.N_2048_BIG_INTEGER;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6BigIntegerSafePrimeN.N_3072_BIG_INTEGER;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6BigIntegerSafePrimeN.N_4096_BIG_INTEGER;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6BigIntegerSafePrimeN.N_6144_BIG_INTEGER;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6BigIntegerSafePrimeN.N_8192_BIG_INTEGER;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.PAD_ZERO;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_1024_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_1536_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_2048_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_3072_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_4096_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_6144_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_8192_BIG_INTEGER;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1024;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1536;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_2048;
@@ -50,6 +49,8 @@ import org.junit.jupiter.params.provider.ValueSource;
  * @author Juan Fidalgo
  */
 class ByteArraysUtilTest {
+
+  static final byte PAD_ZERO = (byte) 0;
 
   @Test
   void throwsIllegalArgumentExceptionWhenToUnsignedByteArrayAndNullValue() {

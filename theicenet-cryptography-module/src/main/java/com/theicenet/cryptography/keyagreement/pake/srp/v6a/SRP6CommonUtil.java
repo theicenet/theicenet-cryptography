@@ -15,10 +15,10 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.concat;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.padLeft;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toBigInteger;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toUnsignedByteArray;
+import static com.theicenet.cryptography.util.ByteArraysUtil.concat;
+import static com.theicenet.cryptography.util.ByteArraysUtil.padLeft;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toBigInteger;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray;
 
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.random.SecureRandomDataService;

@@ -23,7 +23,7 @@ import java.math.BigInteger;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-interface SRP6GeneratorG {
+public interface SRP6GeneratorG {
   //Origin RFC 5054, appendix A (https://tools.ietf.org/html/rfc5054)
   BigInteger G_COMMON = BigInteger.valueOf(2);
 

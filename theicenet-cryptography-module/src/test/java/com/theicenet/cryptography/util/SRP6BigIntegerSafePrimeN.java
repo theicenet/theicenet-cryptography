@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
+package com.theicenet.cryptography.util;
 
 import java.math.BigInteger;
 
@@ -22,7 +22,7 @@ import java.math.BigInteger;
  * {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup}
  *
  * These are used to test the correctness of the `toBigInteger` and `toUnsignedByteArray` methods in
- * {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtilTest}
+ * {@link com.theicenet.cryptography.util.ByteArraysUtilTest}
  *
  * @author Juan Fidalgo
  */

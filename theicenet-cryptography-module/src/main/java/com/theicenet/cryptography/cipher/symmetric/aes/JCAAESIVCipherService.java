@@ -16,19 +16,12 @@
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
-import com.theicenet.cryptography.cipher.symmetric.InvalidAuthenticationTagException;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherServiceException;
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.spec.AlgorithmParameterSpec;
-import java.util.Objects;
-import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -45,18 +38,7 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCAAESIVCipherService implements SymmetricIVCipherService {
-
-  private static final int AES_CIPHER_BLOCK_SIZE_16_BYTES = 16;
-  private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES =
-      "IV's size must be equals to AES cipher block size = %s bytes";
-
-  private static final String IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_16_BYTES =
-      String.format(
-          IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_S_BYTES,
-          AES_CIPHER_BLOCK_SIZE_16_BYTES);
-
-  private static final int AUTHENTICATED_TAG_SIZE_128_BITS = 128;
+public class JCAAESIVCipherService extends JCAAESCipherService implements SymmetricIVCipherService {
 
   private final BlockCipherIVModeOfOperation blockMode;
 
@@ -69,7 +51,7 @@ public class JCAAESIVCipherService implements SymmetricIVCipherService {
   public byte[] encrypt(SecretKey secretKey, byte[] iv, byte[] clearContent) {
     return process(
         Cipher.ENCRYPT_MODE,
-        blockMode,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
         secretKey,
         iv,
         clearContent);
@@ -79,7 +61,7 @@ public class JCAAESIVCipherService implements SymmetricIVCipherService {
   public byte[] decrypt(SecretKey secretKey, byte[] iv, byte[] encryptedContent) {
     return process(
         Cipher.DECRYPT_MODE,
-        blockMode,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
         secretKey,
         iv,
         encryptedContent);
@@ -98,7 +80,7 @@ public class JCAAESIVCipherService implements SymmetricIVCipherService {
 
     process(
         Cipher.ENCRYPT_MODE,
-        blockMode,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
         secretKey,
         iv,
         clearContentInputStream,
@@ -115,124 +97,13 @@ public class JCAAESIVCipherService implements SymmetricIVCipherService {
       byte[] iv,
       InputStream encryptedContentInputStream,
       OutputStream clearContentOutputStream) {
-    
+
     process(
         Cipher.DECRYPT_MODE,
-        blockMode,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
         secretKey,
         iv,
         encryptedContentInputStream,
         clearContentOutputStream);
-  }
-
-  private byte[] process(
-      int operationMode,
-      BlockCipherIVModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      byte[] content) {
-
-    Validate.notNull(blockMode);
-    Validate.notNull(secretKey);
-    validateIV(iv);
-    Validate.notNull(content);
-
-    final AESPadding padding = paddingForBlockMode(blockMode);
-    final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
-
-    try {
-      return cipher.doFinal(content);
-    } catch (AEADBadTagException e) {
-      throw new InvalidAuthenticationTagException("Invalid authentication tag", e);
-    } catch (Exception e) {
-      throw new SymmetricCipherServiceException("Exception processing AES content", e);
-    }
-  }
-
-  private void process(
-      int operationMode,
-      BlockCipherIVModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      InputStream inputStream,
-      OutputStream outputStream) {
-
-    Validate.notNull(blockMode);
-    Validate.notNull(secretKey);
-    validateIV(iv);
-    Validate.notNull(inputStream);
-    Validate.notNull(outputStream);
-
-    final AESPadding padding = paddingForBlockMode(blockMode);
-    final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
-    final CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
-
-    try (inputStream; cipherOutputStream; outputStream) {
-      inputStream.transferTo(cipherOutputStream);
-    } catch (Exception e) {
-      throw new SymmetricCipherServiceException("Exception processing AES content", e);
-    }
-  }
-
-  private Cipher createCipher(
-      Integer operationMode,
-      BlockCipherIVModeOfOperation blockMode,
-      SecretKey secretKey,
-      byte[] iv,
-      AESPadding padding) {
-
-    final Cipher cipher;
-    try {
-      cipher = Cipher.getInstance(String.format("AES/%s/%s", blockMode, padding));
-      cipher.init(operationMode, secretKey, buildAlgorithmParameterSpec(blockMode, iv));
-    } catch (Exception e) {
-      throw new SymmetricCipherServiceException("Exception creating AES cipher", e);
-    }
-
-    return cipher;
-  }
-
-  private AESPadding paddingForBlockMode(BlockCipherIVModeOfOperation mode) {
-    switch (mode) {
-      case CFB:
-      case OFB:
-      case CTR:
-      case GCM:
-        return AESPadding.NOPADDING;
-      case CBC:
-        return AESPadding.PKCS5PADDING;
-      default:
-        throw new IllegalArgumentException(
-            String.format(
-                "Unsupported block cipher mode of operation [%s]",
-                mode));
-    }
-  }
-
-  private AlgorithmParameterSpec buildAlgorithmParameterSpec(
-      BlockCipherIVModeOfOperation mode,
-      byte[] iv) {
-
-    switch (mode) {
-      case CFB:
-      case OFB:
-      case CTR:
-      case CBC:
-        return new IvParameterSpec(iv);
-      case GCM:
-        return new GCMParameterSpec(AUTHENTICATED_TAG_SIZE_128_BITS, iv);
-      default:
-        throw new IllegalArgumentException(
-            String.format(
-                "Unsupported block cipher mode of operation [%s]",
-                mode));
-    }
-  }
-
-  private void validateIV(byte[] iv) {
-    Validate.notNull(iv);
-    Validate.isTrue(
-        iv.length == AES_CIPHER_BLOCK_SIZE_16_BYTES,
-        IV_SIZE_MUST_BE_EQUALS_TO_AES_CIPHER_BLOCK_SIZE_16_BYTES);
   }
 }

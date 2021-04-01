@@ -15,8 +15,8 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.concat;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toBigInteger;
+import static com.theicenet.cryptography.util.ByteArraysUtil.concat;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toBigInteger;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.isValidPublicValue;
 
 import com.theicenet.cryptography.digest.DigestService;

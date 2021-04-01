@@ -15,13 +15,12 @@
  */
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
-import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherServiceException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import org.apache.commons.lang.Validate;
 
@@ -39,7 +38,7 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCAAESNonIVCipherService implements SymmetricNonIVCipherService {
+public class JCAAESNonIVCipherService extends JCAAESCipherService implements SymmetricNonIVCipherService {
 
   private final BlockCipherNonIVModeOfOperation blockMode;
 
@@ -53,13 +52,20 @@ public class JCAAESNonIVCipherService implements SymmetricNonIVCipherService {
   public byte[] encrypt(SecretKey secretKey, byte[] clearContent) {
     return process(
         Cipher.ENCRYPT_MODE,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
         secretKey,
+        null,
         clearContent);
   }
 
   @Override
   public byte[] decrypt(SecretKey secretKey, byte[] encryptedContent) {
-    return process(Cipher.DECRYPT_MODE, secretKey, encryptedContent);
+    return process(
+        Cipher.DECRYPT_MODE,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
+        secretKey,
+        null,
+        encryptedContent);
   }
 
   /**
@@ -74,7 +80,9 @@ public class JCAAESNonIVCipherService implements SymmetricNonIVCipherService {
 
     process(
         Cipher.ENCRYPT_MODE,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
         secretKey,
+        null,
         clearContentInputStream,
         encryptedContentOutputStream);
   }
@@ -88,57 +96,13 @@ public class JCAAESNonIVCipherService implements SymmetricNonIVCipherService {
       SecretKey secretKey,
       InputStream encryptedContentInputStream,
       OutputStream clearContentOutputStream) {
-    
+
     process(
         Cipher.DECRYPT_MODE,
+        BlockCipherModeOfOperation.valueOf(blockMode.name()),
         secretKey,
+        null,
         encryptedContentInputStream,
         clearContentOutputStream);
-  }
-
-  private byte[] process(int operationMode, SecretKey secretKey, byte[] content) {
-    Validate.notNull(secretKey);
-    Validate.notNull(content);
-
-    final Cipher cipher = createCipher(operationMode, secretKey);
-
-    try {
-      return cipher.doFinal(content);
-    } catch (Exception e) {
-      throw new SymmetricCipherServiceException("Exception processing AES content", e);
-    }
-  }
-
-  private void process(
-      int operationMode,
-      SecretKey secretKey,
-      InputStream inputStream,
-      OutputStream outputStream) {
-
-    Validate.notNull(secretKey);
-    Validate.notNull(inputStream);
-    Validate.notNull(outputStream);
-
-    final Cipher cipher = createCipher(operationMode, secretKey);
-    final CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
-
-    try (inputStream; cipherOutputStream; outputStream) {
-      inputStream.transferTo(cipherOutputStream);
-    } catch (Exception e) {
-      throw new SymmetricCipherServiceException("Exception processing AES content", e);
-    }
-  }
-
-  private Cipher createCipher(Integer operationMode, SecretKey secretKey) {
-
-    final Cipher cipher;
-    try {
-      cipher = Cipher.getInstance(String.format("AES/%s/PKCS5PADDING", blockMode));
-      cipher.init(operationMode, secretKey);
-    } catch (Exception e) {
-      throw new SymmetricCipherServiceException("Exception creating AES cipher", e);
-    }
-
-    return cipher;
   }
 }

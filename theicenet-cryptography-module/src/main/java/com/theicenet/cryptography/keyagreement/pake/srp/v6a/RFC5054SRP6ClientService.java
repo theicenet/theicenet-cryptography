@@ -15,8 +15,8 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toBigInteger;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.ByteArraysUtil.toUnsignedByteArray;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toBigInteger;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientUtil.computeA;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientUtil.computeX;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.computeK;
