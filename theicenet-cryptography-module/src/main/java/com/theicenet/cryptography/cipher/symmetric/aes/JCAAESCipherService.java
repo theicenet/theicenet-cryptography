@@ -54,7 +54,7 @@ public abstract class JCAAESCipherService {
       SecretKey secretKey,
       byte[] iv,
       byte[] content,
-      byte[]... additionalData) {
+      byte[]... associatedData) {
 
     Validate.notNull(blockMode);
     Validate.notNull(secretKey);
@@ -63,7 +63,7 @@ public abstract class JCAAESCipherService {
 
     final AESPadding padding = paddingForBlockMode(blockMode);
     final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
-    cipher.updateAAD(concat(additionalData));
+    cipher.updateAAD(concat(associatedData));
 
     try {
       return cipher.doFinal(content);
@@ -81,7 +81,7 @@ public abstract class JCAAESCipherService {
       byte[] iv,
       InputStream inputStream,
       OutputStream outputStream,
-      byte[]... additionalData) {
+      byte[]... associatedData) {
 
     Validate.notNull(blockMode);
     Validate.notNull(secretKey);
@@ -91,7 +91,7 @@ public abstract class JCAAESCipherService {
 
     final AESPadding padding = paddingForBlockMode(blockMode);
     final Cipher cipher = createCipher(operationMode, blockMode, secretKey, iv, padding);
-    cipher.updateAAD(concat(additionalData));
+    cipher.updateAAD(concat(associatedData));
 
     final CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
 

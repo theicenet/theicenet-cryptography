@@ -15,13 +15,13 @@
  */
 package com.theicenet.cryptography.cipher.symmetric.aes;
 
+import static com.theicenet.cryptography.util.ByteArraysUtil.concat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
@@ -32,11 +32,9 @@ import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -112,6 +110,10 @@ class JCAAESIVCipherServiceTest {
               + "4a78d6a21eb25ca6b5f33054ce19671b7150c9c"
               + "0ea1ea");
 
+  static final byte[] ENCRYPTED_CONTENT_AND_TAG_AES_GCM =
+      concat(
+          ENCRYPTED_CONTENT_AES_GCM,
+          AUTHENTICATION_TAG_GCM);
 
   @ParameterizedTest
   @EnumSource(BlockCipherIVModeOfOperation.class)
@@ -430,7 +432,7 @@ class JCAAESIVCipherServiceTest {
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             GCM,
-            ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM))
+            ENCRYPTED_CONTENT_AND_TAG_AES_GCM)
     );
   }
 
@@ -848,7 +850,7 @@ class JCAAESIVCipherServiceTest {
             CTR,
             CLEAR_CONTENT),
         Arguments.of(
-            ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM),
+            ENCRYPTED_CONTENT_AND_TAG_AES_GCM,
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             GCM,
@@ -857,12 +859,15 @@ class JCAAESIVCipherServiceTest {
   }
 
   @Test
-  void throwsExceptionWhenDecryptingByteArrayAndBlockModeGCMAndTagHasBeenManipulated() {
+  void throwsExceptionWhenDecryptingByteArrayAndBlockModeGCMAndAuthenticationTagHasBeenManipulated() {
     // Given
     final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
 
     byte[] MANIPULATED_AUTHENTICATION_TAG = AUTHENTICATION_TAG_GCM.clone();
     MANIPULATED_AUTHENTICATION_TAG[0] += 1;
+
+    final byte[] MANIPULATED_ENCRYPTED_AND_TAG =
+        concat(ENCRYPTED_CONTENT_AES_GCM, MANIPULATED_AUTHENTICATION_TAG);
 
     // Then
     assertThrows(
@@ -871,11 +876,11 @@ class JCAAESIVCipherServiceTest {
             aesCipherService.decrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
                 INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-                ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, MANIPULATED_AUTHENTICATION_TAG)));
+                MANIPULATED_ENCRYPTED_AND_TAG));
   }
 
   @Test
-  void producesEmptyToOutputWhenDecryptingStreamAndBlockModeGCMAndTagHasBeenManipulated() {
+  void producesEmptyToOutputWhenDecryptingStreamAndBlockModeGCMAndAuthenticationTagHasBeenManipulated() {
     // Given
     final SymmetricIVCipherService aesCipherService = new JCAAESIVCipherService(GCM);
 
@@ -883,10 +888,7 @@ class JCAAESIVCipherServiceTest {
     MANIPULATED_AUTHENTICATION_TAG[0] += 1;
 
     final var encryptedInputStream =
-        new ByteArrayInputStream(
-            ArrayUtils.addAll(
-                ENCRYPTED_CONTENT_AES_GCM,
-                MANIPULATED_AUTHENTICATION_TAG));
+        new ByteArrayInputStream(concat(ENCRYPTED_CONTENT_AES_GCM, MANIPULATED_AUTHENTICATION_TAG));
 
     final var clearOutputStream = new ByteArrayOutputStream();
 
@@ -909,6 +911,9 @@ class JCAAESIVCipherServiceTest {
     byte[] MANIPULATED_ENCRYPTED = ENCRYPTED_CONTENT_AES_GCM.clone();
     MANIPULATED_ENCRYPTED[0] += 1;
 
+    final byte[] MANIPULATED_ENCRYPTED_AND_TAG =
+        concat(MANIPULATED_ENCRYPTED, AUTHENTICATION_TAG_GCM);
+
     // Then
     assertThrows(
         InvalidAuthenticationTagException.class,
@@ -916,7 +921,7 @@ class JCAAESIVCipherServiceTest {
             aesCipherService.decrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
                 INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-                ArrayUtils.addAll(MANIPULATED_ENCRYPTED, AUTHENTICATION_TAG_GCM)));
+                MANIPULATED_ENCRYPTED_AND_TAG));
   }
 
   @Test
@@ -928,10 +933,7 @@ class JCAAESIVCipherServiceTest {
     MANIPULATED_ENCRYPTED[0] += 1;
 
     final var encryptedInputStream =
-        new ByteArrayInputStream(
-            ArrayUtils.addAll(
-                MANIPULATED_ENCRYPTED,
-                AUTHENTICATION_TAG_GCM));
+        new ByteArrayInputStream(concat(MANIPULATED_ENCRYPTED, AUTHENTICATION_TAG_GCM));
 
     final var clearOutputStream = new ByteArrayOutputStream();
 

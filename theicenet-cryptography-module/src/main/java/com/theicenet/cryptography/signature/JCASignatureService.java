@@ -32,7 +32,7 @@ public abstract class JCASignatureService<T extends Enum<T>> implements Signatur
 
   private final T algorithm;
 
-  public JCASignatureService(T algorithm) {
+  protected JCASignatureService(T algorithm) {
     Validate.notNull(algorithm);
     this.algorithm = algorithm;
 

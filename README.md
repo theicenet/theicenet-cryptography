@@ -46,6 +46,7 @@ The main cryptographic modules `theicenet-cryptography-module` is 100% Spring ag
         * Symmetric cryptography
             * [Encrypt/Decrypt byte array/stream with AES and ECB block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-ecb-block-mode-of-operation)
             * [Encrypt/Decrypt byte array/stream with AES and IV based block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-iv-based-block-mode-of-operation)
+            * [Encrypt/Decrypt byte array/stream with AES and AEAD based block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-aead-based-block-mode-of-operation)
         * Asymmetric cryptography        
             * [Encrypt/Decrypt with RSA](#encrypt-and-decrypt-with-rsa)
     * Signature generation
@@ -80,9 +81,9 @@ TheIceNet Cryptography library can work with the next symmetric cryptography alg
 
 - **Encrypt / Decrypt**
     - AES
-        - Block Modes of Operation (non IV based): ECB
-        - Block Modes of Operation (IV based): CBC, CFB, OFB, CTR
-        - Block Modes of Operation (Authenticated & IV based): GCM
+        - Non IV based block Modes of Operation: ECB
+        - IV based block Modes of Operation: CBC, CFB, OFB, CTR, GCM
+        - AEAD based block Modes of Operation: GCM
   
 - **MAC generation**
     - HMAC
@@ -298,14 +299,14 @@ In Maven:
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.1.5</version>
+      <version>1.2.0</version>
     </dependency>
 ```
 
 In Gradle
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.1.5'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.2.0'
 ```
 
 ## Building TheIceNet Cryptography library
@@ -1083,7 +1084,7 @@ public class MyComponent {
 }
 ```
 
-The `ECB blockMode` of operation to be used must be set in the `application.yml` for the cipher to be available.
+The ECB `blockMode` of operation must be set in the `application.yml` for the cipher to be available.
 
 ```yaml
 cryptography:
@@ -1255,6 +1256,111 @@ Supported `blockModes` of operation are,
     - OFB 
     - CTR
     - GCM
+
+### Encrypt and decrypt byte array or stream with AES and AEAD based block mode of operation
+
+```java
+import com.theicenet.cryptography.cipher.symmetric.SymmetricAEADCipherService;
+import java.io.InputStream;
+import java.io.OutputStream;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyComponent {
+
+  private final SymmetricAEADCipherService aesCipherService;
+
+  @Autowired
+  public MyComponent(
+      @Qualifier("AESAEADCipher_GCM") SymmetricAEADCipherService aesCipherService) {
+    this.aesCipherService = aesCipherService;
+  }
+
+  /** Byte array **/
+
+  public void encryptByteArray(
+      SecretKey secretKey,
+      byte[] initializationVector,
+      byte[] clearContent,
+      byte[]... associatedData) {
+
+    byte[] encryptedContent =
+        aesCipherService.encrypt(
+            secretKey,
+            initializationVector,
+            clearContent,
+            associatedData);
+  }
+
+  public void decryptByteArray(
+      SecretKey secretKey,
+      byte[] initializationVector,
+      byte[] encryptedContent,
+      byte[]... associatedData) {
+
+    byte[] clearContent =
+        aesCipherService.decrypt(
+            secretKey,
+            initializationVector,
+            encryptedContent,
+            associatedData);
+  }
+
+  /** Stream **/
+
+  public void encryptStream(
+      SecretKey secretKey,
+      byte[] initializationVector,
+      InputStream clearInputStream,
+      OutputStream encryptedOutputStream,
+      byte[]... associatedData) {
+
+    // Input and output stream are flushed and closed before `encrypt` method returns
+    aesCipherService.encrypt(
+        secretKey,
+        initializationVector,
+        clearInputStream,
+        encryptedOutputStream,
+        associatedData);
+  }
+
+  public void decryptStream(
+      SecretKey secretKey,
+      byte[] initializationVector,
+      InputStream encryptedInputStream,
+      OutputStream clearOutputStream,
+      byte[]... associatedData) {
+
+    // Input and output stream are flushed and closed before `decrypt` method returns
+    aesCipherService.decrypt(
+        secretKey,
+        initializationVector,
+        encryptedInputStream,
+        clearOutputStream,
+        associatedData);
+  }
+}
+```
+
+The GCM `blockMode` of operation must be set in the `application.yml` for the cipher to be available.
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: ECB
+```
+
+For AES with GCM block mode of operation, injection can be simplified to just,
+
+```java
+@Autowired
+SymmetricAEADCipherService aesCipherService;
+```
 
 ### Encrypt and decrypt with RSA
 

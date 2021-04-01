@@ -15,17 +15,18 @@
  */
 package com.theicenet.cryptography.acceptancetest.cipher.symmetric.aes;
 
+import static com.theicenet.cryptography.util.ByteArraysUtil.concat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+import com.theicenet.cryptography.cipher.symmetric.SymmetricAEADCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -88,8 +89,14 @@ class AESCipherServiceIT {
               + "d9a1689666ce4189cb6194e1ac20e0ea5e2e60ec7"
               + "0b0f31255a4dc6cf304edb4192d28c725751474");
 
-  static final byte[] AUTHENTICATION_TAG_GCM =
+  static final byte[] ASSOCIATED_DATA_1 = "Associated data one.".getBytes(StandardCharsets.UTF_8);
+  static final byte[] ASSOCIATED_DATA_2 = "Associated data two.".getBytes(StandardCharsets.UTF_8);
+
+  static final byte[] AUTHENTICATION_TAG_NO_AD_GCM =
       HexUtil.decodeHex("ed7f1709863b083e6a7346320f8a5ca9");
+
+  static final byte[] AUTHENTICATION_TAG_WITH_AD_GCM =
+      HexUtil.decodeHex("ded15a2d500fcd26a9501be9cef83a17");
 
   static final byte[] ENCRYPTED_CONTENT_AES_GCM =
       HexUtil.decodeHex(
@@ -121,7 +128,11 @@ class AESCipherServiceIT {
 
   @Autowired
   @Qualifier("AESIVCipher_GCM")
-  SymmetricIVCipherService aesGCMAuthenticatedIVCipherService;
+  SymmetricIVCipherService aesGCMIVCipherService;
+
+  @Autowired
+  @Qualifier("AESAEADCipher_GCM")
+  SymmetricAEADCipherService aesGCMAEADCipherService;
 
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithECB() {
@@ -191,7 +202,7 @@ class AESCipherServiceIT {
   void producesTheRightEncryptedResultWhenEncryptingWithGCM() {
     // When
     final var encrypted =
-        aesGCMAuthenticatedIVCipherService.encrypt(
+        aesGCMIVCipherService.encrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
             CLEAR_CONTENT);
@@ -199,7 +210,24 @@ class AESCipherServiceIT {
     // Then
     assertThat(
         encrypted,
-        is(equalTo(ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM))));
+        is(equalTo(concat(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_NO_AD_GCM))));
+  }
+
+  @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithGCMAndAssociatedData() {
+    // When
+    final var encrypted =
+        aesGCMAEADCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            CLEAR_CONTENT,
+            ASSOCIATED_DATA_1,
+            ASSOCIATED_DATA_2);
+
+    // Then
+    assertThat(
+        encrypted,
+        is(equalTo(concat(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_WITH_AD_GCM))));
   }
 
   @Test
@@ -270,10 +298,25 @@ class AESCipherServiceIT {
   void producesTheRightDecryptedResultWhenDecryptingWithGCM() {
     // When
     final var decrypted =
-        aesGCMAuthenticatedIVCipherService.decrypt(
+        aesGCMIVCipherService.decrypt(
             SECRET_KEY_1234567890123456_128_BITS,
             INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
-            ArrayUtils.addAll(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_GCM));
+            concat(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_NO_AD_GCM));
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithGCMAndAssociatedData() {
+    // When
+    final var decrypted =
+        aesGCMAEADCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+            concat(ENCRYPTED_CONTENT_AES_GCM, AUTHENTICATION_TAG_WITH_AD_GCM),
+            ASSOCIATED_DATA_1,
+            ASSOCIATED_DATA_2);
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));

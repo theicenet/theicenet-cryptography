@@ -15,9 +15,11 @@
  */
 package com.theicenet.cryptography;
 
+import com.theicenet.cryptography.cipher.symmetric.BlockCipherAEADModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESAEADCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVCipherService;
 import com.theicenet.cryptography.util.PropertiesUtil;
@@ -32,6 +34,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @since 1.1.0
  */
 public class AESCipherDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+  private static final String BEAN_NAME_FORMAT = "%s_%s";
 
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -60,19 +64,13 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
       case CFB:
       case OFB:
       case CTR:
-      case GCM:
         registerBean(beanFactory, BlockCipherIVModeOfOperation.valueOf(blockMode.name()));
         break;
+      case GCM:
+        registerBean(beanFactory, BlockCipherIVModeOfOperation.GCM);
+        registerBean(beanFactory, BlockCipherAEADModeOfOperation.GCM);
+        break;
     }
-  }
-
-  private void registerBean(
-      ConfigurableListableBeanFactory beanFactory,
-      BlockCipherIVModeOfOperation blockMode) {
-
-    beanFactory.registerSingleton(
-        String.format("%s_%s", "AESIVCipher", blockMode),
-        new JCAAESIVCipherService(blockMode));
   }
 
   private void registerBean(
@@ -80,7 +78,25 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
       BlockCipherNonIVModeOfOperation blockMode) {
 
     beanFactory.registerSingleton(
-        String.format("%s_%s", "AESNonIVCipher", blockMode),
+        String.format(BEAN_NAME_FORMAT, "AESNonIVCipher", blockMode),
         new JCAAESNonIVCipherService(blockMode));
+  }
+
+  private void registerBean(
+      ConfigurableListableBeanFactory beanFactory,
+      BlockCipherIVModeOfOperation blockMode) {
+
+    beanFactory.registerSingleton(
+        String.format(BEAN_NAME_FORMAT, "AESIVCipher", blockMode),
+        new JCAAESIVCipherService(blockMode));
+  }
+
+  private void registerBean(
+      ConfigurableListableBeanFactory beanFactory,
+      BlockCipherAEADModeOfOperation blockMode) {
+
+    beanFactory.registerSingleton(
+        String.format(BEAN_NAME_FORMAT, "AESAEADCipher", blockMode),
+        new JCAAESAEADCipherService(blockMode));
   }
 }

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - TBC
+
+### Added
+
+- Fully implemented block mode of operation Galois/Counter Mode (GCM) on AES cipher to support associated data (AEAD) when generating/validating the authentication tag [@jjfidalgo]
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [1.1.5] - 2021‑03‑31
 
 ### Added
