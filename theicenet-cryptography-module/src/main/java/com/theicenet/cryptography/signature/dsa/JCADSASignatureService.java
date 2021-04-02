@@ -15,7 +15,7 @@
  */
 package com.theicenet.cryptography.signature.dsa;
 
-import com.theicenet.cryptography.signature.JCASignatureService;
+import com.theicenet.cryptography.signature.JCASignatureBase;
 
 /**
  * Java Cryptography Architecture (JCA) based component which implements <b>DSA</b> digital
@@ -29,7 +29,7 @@ import com.theicenet.cryptography.signature.JCASignatureService;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCADSASignatureService extends JCASignatureService<DSASignatureAlgorithm> {
+public class JCADSASignatureService extends JCASignatureBase<DSASignatureAlgorithm> {
 
   public JCADSASignatureService(DSASignatureAlgorithm algorithm) {
     super(algorithm);

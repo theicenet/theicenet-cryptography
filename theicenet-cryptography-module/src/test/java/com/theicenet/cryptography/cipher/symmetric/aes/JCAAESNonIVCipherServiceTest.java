@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * @author Juan Fidalgo
  */
 class JCAAESNonIVCipherServiceTest {
-  // Given
+
   final String AES = "AES";
 
   final byte[] CLEAR_CONTENT =

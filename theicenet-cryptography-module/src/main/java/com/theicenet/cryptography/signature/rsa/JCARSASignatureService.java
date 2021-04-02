@@ -15,7 +15,7 @@
  */
 package com.theicenet.cryptography.signature.rsa;
 
-import com.theicenet.cryptography.signature.JCASignatureService;
+import com.theicenet.cryptography.signature.JCASignatureBase;
 
 /**
  * Java Cryptography Architecture (JCA) based component which implements <b>RSA</b> digital
@@ -29,7 +29,7 @@ import com.theicenet.cryptography.signature.JCASignatureService;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCARSASignatureService extends JCASignatureService<RSASignatureAlgorithm> {
+public class JCARSASignatureService extends JCASignatureBase<RSASignatureAlgorithm> {
 
   public JCARSASignatureService(RSASignatureAlgorithm algorithm) {
     super(algorithm);

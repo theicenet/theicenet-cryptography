@@ -15,42 +15,36 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import static com.theicenet.cryptography.util.ByteArraysUtil.toBigInteger;
-import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUtil.computeK;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ServerUtil.computeB;
 import static com.theicenet.cryptography.test.support.HexUtil.encodeHex;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
-import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.keyagreement.SRP6ServerService;
-import com.theicenet.cryptography.random.JCASecureRandomDataService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.test.support.RunnerUtil;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author Juan Fidalgo
  */
+@ExtendWith(MockitoExtension.class)
 class RFC5054SRP6ServerServiceTest {
 
   final SRP6StandardGroup SG_2048 = SRP6GenericTestingVectors.SG_2048;
   final DigestAlgorithm HASH_SHA_256 = SRP6GenericTestingVectors.HASH_SHA_256;
-
-  final BigInteger N = SG_2048.getN();
-  final BigInteger g = SG_2048.getG();
 
   final byte[] VERIFIER = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_VERIFIER);
 
@@ -63,6 +57,9 @@ class RFC5054SRP6ServerServiceTest {
 
   final byte[] SESSION_KEY = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_SESSION_KEY);
 
+  @Mock
+  SecureRandomDataService secureRandomDataService;
+
   SRP6ServerService srp6ServerService;
 
   @BeforeEach
@@ -71,11 +68,14 @@ class RFC5054SRP6ServerServiceTest {
         new RFC5054SRP6ServerService(
             SG_2048,
             HASH_SHA_256,
-            new JCASecureRandomDataService(new SecureRandom()));
+            secureRandomDataService);
   }
 
   @Test
   void producesNotNullWhenComputingValuesB() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(b);
+
     // When
     final var computedValuesB = srp6ServerService.computeValuesB(VERIFIER);
 
@@ -85,6 +85,9 @@ class RFC5054SRP6ServerServiceTest {
 
   @Test
   void producesNotNullClientPrivateValueWhenComputingValuesB() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(b);
+
     // When
     final var computedValuesB = srp6ServerService.computeValuesB(VERIFIER);
 
@@ -94,6 +97,9 @@ class RFC5054SRP6ServerServiceTest {
 
   @Test
   void producesNotNullClientPublicValueWhenComputingValuesB() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(b);
+
     // When
     final var computedValuesB = srp6ServerService.computeValuesB(VERIFIER);
 
@@ -103,138 +109,14 @@ class RFC5054SRP6ServerServiceTest {
 
   @Test
   void producesTheRightValueWhenComputingValuesB() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(b);
+
     // When
     final var computedValuesB = srp6ServerService.computeValuesB(VERIFIER);
 
     // Then
-    final byte[] EXPECTED_SERVER_PUBLIC_VALUE_B =
-        toUnsignedByteArray(
-            computeB(
-                N,
-                g,
-                computeK(new JCADigestService(HASH_SHA_256), N, g),
-                toBigInteger(VERIFIER),
-                toBigInteger(computedValuesB.getServerPrivateValueB())));
-
-    assertThat(computedValuesB.getServerPublicValueB(), is(equalTo(EXPECTED_SERVER_PUBLIC_VALUE_B)));
-  }
-
-  @Test
-  void producesDifferentValuesWhenComputingTwoConsecutiveValuesBAndSameVerifier() {
-    // When
-    final var computedValuesB_1 = srp6ServerService.computeValuesB(VERIFIER);
-    final var computedValuesB_2 = srp6ServerService.computeValuesB(VERIFIER);
-
-    // Then
-    assertThat(computedValuesB_1, is(not(samePropertyValuesAs(computedValuesB_2))));
-  }
-
-  @Test
-  void producesDifferentValuesWhenComputingManyConsecutiveValuesBAndSameVerifier() {
-    // Given
-    final var _100 = 100;
-
-    // When
-    final var computedValuesBs =
-        RunnerUtil.runConsecutivelyToList(
-            _100,
-            () -> srp6ServerService.computeValuesB(VERIFIER));
-
-    // Then
-    assertThat(
-        computedValuesBs.stream()
-            .map(SRP6ServerValuesB::getServerPrivateValueB)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_100));
-
-    assertThat(
-        computedValuesBs.stream()
-            .map(SRP6ServerValuesB::getServerPublicValueB)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_100));
-  }
-
-  @Test
-  void producesTheRightValueWhenComputingManyConsecutiveValuesBAndSameVerifier() {
-    // Given
-    final var _100 = 100;
-
-    // When
-    final var computedValuesBs =
-        RunnerUtil.runConsecutivelyToList(
-            _100,
-            () -> srp6ServerService.computeValuesB(VERIFIER));
-
-    // Then
-    computedValuesBs.forEach(computedValuesB -> {
-      final byte[] EXPECTED_SERVER_PUBLIC_VALUE_B =
-          toUnsignedByteArray(
-              computeB(
-                  N,
-                  g,
-                  computeK(new JCADigestService(HASH_SHA_256), N, g),
-                  toBigInteger(VERIFIER),
-                  toBigInteger(computedValuesB.getServerPrivateValueB())));
-
-      assertThat(
-          computedValuesB.getServerPublicValueB(),
-          is(equalTo(EXPECTED_SERVER_PUBLIC_VALUE_B)));
-    });
-  }
-
-  @Test
-  void producesDifferentValuesWhenComputingConcurrentlyManyValuesBAndSameVerifier() {
-    // Given
-    final var _500 = 500;
-
-    // When
-    final var computedValuesBs =
-        RunnerUtil.runConcurrentlyToList(
-            _500,
-            () -> srp6ServerService.computeValuesB(VERIFIER));
-
-    // Then
-    assertThat(
-        computedValuesBs.stream()
-            .map(SRP6ServerValuesB::getServerPrivateValueB)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_500));
-
-    assertThat(
-        computedValuesBs.stream()
-            .map(SRP6ServerValuesB::getServerPublicValueB)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_500));
-  }
-
-  @Test
-  void producesTheRightValueWhenComputingConcurrentlyManyValuesB() {
-    // Given
-    final var _500 = 500;
-
-    // When
-    final var computedValuesBs =
-        RunnerUtil.runConcurrentlyToList(
-            _500,
-            () -> srp6ServerService.computeValuesB(VERIFIER));
-
-    // Then
-    computedValuesBs.forEach(computedValuesB -> {
-      final byte[] EXPECTED_CLIENT_PUBLIC_VALUE =
-          toUnsignedByteArray(
-              computeB(
-                  N,
-                  g,
-                  computeK(new JCADigestService(HASH_SHA_256), N, g),
-                  toBigInteger(VERIFIER),
-                  toBigInteger(computedValuesB.getServerPrivateValueB())));
-
-      assertThat(computedValuesB.getServerPublicValueB(), is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE)));
-    });
+    assertThat(computedValuesB.getServerPublicValueB(), is(equalTo(B)));
   }
 
   @Test

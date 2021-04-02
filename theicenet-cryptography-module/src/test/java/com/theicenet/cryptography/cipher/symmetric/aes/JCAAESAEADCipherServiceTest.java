@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,7 +42,6 @@ import org.junit.jupiter.api.Test;
  */
 class JCAAESAEADCipherServiceTest {
 
-  // Given
   static final String AES = "AES";
   static final BlockCipherAEADModeOfOperation GCM = BlockCipherAEADModeOfOperation.GCM;
 
@@ -78,11 +78,15 @@ class JCAAESAEADCipherServiceTest {
           ENCRYPTED_CONTENT_AES_GCM,
           AUTHENTICATION_TAG_GCM);
 
+  SymmetricAEADCipherService aesCipherService;
+
+  @BeforeEach
+  void setUp() {
+    aesCipherService = new JCAAESAEADCipherService(GCM);
+  }
+
   @Test
   void producesNotNullWhenEncryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -99,8 +103,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesNotNullWhenEncryptingStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
@@ -119,9 +121,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesNotEmptyWhenEncryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -138,8 +137,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesNotEmptyWhenEncryptingByteStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
@@ -159,8 +156,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void throwsIllegalArgumentExceptionWhenEncryptingByteArrayWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
@@ -177,8 +172,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void throwsIllegalArgumentExceptionWhenEncryptingStreamWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
@@ -198,9 +191,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusAuthenticationTagWhenEncryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -219,8 +209,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSizeOfEncryptedEqualsToSizeOfClearContentPlusAuthenticationTagWhenEncryptingStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
@@ -241,9 +229,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesTheRightEncryptedResultWhenEncryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var encrypted =
         aesCipherService.encrypt(
@@ -260,8 +245,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesTheRightEncryptedResultWhenEncryptingStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream = new ByteArrayOutputStream();
 
@@ -282,9 +265,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVAndADForByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var encrypted_1 =
         aesCipherService.encrypt(
@@ -308,9 +288,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesSameEncryptedWhenEncryptingTwoConsecutiveTimesTheSameContentWithTheSameKeyAndIVAndADForStream() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var clearInputStream_1 = new ByteArrayInputStream(CLEAR_CONTENT);
     final var encryptedOutputStream_1 = new ByteArrayOutputStream();
@@ -339,8 +316,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVAndADForByteArray() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _100 = 100;
 
     // When
@@ -363,8 +338,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingManyConsecutiveTimesTheSameContentWithTheSameKeyAndIVAndADForStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _100 = 100;
 
     // When
@@ -393,8 +366,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVAndADForByteArray() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _500 = 500;
 
     // When
@@ -416,8 +387,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameEncryptedWhenEncryptingConcurrentlyManyTimesTheSameContentWithTheSameKeyAndIVAndADForStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _500 = 500;
 
     // When
@@ -445,9 +414,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesNotNullWhenDecryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var decrypted =
         aesCipherService.decrypt(
@@ -464,10 +430,7 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesNotNullWhenDecryptingStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AND_TAG_AES_GCM);
-
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When
@@ -485,9 +448,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesNotEmptyWhenDecryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var decrypted =
         aesCipherService.decrypt(
@@ -504,10 +464,7 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesNotEmptyWhenDecryptingStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AND_TAG_AES_GCM);
-
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When
@@ -526,8 +483,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void throwsIllegalArgumentExceptionWhenDecryptingByteArrayWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
@@ -544,8 +499,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void throwsIllegalArgumentExceptionWhenDecryptingStreamWithInvalidIVSize() {
     // Given initialization vector of invalid size (= 64 bits)
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var INITIALIZATION_VECTOR_KLMNOPQR_64_BITS =
         "KLMNOPQR".getBytes(StandardCharsets.UTF_8);
 
@@ -566,9 +519,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesSizeOfDecryptedEqualsToSizeOfClearContentWhenDecryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var decrypted =
         aesCipherService.decrypt(
@@ -585,10 +535,7 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSizeOfDecryptedEqualsToSizeOfClearContentWhenDecryptingStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AND_TAG_AES_GCM);
-
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When
@@ -606,9 +553,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesTheRightDecryptedResultWhenDecryptingByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var decrypted =
         aesCipherService.decrypt(
@@ -625,10 +569,7 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesTheRightDecryptedResultWhenDecryptingStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var encryptedInputStream = new ByteArrayInputStream(ENCRYPTED_CONTENT_AND_TAG_AES_GCM);
-    
     final var clearOutputStream = new ByteArrayOutputStream();
 
     // When
@@ -647,8 +588,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void throwsExceptionWhenDecryptingByteArrayAndAuthenticationTagHasBeenManipulated() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     byte[] MANIPULATED_AUTHENTICATION_TAG = AUTHENTICATION_TAG_GCM.clone();
     MANIPULATED_AUTHENTICATION_TAG[0] += 1;
 
@@ -670,8 +609,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesEmptyToOutputWhenDecryptingStreamAndAuthenticationTagHasBeenManipulated() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     byte[] MANIPULATED_AUTHENTICATION_TAG = AUTHENTICATION_TAG_GCM.clone();
     MANIPULATED_AUTHENTICATION_TAG[0] += 1;
 
@@ -695,9 +632,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void throwsExceptionWhenDecryptingByteArrayAndAuthenticationTagIsNotProvided() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // Then
     assertThrows(
         InvalidAuthenticationTagException.class,
@@ -711,8 +645,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesEmptyToOutputWhenDecryptingStreamAndAuthenticationTagIsNotProvided() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var encryptedInputStream =
         new ByteArrayInputStream(ENCRYPTED_CONTENT_AND_TAG_AES_GCM);
 
@@ -732,8 +664,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void throwsExceptionWhenDecryptingByteArrayAndEncryptedHasBeenManipulated() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     byte[] MANIPULATED_ENCRYPTED = ENCRYPTED_CONTENT_AES_GCM.clone();
     MANIPULATED_ENCRYPTED[0] += 1;
 
@@ -755,8 +685,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesEmptyToOutputWhenDecryptingStreamAndEncryptedHasBeenManipulated() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     byte[] MANIPULATED_ENCRYPTED = ENCRYPTED_CONTENT_AES_GCM.clone();
     MANIPULATED_ENCRYPTED[0] += 1;
 
@@ -780,9 +708,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVAndADForByteArray() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var decrypted_1 =
         aesCipherService.decrypt(
@@ -806,9 +731,6 @@ class JCAAESAEADCipherServiceTest {
 
   @Test
   void producesSameClearContentWhenDecryptingTwoConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVAndADForStream() {
-    // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     // When
     final var encryptedInputStream_1 = new ByteArrayInputStream(ENCRYPTED_CONTENT_AND_TAG_AES_GCM);
     final var clearContentOutputStream_1 = new ByteArrayOutputStream();
@@ -840,8 +762,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVAndADForByteArray() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _100 = 100;
 
     // When
@@ -864,8 +784,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingManyConsecutiveTimesTheSameEncryptedWithTheSameKeyAndIVAndADForStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _100 = 100;
 
     // When
@@ -895,8 +813,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVAndADForByteArray() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _500 = 500;
 
     // When
@@ -918,8 +834,6 @@ class JCAAESAEADCipherServiceTest {
   @Test
   void producesSameClearContentWhenDecryptingConcurrentlyManyTimesTheSameEncryptedWithTheSameKeyAndIVAndADForStream() {
     // Given
-    final SymmetricAEADCipherService aesCipherService = new JCAAESAEADCipherService(GCM);
-
     final var _500 = 500;
 
     // When

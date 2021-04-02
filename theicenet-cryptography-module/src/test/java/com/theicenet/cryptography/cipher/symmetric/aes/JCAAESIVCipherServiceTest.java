@@ -46,7 +46,6 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class JCAAESIVCipherServiceTest {
 
-  // Given
   static final String AES = "AES";
   static final BlockCipherIVModeOfOperation CBC = BlockCipherIVModeOfOperation.CBC;
   static final BlockCipherIVModeOfOperation CFB = BlockCipherIVModeOfOperation.CFB;

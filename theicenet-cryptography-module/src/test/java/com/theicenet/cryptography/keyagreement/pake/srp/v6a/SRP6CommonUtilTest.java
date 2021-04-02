@@ -15,7 +15,6 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import static com.theicenet.cryptography.util.ByteArraysUtil.toBigInteger;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_A;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_B;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_K;
@@ -26,46 +25,39 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTe
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.EXPECTED_U;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.HASH_SHA_256;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.N;
+import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.a;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6GenericTestingVectors.g;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1024;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1536;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_2048;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_3072;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_4096;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_6144;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_8192;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.digest.JCADigestService;
-import com.theicenet.cryptography.random.JCASecureRandomDataService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
-import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author Juan Fidalgo
  */
+@ExtendWith(MockitoExtension.class)
 class SRP6CommonUtilTest {
 
-  final SecureRandom secureRandom = new SecureRandom();
-  final SecureRandomDataService randomDataService = new JCASecureRandomDataService(secureRandom);
-
   final DigestService sha256Digest = new JCADigestService(HASH_SHA_256);
+
+  @Mock
+  SecureRandomDataService secureRandomDataService;
 
   @Test
   void throwsIllegalArgumentExceptionWhenComputingKAndNullDigest() {
@@ -489,7 +481,7 @@ class SRP6CommonUtilTest {
     // Then
     assertThrows(
         IllegalArgumentException.class,
-        () -> SRP6CommonUtil.generatePrivateValue(NULL_N, randomDataService)); // When
+        () -> SRP6CommonUtil.generatePrivateValue(NULL_N, secureRandomDataService)); // When
   }
 
   @Test
@@ -505,113 +497,50 @@ class SRP6CommonUtilTest {
 
   @Test
   void producesNotNullWhenGeneratingPrivateValue() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt()))
+        .thenReturn(toUnsignedByteArray(a));
+
     // When
-    final var generatedPrivateValue = SRP6CommonUtil.generatePrivateValue(N, randomDataService);
+    final var generatedPrivateValue =
+        SRP6CommonUtil.generatePrivateValue(
+            N,
+            secureRandomDataService);
 
     // Then
     assertThat(generatedPrivateValue, is(notNullValue()));
   }
 
-  @ParameterizedTest
-  @MethodSource("safePrimeForDifferentLengths")
-  void producesValueWithLengthAtLeast256BitsWhenGeneratingPrivateValue(BigInteger safePrimeN) {
+  @Test
+  void producesValueWithLengthAtLeast256BitsWhenGeneratingPrivateValue() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt()))
+        .thenReturn(new byte[]{10})
+        .thenReturn(new byte[]{100})
+        .thenReturn(toUnsignedByteArray(a));
+
     // When
     final var generatedPrivateValue =
-        SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService);
+        SRP6CommonUtil.generatePrivateValue(N, secureRandomDataService);
 
     //Then
     assertThat(generatedPrivateValue.bitLength(), is(greaterThanOrEqualTo(256)));
   }
 
-  @ParameterizedTest
-  @MethodSource("safePrimeForDifferentLengths")
-  void producesValueWithLengthAtLeast256BitsWhenGeneratingManyConsecutivePrivateValues(BigInteger safePrimeN) {
+  @Test
+  void iteratesUntilValueHasLengthAtLeast256BitsWhenGeneratingPrivateValue() {
     // Given
-    final var _10_000 = 10_000;
+    when(secureRandomDataService.generateSecureRandomData(anyInt()))
+        .thenReturn(new byte[]{10})
+        .thenReturn(new byte[]{100})
+        .thenReturn(toUnsignedByteArray(a));
 
     // When
-    final var generatedPrivateValuesList =
-        RunnerUtil.runConsecutivelyToList(
-            _10_000,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
+    final var generatedPrivateValue =
+        SRP6CommonUtil.generatePrivateValue(N, secureRandomDataService);
 
     //Then
-    assertThat(
-        generatedPrivateValuesList.stream()
-            .map(BigInteger::bitLength)
-            .filter(l -> l < 256)
-            .collect(Collectors.toUnmodifiableList()),
-        is(empty()));
-  }
-
-  @ParameterizedTest
-  @MethodSource("safePrimeForDifferentLengths")
-  void producesDifferentValuesWhenGeneratingManyConsecutivePrivateValues(BigInteger safePrimeN) {
-    // Given
-    final var _10_000 = 10_000;
-
-    // When
-    final var generatedPrivateValuesSet =
-        RunnerUtil.runConsecutivelyToSet(
-            _10_000,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
-
-    //Then
-    assertThat(generatedPrivateValuesSet, hasSize(_10_000));
-  }
-
-  @ParameterizedTest
-  @MethodSource("safePrimeForDifferentLengths")
-  void producesValueWithLengthAtLeast256BitsWhenGeneratingConcurrentlyManyPrivateValues(BigInteger safePrimeN) {
-    // Given
-    final var _500 = 500;
-
-    // When
-    final var generatedPrivateValuesList =
-        RunnerUtil.runConcurrentlyToList(
-            _500,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
-
-    //Then
-    assertThat(
-        generatedPrivateValuesList.stream()
-            .map(BigInteger::bitLength)
-            .filter(l -> l < 256)
-            .collect(Collectors.toUnmodifiableList()),
-        is(empty()));
-  }
-
-  @ParameterizedTest
-  @MethodSource("safePrimeForDifferentLengths")
-  void producesDifferentValuesWhenGeneratingConcurrentlyManyPrivateValues(BigInteger safePrimeN) {
-    // Given
-    final var _500 = 500;
-
-    // When
-    final var generatedPrivateValuesSet =
-        RunnerUtil.runConcurrentlyToList(
-            _500,
-            () -> SRP6CommonUtil.generatePrivateValue(safePrimeN, randomDataService));
-
-    //Then
-    assertThat(generatedPrivateValuesSet, hasSize(_500));
-  }
-
-  static Stream<Arguments> safePrimeForDifferentLengths() {
-    return Stream.of(
-        Arguments.of(new BigInteger("0")), // 0 bits
-        Arguments.of(new BigInteger("1")), // 1 bit
-        Arguments.of(new BigInteger("128")), // 8 bits
-        Arguments.of(new BigInteger("365079631")), // 64 bits
-        Arguments.of(new BigInteger("95109301086108025024082983357647711967")), // 256 bits
-        Arguments.of(toBigInteger(N_1024)),
-        Arguments.of(toBigInteger(N_1536)),
-        Arguments.of(toBigInteger(N_2048)),
-        Arguments.of(toBigInteger(N_3072)),
-        Arguments.of(toBigInteger(N_4096)),
-        Arguments.of(toBigInteger(N_6144)),
-        Arguments.of(toBigInteger(N_8192))
-    );
+    verify(secureRandomDataService, times(3)).generateSecureRandomData(anyInt());
   }
 
   @Test

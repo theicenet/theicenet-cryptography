@@ -40,7 +40,7 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCAAESAEADCipherService extends JCAAESCipherService implements SymmetricAEADCipherService {
+public class JCAAESAEADCipherService extends JCAAESCipherBase implements SymmetricAEADCipherService {
 
   private final BlockCipherAEADModeOfOperation blockMode;
 

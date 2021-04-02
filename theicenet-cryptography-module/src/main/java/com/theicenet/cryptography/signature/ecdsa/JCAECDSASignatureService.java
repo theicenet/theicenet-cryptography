@@ -15,7 +15,7 @@
  */
 package com.theicenet.cryptography.signature.ecdsa;
 
-import com.theicenet.cryptography.signature.JCASignatureService;
+import com.theicenet.cryptography.signature.JCASignatureBase;
 
 /**
  * Java Cryptography Architecture (JCA) based component which implements <b>ECDSA</b> digital
@@ -29,7 +29,7 @@ import com.theicenet.cryptography.signature.JCASignatureService;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCAECDSASignatureService extends JCASignatureService<ECDSASignatureAlgorithm> {
+public class JCAECDSASignatureService extends JCASignatureBase<ECDSASignatureAlgorithm> {
 
   public JCAECDSASignatureService(ECDSASignatureAlgorithm algorithm) {
     super(algorithm);

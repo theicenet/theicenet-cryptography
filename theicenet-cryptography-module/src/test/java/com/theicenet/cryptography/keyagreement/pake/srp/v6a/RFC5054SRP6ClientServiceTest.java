@@ -15,40 +15,36 @@
  */
 package com.theicenet.cryptography.keyagreement.pake.srp.v6a;
 
-import static com.theicenet.cryptography.util.ByteArraysUtil.toBigInteger;
-import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray;
-import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6ClientUtil.computeA;
 import static com.theicenet.cryptography.test.support.HexUtil.encodeHex;
+import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 import com.theicenet.cryptography.digest.DigestAlgorithm;
 import com.theicenet.cryptography.keyagreement.SRP6ClientService;
-import com.theicenet.cryptography.random.JCASecureRandomDataService;
-import com.theicenet.cryptography.test.support.HexUtil;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.test.support.RunnerUtil;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author Juan Fidalgo
  */
+@ExtendWith(MockitoExtension.class)
 class RFC5054SRP6ClientServiceTest {
 
   final SRP6StandardGroup SG_2048 = SRP6GenericTestingVectors.SG_2048;
   final DigestAlgorithm HASH_SHA_256 = SRP6GenericTestingVectors.HASH_SHA_256;
-
-  final BigInteger N = SG_2048.getN();
-  final BigInteger g = SG_2048.getG();
 
   final byte[] IDENTITY = SRP6GenericTestingVectors.IDENTITY;
   final byte[] PASSWORD = SRP6GenericTestingVectors.PASSWORD;
@@ -64,6 +60,9 @@ class RFC5054SRP6ClientServiceTest {
 
   final byte[] SESSION_KEY = toUnsignedByteArray(SRP6GenericTestingVectors.EXPECTED_SESSION_KEY);
 
+  @Mock
+  SecureRandomDataService secureRandomDataService;
+
   SRP6ClientService srp6ClientService;
 
   @BeforeEach
@@ -72,11 +71,14 @@ class RFC5054SRP6ClientServiceTest {
         new RFC5054SRP6ClientService(
             SG_2048,
             HASH_SHA_256,
-            new JCASecureRandomDataService(new SecureRandom()));
+            secureRandomDataService);
   }
 
   @Test
   void producesNotNullWhenComputingValuesA() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(a);
+
     // When
     final var computedValuesA = srp6ClientService.computeValuesA();
 
@@ -86,6 +88,9 @@ class RFC5054SRP6ClientServiceTest {
 
   @Test
   void producesNotNullClientPrivateValueWhenComputingValuesA() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(a);
+
     // When
     final var computedValuesA = srp6ClientService.computeValuesA();
 
@@ -95,6 +100,9 @@ class RFC5054SRP6ClientServiceTest {
 
   @Test
   void producesNotNullClientPublicValueWhenComputingValuesA() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(a);
+
     // When
     final var computedValuesA = srp6ClientService.computeValuesA();
 
@@ -104,135 +112,14 @@ class RFC5054SRP6ClientServiceTest {
 
   @Test
   void producesTheRightValueWhenComputingValuesA() {
+    // Given
+    when(secureRandomDataService.generateSecureRandomData(anyInt())).thenReturn(a);
+
     // When
     final var computedValuesA = srp6ClientService.computeValuesA();
 
     // Then
-    final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
-        toUnsignedByteArray(
-            computeA(
-                N,
-                g,
-                toBigInteger(computedValuesA.getClientPrivateValueA())));
-
-    assertThat(
-        computedValuesA.getClientPublicValueA(),
-        is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
-  }
-
-  @Test
-  void producesDifferentValuesWhenComputingTwoConsecutiveValuesA() {
-    // When
-    final var computedValuesA_1 = srp6ClientService.computeValuesA();
-    final var computedValuesA_2 = srp6ClientService.computeValuesA();
-
-    // Then
-    assertThat(computedValuesA_1, is(not(samePropertyValuesAs(computedValuesA_2))));
-  }
-
-  @Test
-  void producesDifferentValuesWhenComputingManyConsecutiveValuesA() {
-    // Given
-    final var _100 = 100;
-
-    // When
-    final var computedValuesAs =
-        RunnerUtil.runConsecutivelyToList(
-            _100,
-            () -> srp6ClientService.computeValuesA());
-
-    // Then
-    assertThat(
-        computedValuesAs.stream()
-            .map(SRP6ClientValuesA::getClientPrivateValueA)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_100));
-
-    assertThat(
-        computedValuesAs.stream()
-            .map(SRP6ClientValuesA::getClientPublicValueA)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_100));
-  }
-
-  @Test
-  void producesTheRightValueWhenComputingManyConsecutiveValuesA() {
-    // Given
-    final var _100 = 100;
-
-    // When
-    final var computedValuesAs =
-        RunnerUtil.runConsecutivelyToList(
-            _100,
-            () -> srp6ClientService.computeValuesA());
-
-    // Then
-    computedValuesAs.forEach(computedValuesA -> {
-      final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
-          toUnsignedByteArray(
-              computeA(
-                  N,
-                  g,
-                  toBigInteger(computedValuesA.getClientPrivateValueA())));
-
-      assertThat(
-          computedValuesA.getClientPublicValueA(),
-          is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
-    });
-  }
-
-  @Test
-  void producesDifferentValuesWhenComputingConcurrentlyManyValuesA() {
-    // Given
-    final var _500 = 500;
-
-    // When
-    final var computedValuesAs =
-        RunnerUtil.runConcurrentlyToList(
-            _500,
-            () -> srp6ClientService.computeValuesA());
-
-    // Then
-    assertThat(
-        computedValuesAs.stream()
-            .map(SRP6ClientValuesA::getClientPrivateValueA)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_500));
-
-    assertThat(
-        computedValuesAs.stream()
-            .map(SRP6ClientValuesA::getClientPublicValueA)
-            .map(HexUtil::encodeHex)
-            .collect(Collectors.toUnmodifiableSet()),
-        hasSize(_500));
-  }
-
-  @Test
-  void producesTheRightValueWhenComputingConcurrentlyManyValuesA() {
-    // Given
-    final var _500 = 500;
-
-    // When
-    final var computedValuesAs =
-        RunnerUtil.runConcurrentlyToList(
-            _500,
-            () -> srp6ClientService.computeValuesA());
-
-    // Then
-    computedValuesAs.forEach(computedValuesA -> {
-      final byte[] EXPECTED_CLIENT_PUBLIC_VALUE_A =
-          toUnsignedByteArray(
-              computeA(
-                  N,
-                  g,
-                  toBigInteger(computedValuesA.getClientPrivateValueA())));
-
-      assertThat(computedValuesA.getClientPublicValueA(),
-          is(equalTo(EXPECTED_CLIENT_PUBLIC_VALUE_A)));
-    });
+    assertThat(computedValuesA.getClientPublicValueA(), is(equalTo(A)));
   }
 
   @Test

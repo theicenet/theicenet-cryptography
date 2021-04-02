@@ -19,9 +19,13 @@ import com.theicenet.cryptography.cipher.symmetric.BlockCipherAEADModeOfOperatio
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherIVModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherModeOfOperation;
 import com.theicenet.cryptography.cipher.symmetric.BlockCipherNonIVModeOfOperation;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESAEADCipherService;
+import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.aes.JCAAESNonIVCipherService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.util.PropertiesUtil;
 import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -37,11 +41,19 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
 
   private static final String BEAN_NAME_FORMAT = "%s_%s";
 
+  public static final String AES_NON_IV_CIPHER = "AESNonIVCipher";
+  public static final String AES_IV_CIPHER = "AESIVCipher";
+  public static final String AES_AEAD_CIPHER = "AESAEADCipher";
+  public static final String AES_CIPHER = "AESCipher";
+
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
 
     final ConfigurableEnvironment environment = applicationContext.getEnvironment();
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+
+    final SecureRandomDataService secureRandomDataService =
+        beanFactory.getBean(SecureRandomDataService.class);
 
     final Set<BlockCipherModeOfOperation> blockModes =
         PropertiesUtil.getProperty(
@@ -49,25 +61,41 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
             "cryptography.cipher.symmetric.aes.blockMode",
             BlockCipherModeOfOperation.class);
 
-    blockModes.forEach(blockMode -> registerBean(beanFactory, blockMode));
+    blockModes.forEach(
+        blockMode ->
+            registerBean(
+                beanFactory,
+                blockMode,
+                secureRandomDataService));
   }
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
-      BlockCipherModeOfOperation blockMode) {
+      BlockCipherModeOfOperation blockMode,
+      SecureRandomDataService secureRandomDataService) {
 
     switch (blockMode) {
       case ECB:
-        registerBean(beanFactory, BlockCipherNonIVModeOfOperation.ECB);
+        registerBean(
+            beanFactory,
+            BlockCipherNonIVModeOfOperation.ECB,
+            secureRandomDataService);
         break;
       case CBC:
       case CFB:
       case OFB:
       case CTR:
-        registerBean(beanFactory, BlockCipherIVModeOfOperation.valueOf(blockMode.name()));
+        registerBean(
+            beanFactory,
+            BlockCipherIVModeOfOperation.valueOf(blockMode.name()),
+            secureRandomDataService);
         break;
       case GCM:
-        registerBean(beanFactory, BlockCipherIVModeOfOperation.GCM);
+        registerBean(
+            beanFactory,
+            BlockCipherIVModeOfOperation.GCM,
+            secureRandomDataService);
+
         registerBean(beanFactory, BlockCipherAEADModeOfOperation.GCM);
         break;
     }
@@ -75,20 +103,42 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
-      BlockCipherNonIVModeOfOperation blockMode) {
+      BlockCipherNonIVModeOfOperation blockMode,
+      SecureRandomDataService secureRandomDataService) {
+
+    final SymmetricNonIVCipherService symmetricNonIVCipherService =
+        new JCAAESNonIVCipherService(blockMode);
 
     beanFactory.registerSingleton(
-        String.format(BEAN_NAME_FORMAT, "AESNonIVCipher", blockMode),
-        new JCAAESNonIVCipherService(blockMode));
+        String.format(BEAN_NAME_FORMAT, AES_NON_IV_CIPHER, blockMode),
+        symmetricNonIVCipherService);
+
+    beanFactory.registerSingleton(
+        String.format(BEAN_NAME_FORMAT, AES_CIPHER, blockMode),
+        new JCAAESCipherService(
+            blockMode,
+            symmetricNonIVCipherService,
+            secureRandomDataService));
   }
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
-      BlockCipherIVModeOfOperation blockMode) {
+      BlockCipherIVModeOfOperation blockMode,
+      SecureRandomDataService secureRandomDataService) {
+
+    final SymmetricIVCipherService symmetricIVCipherService =
+        new JCAAESIVCipherService(blockMode);
 
     beanFactory.registerSingleton(
-        String.format(BEAN_NAME_FORMAT, "AESIVCipher", blockMode),
-        new JCAAESIVCipherService(blockMode));
+        String.format(BEAN_NAME_FORMAT, AES_IV_CIPHER, blockMode),
+        symmetricIVCipherService);
+
+    beanFactory.registerSingleton(
+        String.format(BEAN_NAME_FORMAT, AES_CIPHER, blockMode),
+        new JCAAESCipherService(
+            blockMode,
+            symmetricIVCipherService,
+            secureRandomDataService));
   }
 
   private void registerBean(
@@ -96,7 +146,7 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
       BlockCipherAEADModeOfOperation blockMode) {
 
     beanFactory.registerSingleton(
-        String.format(BEAN_NAME_FORMAT, "AESAEADCipher", blockMode),
+        String.format(BEAN_NAME_FORMAT, AES_AEAD_CIPHER, blockMode),
         new JCAAESAEADCipherService(blockMode));
   }
 }

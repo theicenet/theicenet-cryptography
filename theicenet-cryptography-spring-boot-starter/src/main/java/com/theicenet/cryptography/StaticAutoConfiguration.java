@@ -40,7 +40,6 @@ import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2Configuration;
 import com.theicenet.cryptography.pbkd.pbkdf2.PBKDF2ShaAlgorithm;
 import com.theicenet.cryptography.pbkd.scrypt.PBKDSCryptKeyService;
 import com.theicenet.cryptography.pbkd.scrypt.SCryptConfiguration;
-import com.theicenet.cryptography.random.JCASecureRandomDataService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,9 +49,12 @@ import org.springframework.context.annotation.Lazy;
 
 /**
  * IMPORTANT:
- *  Please note that SecureRandom bean is defined in SecureRandomDynamicContextInitializer
- *  as it's required in some other Context initializers, which are run before than this Auto
- *  Configuration during the Spring Boot context initialisation process.
+ * 
+ *    Please note that SecureRandom & SecureRandomDataService beans are defined in
+ *    SecureRandomDataDynamicContextInitializer as they're required in some other Context
+ *    initializers, which are run before than this AutoConfiguration during the Spring Boot
+ *    context initialisation process.
+ *
  *  Please ignore any IDE warning on this matter.
  *
  * @author Juan Fidalgo
@@ -60,12 +62,6 @@ import org.springframework.context.annotation.Lazy;
  */
 @Configuration
 public class StaticAutoConfiguration {
-
-  @Lazy
-  @Bean("SecureRandomData")
-  public SecureRandomDataService secureRandom(SecureRandom secureRandom) {
-    return new JCASecureRandomDataService(secureRandom);
-  }
 
   @Lazy
   @Bean("AESKey")

@@ -38,7 +38,7 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.0.0
  */
-public class JCAAESIVCipherService extends JCAAESCipherService implements SymmetricIVCipherService {
+public class JCAAESIVCipherService extends JCAAESCipherBase implements SymmetricIVCipherService {
 
   private final BlockCipherIVModeOfOperation blockMode;
 

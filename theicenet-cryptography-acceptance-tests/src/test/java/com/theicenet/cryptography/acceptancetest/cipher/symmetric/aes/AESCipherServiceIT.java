@@ -16,14 +16,18 @@
 package com.theicenet.cryptography.acceptancetest.cipher.symmetric.aes;
 
 import static com.theicenet.cryptography.util.ByteArraysUtil.concat;
+import static com.theicenet.cryptography.util.ByteArraysUtil.split;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.theicenet.cryptography.cipher.symmetric.SymmetricAEADCipherService;
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricIVCipherService;
 import com.theicenet.cryptography.cipher.symmetric.SymmetricNonIVCipherService;
 import com.theicenet.cryptography.test.support.HexUtil;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -39,6 +43,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class AESCipherServiceIT {
 
   final String AES = "AES";
+
+  final int IV_SIZE_16_BYTES = 16;
 
   final byte[] CLEAR_CONTENT =
       "Content to encrypt with AES and different options for block cipher mode of operation"
@@ -119,12 +125,12 @@ class AESCipherServiceIT {
   SymmetricIVCipherService aesCFBIVCipherService;
 
   @Autowired
-  @Qualifier("AESIVCipher_CTR")
-  SymmetricIVCipherService aesCTRIVCipherService;
-
-  @Autowired
   @Qualifier("AESIVCipher_OFB")
   SymmetricIVCipherService aesOFBIVCipherService;
+
+  @Autowired
+  @Qualifier("AESIVCipher_CTR")
+  SymmetricIVCipherService aesCTRIVCipherService;
 
   @Autowired
   @Qualifier("AESIVCipher_GCM")
@@ -133,6 +139,30 @@ class AESCipherServiceIT {
   @Autowired
   @Qualifier("AESAEADCipher_GCM")
   SymmetricAEADCipherService aesGCMAEADCipherService;
+
+  @Autowired
+  @Qualifier("AESCipher_ECB")
+  SymmetricCipherService aesECBCipherService;
+
+  @Autowired
+  @Qualifier("AESCipher_CBC")
+  SymmetricCipherService aesCBCCipherService;
+
+  @Autowired
+  @Qualifier("AESCipher_CFB")
+  SymmetricCipherService aesCFBCipherService;
+
+  @Autowired
+  @Qualifier("AESCipher_OFB")
+  SymmetricCipherService aesOFBCipherService;
+
+  @Autowired
+  @Qualifier("AESCipher_CTR")
+  SymmetricCipherService aesCTRCipherService;
+
+  @Autowired
+  @Qualifier("AESCipher_GCM")
+  SymmetricCipherService aesGCMCipherService;
 
   @Test
   void producesTheRightEncryptedResultWhenEncryptingWithECB() {
@@ -231,6 +261,136 @@ class AESCipherServiceIT {
   }
 
   @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithECBAndEasyToUseAESCipher() {
+    // When
+    final var encrypted =
+        aesECBCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    assertThat(
+        encrypted,
+        is(equalTo(ENCRYPTED_CONTENT_AES_ECB)));
+  }
+
+  @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithCBCAndEasyToUseAESCipher() {
+    // When
+    final var ivAndEncrypted =
+        aesCBCCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    final byte[] decryptedWithIVCipher =
+        decryptWithIVCipher(
+            aesCBCIVCipherService,
+            SECRET_KEY_1234567890123456_128_BITS,
+            ivAndEncrypted);
+
+    assertThat(
+        decryptedWithIVCipher,
+        is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithCFBAndEasyToUseAESCipher() {
+    // When
+    final var ivAndEncrypted =
+        aesCFBCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    final byte[] decryptedWithIVCipher =
+        decryptWithIVCipher(
+            aesCFBIVCipherService,
+            SECRET_KEY_1234567890123456_128_BITS,
+            ivAndEncrypted);
+
+    assertThat(
+        decryptedWithIVCipher,
+        is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithOFBAndEasyToUseAESCipher() {
+    // When
+    final var ivAndEncrypted =
+        aesOFBCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    final byte[] decryptedWithIVCipher =
+        decryptWithIVCipher(
+            aesOFBIVCipherService,
+            SECRET_KEY_1234567890123456_128_BITS,
+            ivAndEncrypted);
+
+    assertThat(
+        decryptedWithIVCipher,
+        is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithCTRAndEasyToUseAESCipher() {
+    // When
+    final var ivAndEncrypted =
+        aesCTRCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    final byte[] decryptedWithIVCipher =
+        decryptWithIVCipher(
+            aesCTRIVCipherService,
+            SECRET_KEY_1234567890123456_128_BITS,
+            ivAndEncrypted);
+
+    assertThat(
+        decryptedWithIVCipher,
+        is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightEncryptedResultWhenEncryptingWithGCMAndEasyToUseAESCipher() {
+    // When
+    final var ivAndEncrypted =
+        aesGCMCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // Then
+    final byte[] decryptedWithIVCipher =
+        decryptWithIVCipher(
+            aesGCMIVCipherService,
+            SECRET_KEY_1234567890123456_128_BITS,
+            ivAndEncrypted);
+
+    assertThat(
+        decryptedWithIVCipher,
+        is(equalTo(CLEAR_CONTENT)));
+  }
+
+  byte[] decryptWithIVCipher(
+      SymmetricIVCipherService ivCipherService,
+      SecretKey secretKey,
+      byte[] ivAndEncrypted) {
+
+    final byte[][] ivAndEncryptedSplit = split(ivAndEncrypted, IV_SIZE_16_BYTES);
+    final byte[] iv = ivAndEncryptedSplit[0];
+    final byte[] encrypted = ivAndEncryptedSplit[1];
+
+    return
+        ivCipherService.decrypt(
+            secretKey,
+            iv,
+            encrypted);
+  }
+
+  @Test
   void producesTheRightDecryptedResultWhenDecryptingWithECB() {
     // When
     final var decrypted =
@@ -320,5 +480,172 @@ class AESCipherServiceIT {
 
     // Then
     assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithECBAndEasyToUseAESCipher() {
+    // When
+    final var decrypted =
+        aesECBCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            ENCRYPTED_CONTENT_AES_ECB);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithECBAndEasyToUseCBCCipher() {
+    // When
+    final var decrypted =
+        aesCBCCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            concat(
+                INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                ENCRYPTED_CONTENT_AES_CBC));
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithECBAndEasyToUseCFBCipher() {
+    // When
+    final var decrypted =
+        aesCFBCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            concat(
+                INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                ENCRYPTED_CONTENT_AES_CFB));
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithECBAndEasyToUseOFBCipher() {
+    // When
+    final var decrypted =
+        aesOFBCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            concat(
+                INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                ENCRYPTED_CONTENT_AES_OFB));
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithECBAndEasyToUseCTRCipher() {
+    // When
+    final var decrypted =
+        aesCTRCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            concat(
+                INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                ENCRYPTED_CONTENT_AES_CTR));
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producesTheRightDecryptedResultWhenDecryptingWithGCMAndEasyToUseCipher() {
+    // When
+    final var decrypted =
+        aesGCMCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            concat(
+                INITIALIZATION_VECTOR_KLMNOPQRSTUVWXYZ_128_BITS,
+                ENCRYPTED_CONTENT_AES_GCM,
+                AUTHENTICATION_TAG_NO_AD_GCM));
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producedOutputFormatWhenEncryptingByteArrayWhichIsValidAsInputForDecryptingWhenNonIVBlockModeAndEasyAESCipher() {
+    // Given
+    final var encrypted =
+        aesECBCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // When
+    final byte[] decrypted =
+        aesECBCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            encrypted);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producedOutputFormatWhenEncryptingByteArrayWhichIsValidAsInputForDecryptingWhenIVBlockModeAndEasyAESCipher() {
+    // Given
+    final var encrypted =
+        aesCBCCipherService.encrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            CLEAR_CONTENT);
+
+    // When
+    final byte[] decrypted =
+        aesCBCCipherService.decrypt(
+            SECRET_KEY_1234567890123456_128_BITS,
+            encrypted);
+
+    // Then
+    assertThat(decrypted, is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producedOutputFormatWhenEncryptingStreamWhichIsValidAsInputForDecryptingWhenNonIVBlockModeAndEasyAESCipher() {
+    // Given
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    aesECBCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
+
+    final var encryptedInputStream = new ByteArrayInputStream(encryptedOutputStream.toByteArray());
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesECBCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray(), is(equalTo(CLEAR_CONTENT)));
+  }
+
+  @Test
+  void producedOutputFormatWhenEncryptingStreamWhichIsValidAsInputForDecryptingWhenIVBlockModeAndEasyAESCipher() {
+    // Given
+    final var clearInputStream = new ByteArrayInputStream(CLEAR_CONTENT);
+    final var encryptedOutputStream = new ByteArrayOutputStream();
+
+    aesCBCCipherService.encrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        clearInputStream,
+        encryptedOutputStream);
+
+    final var encryptedInputStream = new ByteArrayInputStream(encryptedOutputStream.toByteArray());
+    final var clearOutputStream = new ByteArrayOutputStream();
+
+    // When
+    aesCBCCipherService.decrypt(
+        SECRET_KEY_1234567890123456_128_BITS,
+        encryptedInputStream,
+        clearOutputStream);
+
+    // Then
+    assertThat(clearOutputStream.toByteArray(), is(equalTo(CLEAR_CONTENT)));
   }
 }

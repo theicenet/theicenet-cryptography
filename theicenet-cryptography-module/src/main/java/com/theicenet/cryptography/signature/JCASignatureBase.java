@@ -28,11 +28,11 @@ import org.apache.commons.lang.Validate;
  * @author Juan Fidalgo
  * @since 1.1.0
  */
-public abstract class JCASignatureService<T extends Enum<T>> implements SignatureService {
+public abstract class JCASignatureBase<T extends Enum<T>> implements SignatureService {
 
   private final T algorithm;
 
-  protected JCASignatureService(T algorithm) {
+  protected JCASignatureBase(T algorithm) {
     Validate.notNull(algorithm);
     this.algorithm = algorithm;
 
