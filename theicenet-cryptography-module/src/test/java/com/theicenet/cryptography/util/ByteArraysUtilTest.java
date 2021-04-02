@@ -15,13 +15,6 @@
  */
 package com.theicenet.cryptography.util;
 
-import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_1024_BIG_INTEGER;
-import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_1536_BIG_INTEGER;
-import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_2048_BIG_INTEGER;
-import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_3072_BIG_INTEGER;
-import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_4096_BIG_INTEGER;
-import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_6144_BIG_INTEGER;
-import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_8192_BIG_INTEGER;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1024;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_1536;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_2048;
@@ -29,9 +22,19 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrime
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_4096;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_6144;
 import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6SafePrimeN.N_8192;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_1024_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_1536_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_2048_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_3072_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_4096_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_6144_BIG_INTEGER;
+import static com.theicenet.cryptography.util.SRP6BigIntegerSafePrimeN.N_8192_BIG_INTEGER;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
+import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -613,5 +616,501 @@ class ByteArraysUtilTest {
                 paddingValue,
                 paddingValue,
                 paddingValue})));
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenSplittingAndNullByteArrayAndNoIndexes() {
+    // Given
+    final byte[] NULL_BYTE_ARRAY = null;
+
+    // When
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ByteArraysUtil.split(NULL_BYTE_ARRAY)
+    );
+  }
+
+  @Test
+  void throwsIllegalArgumentExceptionWhenSplittingAndNullByteArrayAndIndexes() {
+    // Given
+    final byte[] NULL_BYTE_ARRAY = null;
+    final var SPLIT_INDEX = 1;
+
+    // When
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ByteArraysUtil.split(NULL_BYTE_ARRAY, SPLIT_INDEX)
+    );
+  }
+
+  @Test
+  void producesNotNullWhenSplittingAndNoIndexes() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY);
+
+    // Then
+    assertThat(splitResult, is(notNullValue()));
+  }
+
+  @Test
+  void producesNotEmptyWhenSplittingAndNoIndexes() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY);
+
+    // Then
+    assertThat(splitResult, is(not(emptyArray())));
+  }
+
+  @Test
+  void producesResultOfSizeOneWhenSplittingAndNoIndexes() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY);
+
+    // Then
+    assertThat(splitResult, is(arrayWithSize(1)));
+  }
+
+  @Test
+  void producesTheSameArrayWhenSplittingAndNoIndexes() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY);
+
+    // Then
+    assertThat(splitResult, is(equalTo(new byte[][]{BYTE_ARRAY})));
+  }
+
+  @Test
+  void producesNotNullWhenSplittingAndOneIndex() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX = 3;
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY, SPLIT_INDEX);
+
+    // Then
+    assertThat(splitResult, is(notNullValue()));
+  }
+
+  @Test
+  void producesNotEmptyWhenSplittingAndOneIndex() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX = 3;
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY, SPLIT_INDEX);
+
+    // Then
+    assertThat(splitResult, is(not(emptyArray())));
+  }
+
+  @Test
+  void producesResultOfSizeTwoWhenSplittingAndOneIndex() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX = 3;
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY, SPLIT_INDEX);
+
+    // Then
+    assertThat(splitResult, is(arrayWithSize(2)));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndOneIndexWithinArray() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX_WITHIN_ARRAY = 3;
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY, SPLIT_INDEX_WITHIN_ARRAY);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndOneIndexEqualMinusOne() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX_MINUS_ONE = -1;
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY, SPLIT_INDEX_MINUS_ONE);
+
+    // Then
+    assertThat(splitResult, is(equalTo(new byte[][]{BYTE_ARRAY})));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndOneIndexEqualZero() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX_ZERO = 0;
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY, SPLIT_INDEX_ZERO);
+
+    // Then
+    assertThat(splitResult, is(equalTo(new byte[][]{BYTE_ARRAY})));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndOneIndexEqualOne() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX_ZERO = 1;
+
+    // When
+    final var splitResult = ByteArraysUtil.split(BYTE_ARRAY, SPLIT_INDEX_ZERO);
+
+    // Then
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0},
+                    {1, 2, 3, 4}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndOneIndexEqualToByteArrayLength() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX_MINUS_BYTE_ARRAY_LENGTH = BYTE_ARRAY.length;
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEX_MINUS_BYTE_ARRAY_LENGTH);
+
+    // Then
+    assertThat(splitResult, is(equalTo(new byte[][]{BYTE_ARRAY})));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndOneIndexEqualToByteArrayLengthPlusOne() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX_MINUS_BYTE_ARRAY_LENGTH_PLUS_ONE = BYTE_ARRAY.length + 1;
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEX_MINUS_BYTE_ARRAY_LENGTH_PLUS_ONE);
+
+    // Then
+    assertThat(splitResult, is(equalTo(new byte[][]{BYTE_ARRAY})));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndOneIndexEqualToByteArrayLengthMinusOne() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4};
+    final var SPLIT_INDEX_MINUS_BYTE_ARRAY_LENGTH_PLUS_ONE = BYTE_ARRAY.length - 1;
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEX_MINUS_BYTE_ARRAY_LENGTH_PLUS_ONE);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2, 3},
+                    {4}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesAllInRangeWithNoDuplicatesAndSortedAsc() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{3, 6, 11, 14};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesAllInRangeWithDuplicatesAndSortedAsc() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{3, 3, 3, 6, 6, 6, 11, 14, 14, 14};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesAllInRangeWithNoDuplicatesAndSortedDesc() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{14, 11, 6, 3};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesAllInRangeWithNoDuplicatesAndUnsorted() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{6, 14, 3, 11};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesAllInRangeWithDuplicatesAndUnsorted() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{6, 11, 6, 14, 3, 11, 6, 11, 14, 11};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesSomeNotInRangeWithNoDuplicatesAndSortedAsc() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{-10, 3, 6, 11, 14, 20};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesSomeNotInRangeWithDuplicatesAndSortedAsc() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{-10, -10, 3, 3, 3, 6, 6, 6, 11, 14, 14, 14, 20, 20, 20};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesSomeNotInRangeWithNoDuplicatesAndSortedDesc() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{20, 14, 11, 6, 3, -10};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesSomeNotInRangeWithNoDuplicatesAndUnsorted() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC = new int[]{6, 14, -10, 3, 20, 11};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
+  }
+
+  @Test
+  void producesTheRightSubArraysWhenSplittingAndMultipleIndexesSomeNotInRangeWithDuplicatesAndUnsorted() {
+    // Given
+    final var BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final var SPLIT_INDEXES_NO_DUP_SORTED_ASC =
+        new int[]{6, -10, 6, -10, 6, 14, 3, 20, 14, 20, 11, 3, 20, 11, 6};
+
+    // When
+    final var splitResult =
+        ByteArraysUtil.split(
+            BYTE_ARRAY,
+            SPLIT_INDEXES_NO_DUP_SORTED_ASC);
+
+    // Then
+    assertThat(
+        splitResult,
+        is(equalTo(
+            new byte[][]
+                {
+                    {0, 1, 2},
+                    {3, 4, 5},
+                    {6, 7, 8, 9, 10},
+                    {11, 12, 13},
+                    {14, 15}
+                })));
   }
 }

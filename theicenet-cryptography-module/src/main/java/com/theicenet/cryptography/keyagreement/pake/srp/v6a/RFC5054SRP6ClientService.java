@@ -35,7 +35,7 @@ import java.math.BigInteger;
 import org.apache.commons.lang.Validate;
 
 /**
- * Implementation for SRP6 v6a `client` service according to Specification RFC 5054.
+ * Implementation for SRP6 v6a 'client' service according to Specification RFC 5054.
  *
  * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
  * @see <a href="https://tools.ietf.org/html/rfc2945">Specification: RFC 2945</a>

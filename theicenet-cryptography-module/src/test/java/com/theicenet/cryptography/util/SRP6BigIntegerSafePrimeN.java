@@ -21,7 +21,7 @@ import java.math.BigInteger;
  * These are manual BigInteger representation of the safe prime numbers defined in
  * {@link com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6StandardGroup}
  *
- * These are used to test the correctness of the `toBigInteger` and `toUnsignedByteArray` methods in
+ * These are used to test the correctness of the 'toBigInteger' and 'toUnsignedByteArray' methods in
  * {@link com.theicenet.cryptography.util.ByteArraysUtilTest}
  *
  * @author Juan Fidalgo

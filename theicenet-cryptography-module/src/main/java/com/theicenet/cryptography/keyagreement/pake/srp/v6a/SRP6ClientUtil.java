@@ -32,7 +32,7 @@ final class SRP6ClientUtil {
   private SRP6ClientUtil() {}
 
   /**
-   * Creates a new SRP `verifier` according to the standard routine v = (g^x) mod N
+   * Creates a new SRP 'verifier' according to the standard routine v = (g^x) mod N
    *
    * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
    * @see <a href="https://tools.ietf.org/html/rfc2945">Specification: RFC 2945</a>

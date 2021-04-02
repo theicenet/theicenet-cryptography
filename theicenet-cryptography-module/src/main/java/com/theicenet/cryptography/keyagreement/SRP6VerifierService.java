@@ -31,7 +31,7 @@ package com.theicenet.cryptography.keyagreement;
 public interface SRP6VerifierService {
 
   /**
-   * Generates the SRP v6a `verifier`
+   * Generates the SRP v6a 'verifier'
    *
    * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
    * @see <a href="https://tools.ietf.org/html/rfc2945">Specification: RFC 2945</a>
@@ -40,7 +40,7 @@ public interface SRP6VerifierService {
    * @param salt random 'salt' common to client and server
    * @param identity client's 'identity'
    * @param password client's 'password'
-   * @return The generated SRP6 v6a `verifier` as big-endian unsigned binary representation
+   * @return The generated SRP6 v6a 'verifier' as big-endian unsigned binary representation
    */
   byte[] generateVerifier(byte[] salt, byte[] identity, byte[] password);
 }

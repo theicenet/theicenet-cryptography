@@ -25,7 +25,7 @@ import com.theicenet.cryptography.keyagreement.SRP6VerifierService;
 import org.apache.commons.lang.Validate;
 
 /**
- * Implementation for SRP6 v6a `verifier` service according to Specification RFC 5054.
+ * Implementation for SRP6 v6a 'verifier' service according to Specification RFC 5054.
  *
  * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
  * @see <a href="https://tools.ietf.org/html/rfc2945">Specification: RFC 2945</a>
@@ -54,7 +54,7 @@ public class RFC5054SRP6VerifierService implements SRP6VerifierService {
   }
 
   /**
-   * Creates a new SRP v6a `verifier` according to the Specification RFC 5054
+   * Creates a new SRP v6a 'verifier' according to the Specification RFC 5054
    *
    *    verifier = (g^x) mod N
    *    x = H(salt | H ( identity | ":" | password) )

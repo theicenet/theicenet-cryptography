@@ -34,7 +34,7 @@ import java.math.BigInteger;
 import org.apache.commons.lang.Validate;
 
 /**
- * Implementation for SRP6 v6a `server` service according to Specification RFC 5054.
+ * Implementation for SRP6 v6a 'server' service according to Specification RFC 5054.
  *
  * @see <a href="https://tools.ietf.org/html/rfc5054">Specification: RFC 5054</a>
  * @see <a href="https://tools.ietf.org/html/rfc2945">Specification: RFC 2945</a>
@@ -156,7 +156,7 @@ public class RFC5054SRP6ServerService implements SRP6ServerService {
    *
    *    M1 = H( A | B | S )
    *
-   * and compares the resulting value with what is passed in `receivedM1` to determine if the
+   * and compares the resulting value with what is passed in <b>receivedM1</b> to determine if the
    * received client's evidence message 'M1' is valid or not
    */
   @Override

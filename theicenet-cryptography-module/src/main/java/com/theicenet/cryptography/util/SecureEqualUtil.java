@@ -37,12 +37,12 @@ public final class SecureEqualUtil {
   private SecureEqualUtil() {}
 
   /**
-   * Checks in a constant time which depends on `a` and `b` lengths, if the byte arrays `a` and `b`
-   * are equals. The time spent to check the equality of the byte arrays, does NOT depend on if the
-   * byte arrays are equal or not, or how equal or different they are. Time spent to  produce a
-   * equality result depends only on `a` and `b` lengths, and for any pair of arrays with the same
-   * lengths, the computation will spend always the same time, independently if the byte arrays are
-   * equals or not.
+   * Checks in a constant time which depends on 'a' and 'b' lengths, if the byte arrays <b>a</b>
+   * and <b>b</b> are equals. The time spent to check the equality of the byte arrays, does NOT
+   * depend on if the byte arrays are equal or not, or how equal or different they are. Time spent
+   * to  produce a equality result depends only on 'a' and 'b' lengths, and for any pair of arrays
+   * with the same lengths, the computation will spend always the same time, independently if the
+   * byte arrays are equals or not.
    *
    * Note: If the lengths do not match the function returns false immediately.
    *

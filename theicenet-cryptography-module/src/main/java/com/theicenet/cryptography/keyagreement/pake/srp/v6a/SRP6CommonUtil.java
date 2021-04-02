@@ -228,7 +228,7 @@ final class SRP6CommonUtil {
    *
    * @param N The safe prime parameter 'N' (a prime of the form N=2q+1, where q is also prime)
    * @param value The public value to validate
-   * @return `true` on successful validation, other case `false`
+   * @return true on successful validation, other case false
    */
   static boolean isValidPublicValue(BigInteger N, BigInteger value) {
     Validate.notNull(N);

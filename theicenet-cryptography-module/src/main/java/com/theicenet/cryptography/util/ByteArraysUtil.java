@@ -76,7 +76,7 @@ public final class ByteArraysUtil {
   }
 
   /**
-   * Pads left `byteArray` with value `paddingValue` to a final total length of `paddedLength`
+   * Pads left <b>byteArray</b> with value <b>paddingValue</b> to a final total length of <b>paddedLength</b>
    *
    * @param byteArray byte array to pad left
    * @param paddedLength final length of the resulting array
@@ -118,5 +118,59 @@ public final class ByteArraysUtil {
     }
 
     return concatenated;
+  }
+
+  /**
+   * Split a <b>byteArray</b> according to the <b>splitIndexes</b>.
+   * The element at each index (zero based) is the first element of each resulting subarray.
+   *
+   * For this given configuration,
+   *
+   *  - array: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+   *  - split indexes: 3, 7
+   *
+   * The resulting sub arrays would be,
+   *  {
+   *    {0, 1, 2}
+   *    {3, 4, 5, 6}
+   *    {7, 8, 9, 10}
+   *  }
+   *
+   * @param byteArray byte array to split by <b>splitIndexes</b>
+   * @param splitIndexes
+   *    Indexes (zero based) where to split the <b>byteArray</b>.
+   *    The element at each splitIndex is the first element of each resulting subarray.
+   * @return an array of sub arrays with the resulting split
+   */
+  public static byte[][] split(byte[] byteArray, int... splitIndexes) {
+    Validate.notNull(byteArray);
+
+    if (splitIndexes.length == 0) {
+      return new byte[][]{byteArray};
+    }
+
+    final int byteArrayLength = byteArray.length;
+
+    final int[] splitIndexesSanitisedAndSortedAsc =
+        ArrayUtils.addAll(
+            Arrays.stream(splitIndexes)
+                .filter(index -> index > 0 && index < byteArrayLength)
+                .sorted()
+                .distinct()
+                .toArray(),
+            new int[]{byteArrayLength});
+
+    byte[][] splitResult = new byte[splitIndexesSanitisedAndSortedAsc.length][];
+    for (int index = 0; index < splitResult.length; index++) {
+      final int splitIndex = splitIndexesSanitisedAndSortedAsc[index];
+
+      splitResult[index] =
+          ArrayUtils.subarray(
+              byteArray,
+              index == 0 ? 0 : splitIndexesSanitisedAndSortedAsc[index - 1],
+              splitIndex);
+    }
+
+    return splitResult;
   }
 }
