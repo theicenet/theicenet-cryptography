@@ -50,7 +50,7 @@ import org.springframework.context.annotation.Lazy;
 /**
  * IMPORTANT:
  * 
- *    Please note that SecureRandom & SecureRandomDataService beans are defined in
+ *    Please note that SecureRandom and SecureRandomDataService beans are defined in
  *    SecureRandomDataDynamicContextInitializer as they're required in some other Context
  *    initializers, which are run before than this AutoConfiguration during the Spring Boot
  *    context initialisation process.

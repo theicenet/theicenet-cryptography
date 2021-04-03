@@ -82,8 +82,8 @@ public final class ByteArraysUtil {
    * @param paddedLength final length of the resulting array
    * @param paddingValue value to use to pad left
    * @return
-   *  - padded left array if paddedLength > byteArray.length
-   *  - the same array if paddedLength <= byteArray.length
+   *  - padded left array if paddedLength {@literal >} byteArray.length
+   *  - the same array if paddedLength {@literal <=} byteArray.length
    */
   public static byte[] padLeft(byte[] byteArray, int paddedLength, byte paddingValue) {
     Validate.notNull(byteArray);
