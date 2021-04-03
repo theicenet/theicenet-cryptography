@@ -47,6 +47,7 @@ The main cryptographic modules `theicenet-cryptography-module` is 100% Spring ag
             * [Encrypt/Decrypt byte array/stream with AES and ECB block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-ecb-block-mode-of-operation)
             * [Encrypt/Decrypt byte array/stream with AES and IV based block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-iv-based-block-mode-of-operation)
             * [Encrypt/Decrypt byte array/stream with AES and AEAD based block mode of operation](#encrypt-and-decrypt-byte-array-or-stream-with-aes-and-aead-based-block-mode-of-operation)
+            * [Encrypt/Decrypt byte array/stream with the 'easy to use' AES cipher](#encrypt-and-decrypt-byte-array-or-stream-with-the-easy-to-use-aes-cipher)
         * Asymmetric cryptography        
             * [Encrypt/Decrypt with RSA](#encrypt-and-decrypt-with-rsa)
     * Signature generation
@@ -1119,7 +1120,7 @@ public class MyComponent {
 
   @Autowired
   public MyComponent(
-      @Qualifier("AESIVCipher_CFB") SymmetricIVCipherService aesIVCipherService) {
+      @Qualifier("AESIVCipher_CBC") SymmetricIVCipherService aesIVCipherService) {
     this.aesIVCipherService = aesIVCipherService;
   }
 
@@ -1182,7 +1183,7 @@ cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: CFB
+        blockMode: CBC
 ```
 
 Multiple AES ciphers for different `blockModes` of operation can be created in the same Spring Boot context.
@@ -1193,10 +1194,10 @@ cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: 
-          CFB, 
+        blockMode:
+          CBC, 
           CRT, 
-          CBC
+          CFB
 ```
 
 If only one single `blockMode` of operation is specified in the `application.yml`, then the AES cipher can be just injected by,
@@ -1206,7 +1207,7 @@ cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: CFB
+        blockMode: CBC
 ```
 
 ```java
@@ -1229,24 +1230,24 @@ cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: 
-          CFB, 
-          CBC, 
-          CTR
+        blockMode:
+          CBC,
+          CRT,
+          CFB
 ```
 
 ```java
 @Autowired
+@Qualifier("AESIVCipher_CBC")
+SymmetricIVCipherService aesCBCIVCipherService;
+
+@Autowired
+@Qualifier("AESIVCipher_CRT")
+SymmetricIVCipherService aesCRTIVCipherService;
+
+@Autowired
 @Qualifier("AESIVCipher_CFB")
 SymmetricIVCipherService aesCFBIVCipherService;
-
-@Autowired
-@Qualifier("AESIVCipher_CBC")
-SymmetricIVCipherService aesCFCIVCipherService;
-
-@Autowired
-@Qualifier("AESIVCipher_CTR")
-SymmetricIVCipherService aesCTRIVCipherService;
 ```
 
 Supported `blockModes` of operation are,
@@ -1352,7 +1353,7 @@ cryptography:
   cipher:
     symmetric:
       aes:
-        blockMode: ECB
+        blockMode: GCM
 ```
 
 For AES with GCM block mode of operation, injection can be simplified to just,
@@ -1361,6 +1362,174 @@ For AES with GCM block mode of operation, injection can be simplified to just,
 @Autowired
 SymmetricAEADCipherService aesCipherService;
 ```
+
+### Encrypt and decrypt byte array or stream with the Easy to Use AES cipher
+
+If you don't want to worry about the complexity, and the cumbersome of dealing with the different
+AES's block modes of operation and their specific particularities, and you just want an AES cipher
+which just receives the 'content to encrypt/decrypt' and the 'secret key', and, regardless of the 
+block mode of operation, it works out the encrypted/decrypted, by managing transparently, any 
+potentially required IV, for the chosen block mode of operation, then, you can just use 
+the Easy to Use' AES cipher.
+
+The 'Easy to Use' AES cipher can operate in all [block modes of operation supported by the library](#symmetric-cryptography-supported-algorithms)
+and it only requires you provide with the 'content to encrypt/decrypt' and with the 'secret key' to use. 
+Any other extra data/complexity required for the specific chosen block mode of operation, will be managed   
+transparently by the component.
+
+When encrypting, if IV is required for the chosen block of operation, then, it will be generated on 
+the fly  and prefixed to the output, so the prefix of the output will be the IV, and the remaining
+will be the encrypted result.
+
+When decrypting, if IV is required for the chosen block of operation, then, it must be prefixed in
+the input, so the prefix of the input will be the IV, and the remaining,  will be the encrypted 
+content to decrypt.
+
+The 'encrypt' and 'decrypt' methods of the 'Easy to Use' AES cipher, ensure that the IV
+(when required) prefixed (to output)/read (from input) has identical size and structure, 
+so the output of the 'encrypt' method can be passed with no alteration into the 'decrypt' 
+method to produce back the clear content (as long as the 'secret key' used is the same).
+
+```java
+import com.theicenet.cryptography.cipher.symmetric.SymmetricCipherService;
+import java.io.InputStream;
+import java.io.OutputStream;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyComponent {
+
+  private final SymmetricCipherService aesCipherService;
+
+  @Autowired
+  public MyComponent(
+      @Qualifier("AESCipher_CBC") SymmetricCipherService aesCipherService) {
+    this.aesCipherService = aesCipherService;
+  }
+
+  /** Byte array **/
+
+  public void encryptByteArray(SecretKey secretKey, byte[] clearContent) {
+    byte[] encryptedContent = aesCipherService.encrypt(secretKey, clearContent);
+  }
+
+  public void decryptByteArray(SecretKey secretKey, byte[] encryptedContent) {
+    byte[] clearContent = aesCipherService.decrypt(secretKey, encryptedContent);
+  }
+
+  /** Stream **/
+
+  public void encryptStream(
+      SecretKey secretKey,
+      InputStream clearInputStream,
+      OutputStream encryptedOutputStream) {
+
+    // Input and output stream are flushed and closed before `encrypt` method returns
+    aesCipherService.encrypt(
+        secretKey,
+        clearInputStream,
+        encryptedOutputStream);
+  }
+
+  public void decryptStream(
+      SecretKey secretKey,
+      InputStream encryptedInputStream,
+      OutputStream clearOutputStream) {
+
+    // Input and output stream are flushed and closed before `decrypt` method returns
+    aesCipherService.decrypt(
+        secretKey,
+        encryptedInputStream,
+        clearOutputStream);
+  }
+}
+```
+
+The `blockMode` of operation to be used must be set in the `application.yml`.
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: CBC
+```
+
+Multiple 'Easy to Use' AES ciphers for different `blockModes` of operation can be created in the same Spring Boot context.
+Just specify the different `blockModes` of operation you wish to create 'Easy to Use' AES ciphers for into the Spring Context, separated by a comma,
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: 
+          ECB,
+          CBC, 
+          GCM
+```
+
+If only one single `blockMode` of operation is specified in the `application.yml`, then the 'Easy to Use' AES cipher can be just injected by,
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode: CBC
+```
+
+```java
+@Autowired
+SymmetricCipherService aesCipherService;
+```
+
+If multiple `blockModes` of operation are specified in the `application.yml`, then the 'Easy to Use' AES cipher for each specific `blockMode` of operation can be injected by,
+
+```java
+@Autowired
+@Qualifier("AESCipher_${blockMode}")
+SymmetricCipherService aesCipherService;
+```
+
+Where `${blockMode}` must be replaced by the `blockMode` of operation to inject,
+
+```yaml
+cryptography:
+  cipher:
+    symmetric:
+      aes:
+        blockMode:
+          ECB,
+          CBC,
+          GCM
+```
+
+```java
+@Autowired
+@Qualifier("AESIVCipher_ECB")
+SymmetricCipherService aesECBCipherService;
+
+@Autowired
+@Qualifier("AESIVCipher_CBC")
+SymmetricCipherService aesCBCCipherService;
+
+@Autowired
+@Qualifier("AESIVCipher_GCM")
+SymmetricCipherService aesGCMCipherService;
+```
+
+Supported `blockModes` of operation for the 'Easy to Use' AES cipher are,
+
+    - ECB
+    - CBC 
+    - CFB 
+    - OFB 
+    - CTR
+    - GCM
 
 ### Encrypt and decrypt with RSA
 

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Fully implemented block mode of operation Galois/Counter Mode (GCM) on AES cipher to support associated data (AEAD) when generating/validating the authentication tag [@jjfidalgo]
+- Implemented component 'Easy to Use' AES cipher [@jjfidalgo]
 
 ### Changed
 

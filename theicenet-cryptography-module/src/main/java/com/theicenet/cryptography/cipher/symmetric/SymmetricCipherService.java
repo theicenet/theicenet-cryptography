@@ -63,7 +63,7 @@ public interface SymmetricCipherService {
    * Decrypts what is passed in <b>encryptedContent</b> using the secret key <b>privateKey</b>.
    *
    * If IV is required for the implemented block of operation, then, it will be prefixed in
-   * the input, so the prefix of the input will be the IV, and the remaining
+   * the input, so the prefix of the input must be the IV, and the remaining
    * will be the encrypted content to decrypt.
    *
    * @param secretKey secret key to use to decrypt the passed <b>encryptedContent</b>
@@ -104,7 +104,7 @@ public interface SymmetricCipherService {
    * secret key <b>secretKey</b> and sends the decrypted result to <b>clearContentOutputStream</b>.
    *
    * If IV is required for the implemented block of operation, then, it will be prefixed in
-   * the input, so the prefix of the input will be the IV, and the remaining
+   * the input, so the prefix of the input must be the IV, and the remaining
    * will be the encrypted content to decrypt.
    *
    * @apiNote Once this method returns the input and output streams must have been closed
