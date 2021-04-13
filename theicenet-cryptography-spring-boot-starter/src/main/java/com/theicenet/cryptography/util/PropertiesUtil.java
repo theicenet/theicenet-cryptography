@@ -29,20 +29,51 @@ import org.springframework.core.env.ConfigurableEnvironment;
 public final class PropertiesUtil {
   private PropertiesUtil() {}
 
-  public static <T extends Enum<T>> Set<T> getProperty(
+  public static <T extends Enum<T>> Set<T> getEnumPropertyMultiValue(
       ConfigurableEnvironment environment,
       String propertyPath,
       Class<T> enumType) {
 
-    return Optional.ofNullable(
-        environment.getProperty(propertyPath, String.class))
-        .map(propertyValues -> propertyValues.split(","))
-        .map(Arrays::stream)
-        .map(propertyValuesStream ->
-            propertyValuesStream
-                .map(String::trim)
-                .map(value -> Enum.valueOf(enumType, value))
-                .collect(Collectors.toUnmodifiableSet()))
-        .orElse(Collections.emptySet());
+    return
+        Optional.ofNullable(environment.getProperty(propertyPath, String.class))
+            .map(propertyValues -> propertyValues.split(","))
+            .map(Arrays::stream)
+            .map(propertyValuesStream ->
+                propertyValuesStream
+                    .map(String::trim)
+                    .map(value -> Enum.valueOf(enumType, value))
+                    .collect(Collectors.toUnmodifiableSet()))
+            .orElse(Collections.emptySet());
+  }
+
+  public static <T extends Enum<T>> Optional<T> getEnumPropertySingleValue(
+      ConfigurableEnvironment environment,
+      String propertyPath,
+      Class<T> enumType) {
+
+    return
+        Optional.ofNullable(environment.getProperty(propertyPath, String.class))
+            .map(String::trim)
+            .map(propertyValue -> Enum.valueOf(enumType, propertyValue));
+  }
+
+  public static Optional<Integer> getIntegerPropertySingleValue(
+      ConfigurableEnvironment environment,
+      String propertyPath) {
+
+    return
+        Optional.ofNullable(environment.getProperty(propertyPath, String.class))
+            .map(String::trim)
+            .map(Integer::valueOf);
+  }
+
+  public static Optional<Boolean> getBooleanPropertySingleValue(
+      ConfigurableEnvironment environment,
+      String propertyPath) {
+
+    return
+        Optional.ofNullable(environment.getProperty(propertyPath, String.class))
+            .map(String::trim)
+            .map(Boolean::valueOf);
   }
 }

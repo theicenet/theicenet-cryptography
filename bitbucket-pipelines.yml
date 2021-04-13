@@ -1,4 +1,4 @@
-image: maven:3.6.3-jdk-11
+image: maven:3.8.1-jdk-11
 
 pipelines:
   pull-requests:
@@ -8,6 +8,8 @@ pipelines:
           caches:
             - maven
           script:
+            - rm -f /dev/random
+            - ln -s /dev/urandom /dev/random
             - mvn -V -B clean verify
   branches:
     master:
@@ -16,6 +18,8 @@ pipelines:
           caches:
             - maven
           script:
+            - rm -f /dev/random
+            - ln -s /dev/urandom /dev/random
             - mvn -V -B clean verify
   custom:
     release-to-maven-central:
@@ -25,6 +29,8 @@ pipelines:
           caches:
             - maven
           script:
+            - rm -f /dev/random
+            - ln -s /dev/urandom /dev/random
             - openssl aes-256-cbc -d -a -md sha512 -pbkdf2 -iter 1048576 -pass pass:"$THEICENET_PIPELINE_AES_PASSWORD" -in private-key.gpg.enc -out private-key.gpg
             - gpg --batch --import private-key.gpg
             - git config user.name "TheIceNet Pipeline"

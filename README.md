@@ -300,14 +300,14 @@ In Maven:
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
     </dependency>
 ```
 
 In Gradle
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.2.0'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.2.1'
 ```
 
 ## Building TheIceNet Cryptography library
@@ -2322,9 +2322,68 @@ public class MyComponent {
 }
 ```
 
-The secure random data service can be just injected by,
+The secure random data service can be injected by,
 
 ```java
 @Autowired
 SecureRandomDataService secureRandomDataService;
 ```
+
+The `algorithm` to be used for the `SecureRandom` provider can be set in the `application.yml`.
+
+```yaml
+cryptography:
+  random:
+    algorithm: NATIVEPRNG
+```
+
+If no configuration for the `algorithm` is specified, or `DEFAULT` is set up, then, a default 
+`SecureRandom` provider will be created. The default `SecureRandom` provider is platform dependant, 
+and depends on different factors, like the operating system, specific configuration in 
+`java.security` file, etc.
+
+Supported `algorithms` for the `SecureRandom` provider are,
+
+    - DEFAULT
+    - NATIVEPRNG
+    - SHA1PRNG
+    - NATIVEPRNGBLOCKING
+    - NATIVEPRNGNONBLOCKING
+    - DRBG
+
+Please note, that depending on the operating system, some above `algorithms` might not be available.
+
+For the `DRBG` `algorithm`, specific configuration can be set up, in line with [NIST SP 800-90A Rev. 1:Recommendation for Random Number Generation Using Deterministic Random Bit Generators](https://csrc.nist.gov/publications/detail/sp/800-90a/rev-1/final)
+
+```yaml
+cryptography:
+  random:
+    algorithm: DRBG
+    drbg:
+      strength: 256
+      capability: PR_AND_RESEED
+      personalizationString:
+        generate: true
+        length: 16
+```
+
+If no specific `drbg` configuration is specified, then, the default `drbg` config will be used, which 
+will be picked up from `java.security#securerandom.drbg.config`.
+
+Find next the meaning of the specific `drbg` configuration and the supported values, 
+
+`cryptography.random.drbg.strength` -> 
+    Select the security strength (in bits). Supported strengths are 112, 128, 192, 256
+
+`cryptography.random.drbg.capability` -> 
+    Specify if prediction resistance or reseeding is needed. Supported capabilities are,
+
+        - NONE (Neither prediction resistance nor reseed)
+        - RESEED_ONLY (Reseed but no prediction resistance)
+        - PR_AND_RESEED (Both prediction resistance and reseed)
+
+`cryptography.random.drbg.personalizationString.generate` -> Specified if a `personalisation string` must be generated
+`cryptography.random.drbg.personalizationString.length` -> In case `personalisation string` is set to be generated, then, this config property specify its length (in bytes)
+
+Please note that some of the supported values for the specific `drbg` configuration might not be available
+depending on the operating systems

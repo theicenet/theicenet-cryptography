@@ -37,7 +37,7 @@ public class RSACipherDynamicContextInitializer implements ApplicationContextIni
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
     final Set<RSAPadding> paddings =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.cipher.asymmetric.rsa.padding",
             RSAPadding.class);

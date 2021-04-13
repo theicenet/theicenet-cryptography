@@ -30,6 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
+import com.theicenet.cryptography.random.JCASecureRandomDataService;
+import com.theicenet.cryptography.random.SecureRandomAlgorithm;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.KeyFactory;
@@ -51,11 +54,17 @@ class JCAECDSAKeyServiceTest {
   final String PKCS_8 = "PKCS#8";
   final int KEY_LENGTH_160_BITS = 160;
 
+  final SecureRandomDataService secureRandomDataService =
+      new JCASecureRandomDataService(SecureRandomAlgorithm.DEFAULT); // This is not mocked, because JCAECDSAKeyService must use the SecureRandom embedded in SecureRandomDataService, so a real instance is created and the component is fully tested. SecureRandomDataService acts only as a container for the library's SecureRandom
+
+
   @Test
   void throwsIllegalArgumentExceptionWhenGeneratingKeyAndInvalidKeyLength() {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(
+            ECCCurve.brainpoolpXXXr1,
+            secureRandomDataService);
 
     final var KEY_LENGTH_128 = 128;
 
@@ -70,7 +79,9 @@ class JCAECDSAKeyServiceTest {
   void producesNotNullKeyPairWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -84,7 +95,9 @@ class JCAECDSAKeyServiceTest {
   void producesNotNullPublicKeyWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -98,7 +111,9 @@ class JCAECDSAKeyServiceTest {
   void producesNotNullPrivateKeyWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -112,7 +127,9 @@ class JCAECDSAKeyServiceTest {
   void producesPublicKeyWithECDSAAlgorithmWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -126,7 +143,9 @@ class JCAECDSAKeyServiceTest {
   void producesPrivateKeyWithECDSAAlgorithmWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -140,7 +159,9 @@ class JCAECDSAKeyServiceTest {
   void producesPublicKeyWithX509FormatWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -154,7 +175,9 @@ class JCAECDSAKeyServiceTest {
   void producesPrivateKeyWithPKCS8FormatWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -168,7 +191,9 @@ class JCAECDSAKeyServiceTest {
   void producesPublicKeyWithContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -182,7 +207,9 @@ class JCAECDSAKeyServiceTest {
   void producesPrivateKeyWithContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -196,7 +223,9 @@ class JCAECDSAKeyServiceTest {
   void producesPublicKeyWithNonEmptyContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -210,7 +239,9 @@ class JCAECDSAKeyServiceTest {
   void producesPrivateKeyWithNonEmptyContentWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -224,7 +255,9 @@ class JCAECDSAKeyServiceTest {
   void producesPublicKeyWithTheRightBitLengthWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -245,7 +278,9 @@ class JCAECDSAKeyServiceTest {
   void producesPrivateKeyWithTheRightBitLengthWhenGeneratingKey(ECCCurve curve, Integer keyLengthInBits) throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When
     final var generatedKeyPair = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -266,7 +301,9 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPublicKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When generating two consecutive key pairs with the same length
     final var generatedKeyPair_1 = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -284,7 +321,9 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPrivateKeysWhenGeneratingTwoConsecutiveKeysWithTheSameLength(ECCCurve curve, Integer keyLengthInBits) {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(curve, new SecureRandom());
+        new JCAECDSAKeyService(
+            curve,
+            secureRandomDataService);
 
     // When generating two consecutive key pairs with the same length
     final var generatedKeyPair_1 = ecdsaKeyService.generateKey(keyLengthInBits);
@@ -308,7 +347,9 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPublicKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(
+            ECCCurve.brainpoolpXXXr1,
+            secureRandomDataService);
 
     final var _100 = 100;
 
@@ -331,7 +372,9 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPrivateKeysWhenGeneratingManyConsecutiveKeysWithTheSameLength() {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(
+            ECCCurve.brainpoolpXXXr1,
+            secureRandomDataService);
 
     final var _100 = 100;
 
@@ -354,7 +397,9 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPublicKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(
+            ECCCurve.brainpoolpXXXr1,
+            secureRandomDataService);
 
     final var _500 = 500;
 
@@ -377,7 +422,9 @@ class JCAECDSAKeyServiceTest {
   void producesDifferentPrivateKeysWhenGeneratingConcurrentlyManyKeysWithTheSameLength() throws Exception {
     // Given
     final AsymmetricKeyService ecdsaKeyService =
-        new JCAECDSAKeyService(ECCCurve.brainpoolpXXXr1, new SecureRandom());
+        new JCAECDSAKeyService(
+            ECCCurve.brainpoolpXXXr1,
+            secureRandomDataService);
 
     final var _500 = 500;
 

@@ -15,12 +15,20 @@
  */
 package com.theicenet.cryptography;
 
+import com.theicenet.cryptography.exception.DynamicContextInitializerException;
 import com.theicenet.cryptography.random.JCASecureRandomDataService;
+import com.theicenet.cryptography.random.SecureRandomAlgorithm;
+import com.theicenet.cryptography.random.SecureRandomCapability;
+import com.theicenet.cryptography.util.PropertiesUtil;
+import java.security.DrbgParameters;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * @author Juan Fidalgo
@@ -28,20 +36,107 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public class SecureRandomDataDynamicContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+  private static final String BEAN_NAME_FORMAT = "%s_%s";
+  private static final String RANDOM_DATA = "RandomData";
+
   @Override
   public void initialize(ConfigurableApplicationContext applicationContext) {
+
+    final ConfigurableEnvironment environment = applicationContext.getEnvironment();
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
-    SecureRandom secureRandom;
-    try {
-      secureRandom = beanFactory.getBean(SecureRandom.class);
-    } catch (NoSuchBeanDefinitionException e) {
-      secureRandom = new SecureRandom();
-      beanFactory.registerSingleton("secureRandom", secureRandom);
+    final Optional<SecureRandomAlgorithm> optAlgorithm =
+        PropertiesUtil.getEnumPropertySingleValue(
+            environment,
+            "cryptography.random.algorithm",
+            SecureRandomAlgorithm.class);
+
+    if (optAlgorithm.isEmpty()) {
+      registerBean(beanFactory, SecureRandomAlgorithm.DEFAULT);
+      return;
     }
 
+    final SecureRandomAlgorithm algorithm = optAlgorithm.get();
+
+    if (!Objects.equals(algorithm, SecureRandomAlgorithm.DRBG)) {
+      registerBean(beanFactory, algorithm);
+      return;
+    }
+
+    final Optional<Integer> optStrength =
+        PropertiesUtil.getIntegerPropertySingleValue(
+            environment,
+            "cryptography.random.drbg.strength");
+
+    final Optional<SecureRandomCapability> optCapability =
+        PropertiesUtil.getEnumPropertySingleValue(
+            environment,
+            "cryptography.random.drbg.capability",
+            SecureRandomCapability.class);
+
+    final Optional<Boolean> optGeneratePersonalizationString =
+        PropertiesUtil.getBooleanPropertySingleValue(
+            environment,
+            "cryptography.random.drbg.personalizationString.generate");
+
+    final Optional<Integer> optPersonalizationStringLength =
+        PropertiesUtil.getIntegerPropertySingleValue(
+            environment,
+            "cryptography.random.drbg.personalizationString.length");
+
+    final DrbgParameters.Instantiation params = getDefaultDRBGParams();
+
+    final int strength = optStrength.orElse(params.getStrength());
+    final SecureRandomCapability capability =
+        optCapability.orElse(SecureRandomCapability.valueOf(params.getCapability().name()));
+
+    final boolean generatePersonalizationString = optGeneratePersonalizationString.orElse(false);
+    if (generatePersonalizationString) {
+      registerBean(
+          beanFactory,
+          strength,
+          capability,
+          optPersonalizationStringLength.orElse(16));
+    } else {
+      registerBean(beanFactory, strength, capability);
+    }
+  }
+
+  private void registerBean(
+      ConfigurableListableBeanFactory beanFactory,
+      SecureRandomAlgorithm algorithm) {
+
     beanFactory.registerSingleton(
-        "SecureRandomData",
-        new JCASecureRandomDataService(secureRandom));
+        String.format(BEAN_NAME_FORMAT, RANDOM_DATA, algorithm.name()),
+        new JCASecureRandomDataService(algorithm));
+  }
+
+  private void registerBean(
+      ConfigurableListableBeanFactory beanFactory,
+      int strength,
+      SecureRandomCapability capability,
+      int personalizationStringLength) {
+
+    beanFactory.registerSingleton(
+        String.format(BEAN_NAME_FORMAT, RANDOM_DATA, SecureRandomAlgorithm.DRBG.name()),
+        new JCASecureRandomDataService(strength, capability, personalizationStringLength));
+  }
+
+  private void registerBean(
+      ConfigurableListableBeanFactory beanFactory,
+      int strength,
+      SecureRandomCapability capability) {
+
+    beanFactory.registerSingleton(
+        String.format(BEAN_NAME_FORMAT, RANDOM_DATA, SecureRandomAlgorithm.DRBG.name()),
+        new JCASecureRandomDataService(strength, capability));
+  }
+
+  private DrbgParameters.Instantiation getDefaultDRBGParams() {
+    try {
+      return (DrbgParameters.Instantiation) SecureRandom.getInstance(SecureRandomAlgorithm.DRBG.name()).getParameters();
+    } catch (NoSuchAlgorithmException e) {
+      throw new DynamicContextInitializerException("Exception initializing SecureRandomData", e);
+    }
   }
 }

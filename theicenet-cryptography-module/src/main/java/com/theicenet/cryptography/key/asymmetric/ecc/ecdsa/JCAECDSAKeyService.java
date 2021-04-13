@@ -18,7 +18,7 @@ package com.theicenet.cryptography.key.asymmetric.ecc.ecdsa;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.key.asymmetric.ecc.JCAECCKeyService;
-import java.security.SecureRandom;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 
 /**
  * Java Cryptography Architecture (JCA) based component which generates ECDSA key pairs.
@@ -35,7 +35,7 @@ public class JCAECDSAKeyService extends JCAECCKeyService {
 
   private static final ECCKeyAlgorithm ECDSA = ECCKeyAlgorithm.ECDSA;
 
-  public JCAECDSAKeyService(ECCCurve curve, SecureRandom secureRandom) {
-    super(ECDSA, curve, secureRandom);
+  public JCAECDSAKeyService(ECCCurve curve, SecureRandomDataService secureRandomDataService) {
+    super(ECDSA, curve, secureRandomDataService);
   }
 }

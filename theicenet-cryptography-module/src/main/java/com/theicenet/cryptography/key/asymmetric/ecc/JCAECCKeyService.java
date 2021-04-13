@@ -17,6 +17,7 @@ package com.theicenet.cryptography.key.asymmetric.ecc;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyServiceException;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.util.CryptographyProviderUtil;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -34,16 +35,20 @@ public class JCAECCKeyService implements AsymmetricKeyService {
 
   private final ECCKeyAlgorithm algorithm;
   private final ECCCurve curve;
-  private final SecureRandom secureRandom;
+  private final SecureRandomDataService secureRandomDataService; // We store the whole SecureRandomDataService, although we are interested only in the embedded SecureRandom provider. The embedded SecureRandom might be recycled over the time following SecureRandomDataService's prediction protection rules
 
-  public JCAECCKeyService(ECCKeyAlgorithm algorithm, ECCCurve curve, SecureRandom secureRandom) {
+  public JCAECCKeyService(
+      ECCKeyAlgorithm algorithm,
+      ECCCurve curve,
+      SecureRandomDataService secureRandomDataService) {
+
     Validate.notNull(algorithm);
     Validate.notNull(curve);
-    Validate.notNull(secureRandom);
+    Validate.notNull(secureRandomDataService);
 
     this.algorithm = algorithm;
     this.curve = curve;
-    this.secureRandom = secureRandom;
+    this.secureRandomDataService = secureRandomDataService;
 
     // Bouncy Castle is required for most of the ECC curves
     CryptographyProviderUtil.addBouncyCastleCryptographyProvider();
@@ -55,7 +60,7 @@ public class JCAECCKeyService implements AsymmetricKeyService {
    */
   @Override
   public KeyPair generateKey(int keyLengthInBits) {
-    return generateKey(keyLengthInBits, curve, algorithm, secureRandom);
+    return generateKey(keyLengthInBits, curve, algorithm, secureRandomDataService.getSecureRandom());
   }
 
   private KeyPair generateKey(

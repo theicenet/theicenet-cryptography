@@ -17,6 +17,7 @@ package com.theicenet.cryptography.key.symmetric.aes;
 
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyServiceException;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import org.apache.commons.lang.Validate;
 
 import javax.crypto.KeyGenerator;
@@ -39,11 +40,11 @@ public class JCAAESKeyService implements SymmetricKeyService {
 
   private static final String AES = "AES";
 
-  private final SecureRandom secureRandom;
+  private final SecureRandomDataService secureRandomDataService; // We store the whole SecureRandomDataService, although we are interested only in the embedded SecureRandom provider. The embedded SecureRandom might be recycled over the time following SecureRandomDataService's prediction protection rules
 
-  public JCAAESKeyService(SecureRandom secureRandom) {
-    Validate.notNull(secureRandom);
-    this.secureRandom = secureRandom;
+  public JCAAESKeyService(SecureRandomDataService secureRandomDataService) {
+    Validate.notNull(secureRandomDataService);
+    this.secureRandomDataService = secureRandomDataService;
   }
 
   @Override
@@ -56,7 +57,7 @@ public class JCAAESKeyService implements SymmetricKeyService {
     } catch (NoSuchAlgorithmException e) {
       throw new SymmetricKeyServiceException("Exception creating AES key generator", e);
     }
-    keyGenerator.init(keyLengthInBits, secureRandom);
+    keyGenerator.init(keyLengthInBits, secureRandomDataService.getSecureRandom());
 
     return keyGenerator.generateKey();
   }

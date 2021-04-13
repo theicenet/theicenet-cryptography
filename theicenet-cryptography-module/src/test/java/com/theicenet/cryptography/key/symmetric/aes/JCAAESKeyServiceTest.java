@@ -24,9 +24,11 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
+import com.theicenet.cryptography.random.JCASecureRandomDataService;
+import com.theicenet.cryptography.random.SecureRandomAlgorithm;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
-import java.security.SecureRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,11 +44,15 @@ class JCAAESKeyServiceTest {
   final String AES = "AES";
   final String RAW = "RAW";
 
+  final SecureRandomDataService secureRandomDataService =
+      new JCASecureRandomDataService(SecureRandomAlgorithm.DEFAULT); // This is not mocked, because JCAAESKeyService must use the SecureRandom embedded in SecureRandomDataService, so a real instance is created and the component is fully tested. SecureRandomDataService acts only as a container for the library's SecureRandom
+
+
   SymmetricKeyService aesKeyService;
 
   @BeforeEach
   void setUp() {
-    aesKeyService = new JCAAESKeyService(new SecureRandom());
+    aesKeyService = new JCAAESKeyService(secureRandomDataService);
   }
 
   @Test

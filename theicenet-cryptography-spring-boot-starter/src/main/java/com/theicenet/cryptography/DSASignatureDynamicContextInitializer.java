@@ -37,7 +37,7 @@ public class DSASignatureDynamicContextInitializer implements ApplicationContext
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
     final Set<DSASignatureAlgorithm> algorithms =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.signature.asymmetric.dsa.algorithm",
             DSASignatureAlgorithm.class);

@@ -17,6 +17,7 @@ package com.theicenet.cryptography.key.asymmetric.rsa;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyServiceException;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -38,11 +39,11 @@ public class JCARSAKeyService implements AsymmetricKeyService {
 
   private static final String RSA = "RSA";
 
-  private final SecureRandom secureRandom;
+  private final SecureRandomDataService secureRandomDataService; // We store the whole SecureRandomDataService, although we are interested only in the embedded SecureRandom provider. The embedded SecureRandom might be recycled over the time following SecureRandomDataService's prediction protection rules
 
-  public JCARSAKeyService(SecureRandom secureRandom) {
-    Validate.notNull(secureRandom);
-    this.secureRandom = secureRandom;
+  public JCARSAKeyService(SecureRandomDataService secureRandomDataService) {
+    Validate.notNull(secureRandomDataService);
+    this.secureRandomDataService = secureRandomDataService;
   }
 
   /**
@@ -59,7 +60,7 @@ public class JCARSAKeyService implements AsymmetricKeyService {
     } catch (NoSuchAlgorithmException e) {
       throw new AsymmetricKeyServiceException("Exception creating RSA key generator", e);
     }
-    generator.initialize(keyLengthInBits, secureRandom);
+    generator.initialize(keyLengthInBits, secureRandomDataService.getSecureRandom());
 
     return generator.generateKeyPair();
   }

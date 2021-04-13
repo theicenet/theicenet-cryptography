@@ -25,6 +25,9 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
+import com.theicenet.cryptography.random.JCASecureRandomDataService;
+import com.theicenet.cryptography.random.SecureRandomAlgorithm;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.test.support.HexUtil;
 import com.theicenet.cryptography.test.support.RunnerUtil;
 import java.security.KeyFactory;
@@ -47,11 +50,14 @@ class JCARSAKeyServiceTest {
   final int KEY_LENGTH_1024_BITS = 1024;
   final int KEY_LENGTH_2048_BITS = 2048;
 
+  final SecureRandomDataService secureRandomDataService =
+      new JCASecureRandomDataService(SecureRandomAlgorithm.DEFAULT); // This is not mocked, because JCARSAKeyService must use the SecureRandom embedded in SecureRandomDataService, so a real instance is created and the component is fully tested. SecureRandomDataService acts only as a container for the library's SecureRandom
+
   AsymmetricKeyService rsaKeyService;
 
   @BeforeEach
   void setUp() {
-    rsaKeyService = new JCARSAKeyService(new SecureRandom());
+    rsaKeyService = new JCARSAKeyService(secureRandomDataService);
   }
 
   @Test

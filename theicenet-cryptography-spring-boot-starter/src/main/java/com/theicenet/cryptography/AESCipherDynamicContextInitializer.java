@@ -56,7 +56,7 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
         beanFactory.getBean(SecureRandomDataService.class);
 
     final Set<BlockCipherModeOfOperation> blockModes =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.cipher.symmetric.aes.blockMode",
             BlockCipherModeOfOperation.class);

@@ -17,6 +17,7 @@ package com.theicenet.cryptography.key.asymmetric.dsa;
 
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyService;
 import com.theicenet.cryptography.key.asymmetric.AsymmetricKeyServiceException;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -38,11 +39,11 @@ public class JCADSAKeyService implements AsymmetricKeyService {
 
   private static final String DSA = "DSA";
 
-  private final SecureRandom secureRandom;
+  private final SecureRandomDataService secureRandomDataService; // We store the whole SecureRandomDataService, although we are interested only in the embedded SecureRandom provider. The embedded SecureRandom might be recycled over the time following SecureRandomDataService's prediction protection rules
 
-  public JCADSAKeyService(SecureRandom secureRandom) {
-    Validate.notNull(secureRandom);
-    this.secureRandom = secureRandom;
+  public JCADSAKeyService(SecureRandomDataService secureRandomDataService) {
+    Validate.notNull(secureRandomDataService);
+    this.secureRandomDataService = secureRandomDataService;
   }
 
   /**
@@ -59,7 +60,7 @@ public class JCADSAKeyService implements AsymmetricKeyService {
     } catch (NoSuchAlgorithmException e) {
       throw new AsymmetricKeyServiceException("Exception generating DSA key", e);
     }
-    generator.initialize(keyLengthInBits, secureRandom);
+    generator.initialize(keyLengthInBits, secureRandomDataService.getSecureRandom());
 
     return generator.generateKeyPair();
   }

@@ -37,7 +37,7 @@ public class RSASignatureDynamicContextInitializer  implements ApplicationContex
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
     final Set<RSASignatureAlgorithm> algorithms =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.signature.asymmetric.rsa.algorithm",
             RSASignatureAlgorithm.class);

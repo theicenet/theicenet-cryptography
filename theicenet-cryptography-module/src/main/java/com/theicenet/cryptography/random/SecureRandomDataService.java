@@ -15,8 +15,14 @@
  */
 package com.theicenet.cryptography.random;
 
+import java.security.SecureRandom;
+
 /**
- * A SecureRandomDataService instance is a component which generates <b>secure random</b> data.
+ * A SecureRandomDataService instance is a component which generates <b>cryptographically secure
+ * pseudorandom</b> data.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator">Cryptographically secure pseudorandom number generator</a>
+ * @see <a href="https://csrc.nist.gov/publications/detail/sp/800-90a/rev-1/final">NIST SP 800-90A Rev. 1 - Recommendation for Random Number Generation Using Deterministic Random Bit Generators</a>
  *
  * @apiNote Any implementation of this interface <b>must</b> be <b>unconditionally thread-safe</b>.
  *
@@ -34,4 +40,21 @@ public interface SecureRandomDataService {
    * @return <b>secure random</b> byte array with length <b>lengthInBytes</b>
    */
   byte[] generateSecureRandomData(int lengthInBytes);
+
+  /**
+   * Returns the 'SecureRandom' instance used by the 'SecureRandomDataService'.
+   * The returned 'SecureRandom' instance, can be used to be passed to other external components
+   * that might receive directly a SecureRandom, so they can't work properly
+   * with 'SecureRandomDataService'.
+   *
+   * IMPORTANT:
+   *  The returned 'SecureRandom' must NOT be cached, as 'SecureRandomDataService' might recycle
+   *  regularly the whole internal 'SecureRandom' instance to make more secure random data generation,
+   *  make it unpredictable, and prediction resistant. This method MUST be invoked every time
+   *  a 'SecureRandom' is required, so, it's always used the most up to date (and secure)
+   *  'SecureRandom' instance.
+   *
+   * @return SecureRandom instance used by the SecureRandomDataService instance and by the library
+   */
+  SecureRandom getSecureRandom();
 }

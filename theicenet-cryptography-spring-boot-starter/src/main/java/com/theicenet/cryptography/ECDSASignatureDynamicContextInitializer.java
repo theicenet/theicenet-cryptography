@@ -37,7 +37,7 @@ public class ECDSASignatureDynamicContextInitializer implements ApplicationConte
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
     final Set<ECDSASignatureAlgorithm> algorithms =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.signature.asymmetric.ecdsa.algorithm",
             ECDSASignatureAlgorithm.class);

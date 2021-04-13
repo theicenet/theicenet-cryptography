@@ -37,7 +37,7 @@ public class MacDynamicContextInitializer implements ApplicationContextInitializ
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
     final Set<HmacAlgorithm> algorithms =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.mac.algorithm",
             HmacAlgorithm.class);

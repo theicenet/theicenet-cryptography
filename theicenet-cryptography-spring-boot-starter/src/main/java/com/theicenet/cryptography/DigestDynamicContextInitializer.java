@@ -37,7 +37,7 @@ public class DigestDynamicContextInitializer implements ApplicationContextInitia
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
     final Set<DigestAlgorithm> algorithms =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.digest.algorithm",
             DigestAlgorithm.class);

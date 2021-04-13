@@ -18,7 +18,7 @@ package com.theicenet.cryptography.key.asymmetric.ecc.ecdh;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCKeyAlgorithm;
 import com.theicenet.cryptography.key.asymmetric.ecc.JCAECCKeyService;
-import java.security.SecureRandom;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 
 /**
  * Java Cryptography Architecture (JCA) based component which generates ECDH key pair.
@@ -35,7 +35,7 @@ public class JCAECDHKeyService extends JCAECCKeyService {
 
   private static final ECCKeyAlgorithm ECDH = ECCKeyAlgorithm.ECDH;
 
-  public JCAECDHKeyService(ECCCurve curve, SecureRandom secureRandom) {
-    super(ECDH, curve, secureRandom);
+  public JCAECDHKeyService(ECCCurve curve, SecureRandomDataService secureRandomDataService) {
+    super(ECDH, curve, secureRandomDataService);
   }
 }

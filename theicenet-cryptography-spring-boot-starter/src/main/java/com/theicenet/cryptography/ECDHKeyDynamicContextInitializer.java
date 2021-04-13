@@ -17,8 +17,8 @@ package com.theicenet.cryptography;
 
 import com.theicenet.cryptography.key.asymmetric.ecc.ECCCurve;
 import com.theicenet.cryptography.key.asymmetric.ecc.ecdsa.JCAECDSAKeyService;
+import com.theicenet.cryptography.random.SecureRandomDataService;
 import com.theicenet.cryptography.util.PropertiesUtil;
-import java.security.SecureRandom;
 import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
@@ -36,24 +36,26 @@ public class ECDHKeyDynamicContextInitializer implements ApplicationContextIniti
 
     final ConfigurableEnvironment environment = applicationContext.getEnvironment();
     final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
-    final SecureRandom secureRandom = beanFactory.getBean(SecureRandom.class);
+    final SecureRandomDataService secureRandomDataService = beanFactory.getBean(SecureRandomDataService.class);
 
     final Set<ECCCurve> curves =
-        PropertiesUtil.getProperty(
+        PropertiesUtil.getEnumPropertyMultiValue(
             environment,
             "cryptography.key.asymmetric.ecc.ecdh.curve",
             ECCCurve.class);
 
-    curves.forEach(curve -> registerBean(beanFactory, curve, secureRandom));
+    curves.forEach(curve -> registerBean(beanFactory, curve, secureRandomDataService));
   }
 
   private void registerBean(
       ConfigurableListableBeanFactory beanFactory,
       ECCCurve eccCurve,
-      SecureRandom secureRandom) {
+      SecureRandomDataService secureRandomDataService) {
 
     beanFactory.registerSingleton(
         String.format("%s_%s", "ECDHKey", eccCurve),
-        new JCAECDSAKeyService(eccCurve, secureRandom));
+        new JCAECDSAKeyService(
+            eccCurve,
+            secureRandomDataService));
   }
 }

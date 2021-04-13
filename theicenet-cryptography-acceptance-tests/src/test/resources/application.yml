@@ -63,4 +63,12 @@ cryptography:
         digest:
           algorithm: SHA_256
 
+  random:
+    algorithm: DRBG
+    drbg:
+      strength: 256
+      capability: PR_AND_RESEED
+      personalizationString:
+        generate: true
+        length: 16
 
