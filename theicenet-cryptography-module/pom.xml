@@ -6,7 +6,7 @@
   <parent>
     <artifactId>theicenet-cryptography</artifactId>
     <groupId>com.theicenet</groupId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>theicenet-cryptography-module</artifactId>
@@ -15,7 +15,7 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk15on</artifactId>
-      <version>1.68</version>
+      <version>1.69</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -52,12 +52,6 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mutabilitydetector</groupId>
-      <artifactId>MutabilityDetector</artifactId>
-      <version>0.10.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

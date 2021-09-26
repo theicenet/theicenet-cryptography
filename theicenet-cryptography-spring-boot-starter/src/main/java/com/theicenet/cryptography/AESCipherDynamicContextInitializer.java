@@ -75,29 +75,24 @@ public class AESCipherDynamicContextInitializer implements ApplicationContextIni
       SecureRandomDataService secureRandomDataService) {
 
     switch (blockMode) {
-      case ECB:
+      case ECB ->
         registerBean(
             beanFactory,
             BlockCipherNonIVModeOfOperation.ECB,
             secureRandomDataService);
-        break;
-      case CBC:
-      case CFB:
-      case OFB:
-      case CTR:
+      case CBC, CFB, OFB, CTR ->
         registerBean(
             beanFactory,
             BlockCipherIVModeOfOperation.valueOf(blockMode.name()),
             secureRandomDataService);
-        break;
-      case GCM:
+      case GCM -> {
         registerBean(
             beanFactory,
             BlockCipherIVModeOfOperation.GCM,
             secureRandomDataService);
 
         registerBean(beanFactory, BlockCipherAEADModeOfOperation.GCM);
-        break;
+      }
     }
   }
 

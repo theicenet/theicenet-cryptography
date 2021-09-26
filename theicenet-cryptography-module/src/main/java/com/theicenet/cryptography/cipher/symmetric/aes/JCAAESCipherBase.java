@@ -113,19 +113,13 @@ public abstract class JCAAESCipherBase {
     try {
       cipher = Cipher.getInstance(String.format("AES/%s/%s", blockMode, padding));
       switch (blockMode) {
-        case ECB:
+        case ECB ->
           cipher.init(operationMode, secretKey);
-          break;
-        case CBC:
-        case CFB:
-        case OFB:
-        case CTR:
+        case CBC, CFB, OFB, CTR ->
           cipher.init(operationMode, secretKey, new IvParameterSpec(iv));
-          break;
-        case GCM:
+        case GCM ->
           cipher.init(operationMode, secretKey, new GCMParameterSpec(AUTHENTICATED_TAG_SIZE_128_BITS, iv));
-          break;
-        default:
+        default ->
           throw new IllegalArgumentException(
               String.format(
                   "Unsupported block cipher mode of operation [%s]",
@@ -139,21 +133,11 @@ public abstract class JCAAESCipherBase {
   }
 
   private AESPadding paddingForBlockMode(BlockCipherModeOfOperation mode) {
-    switch (mode) {
-      case CFB:
-      case OFB:
-      case CTR:
-      case GCM:
-        return AESPadding.NOPADDING;
-      case ECB:
-      case CBC:
-        return AESPadding.PKCS5PADDING;
-      default:
-        throw new IllegalArgumentException(
-            String.format(
-                "Unsupported block cipher mode of operation [%s]",
-                mode));
-    }
+    return
+        switch (mode) {
+          case CFB, OFB, CTR, GCM -> AESPadding.NOPADDING;
+          case ECB, CBC -> AESPadding.PKCS5PADDING;
+        };
   }
 
   private void validateIV(byte[] iv) {

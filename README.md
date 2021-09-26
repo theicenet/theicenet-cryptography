@@ -286,7 +286,7 @@ TheIceNet Cryptography library can generate the next type of random data,
 
 ## TheIceNet Cryptography library requirements
 
-- [Java 11](https://adoptopenjdk.net) or later
+- [Java 11](https://adoptium.net/) or later
 - [Spring Boot 2.0.0](https://spring.io/projects/spring-boot) or later
 - [Maven 3.2+](https://maven.apache.org) or [Gradle 4+](https://gradle.org)
 
@@ -296,6 +296,8 @@ To enable TheIceNet Cryptography library in a Spring Boot application, we'll jus
 
 In Maven:
 
+For Java 11+
+
 ```xml
     <dependency>
       <groupId>com.theicenet</groupId>
@@ -304,10 +306,28 @@ In Maven:
     </dependency>
 ```
 
+For Java 17+
+
+```xml
+    <dependency>
+      <groupId>com.theicenet</groupId>
+      <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+```
+
 In Gradle
+
+For Java 11+
 
 ```groovy
     compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.2.1'
+```
+
+For Java 17+
+
+```groovy
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.3.0'
 ```
 
 ## Building TheIceNet Cryptography library
