@@ -11,7 +11,7 @@
 
   <groupId>com.theicenet</groupId>
   <artifactId>theicenet-cryptography</artifactId>
-  <version>1.3.0-SNAPSHOT</version>
+  <version>1.3.0</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -22,7 +22,7 @@
     <connection>scm:git:git@bitbucket.org:theicenet/theicenet-cryptography.git</connection>
     <developerConnection>scm:git:git@bitbucket.org:theicenet/theicenet-cryptography.git</developerConnection>
     <url>https://bitbucket.org/theicenet/theicenet-cryptography/src</url>
-    <tag>HEAD</tag>
+    <tag>theicenet-cryptography-1.3.0</tag>
   </scm>
 
   <name>${project.groupId}:${project.artifactId}</name>
