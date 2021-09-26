@@ -46,7 +46,6 @@ pipelines:
             - gpg --batch --import private-key.gpg
             - git config user.name "TheIceNet Pipeline"
             - git config user.email "pipeline@theicenet.com"
-            - export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
             - mvn -V -B release:clean -Prelease
             - mvn -V -B release:prepare -Prelease
             - mvn -V -B -s settings.xml release:perform -Prelease

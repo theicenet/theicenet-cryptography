@@ -312,7 +312,7 @@ For Java 17+
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.3.0</version>
+      <version>1.3.1</version>
     </dependency>
 ```
 
@@ -327,7 +327,7 @@ For Java 11+
 For Java 17+
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.3.0'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.3.1'
 ```
 
 ## Building TheIceNet Cryptography library
