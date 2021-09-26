@@ -12,6 +12,15 @@ pipelines:
             - ln -s /dev/urandom /dev/random
             - mvn -V -B clean verify
   branches:
+    1.2.x:
+      - step:
+          name: Build master
+          caches:
+            - maven
+          script:
+            - rm -f /dev/random
+            - ln -s /dev/urandom /dev/random
+            - mvn -V -B clean verify
     master:
       - step:
           name: Build master
@@ -21,6 +30,7 @@ pipelines:
             - rm -f /dev/random
             - ln -s /dev/urandom /dev/random
             - mvn -V -B clean verify
+
   custom:
     release-to-maven-central:
       - step:
