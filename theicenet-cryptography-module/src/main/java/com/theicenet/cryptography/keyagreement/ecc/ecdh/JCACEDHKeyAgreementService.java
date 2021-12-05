@@ -21,7 +21,7 @@ import com.theicenet.cryptography.keyagreement.KeyAgreementServiceException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import javax.crypto.KeyAgreement;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Java Cryptography Architecture (JCA) based component which implements Elliptic-curve

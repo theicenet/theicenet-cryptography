@@ -123,70 +123,70 @@ class RFC5054SRP6ClientServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullSalt() {
+  void throwsNullPointerExceptionWhenComputingSAndNullSalt() {
     // Given
     final byte[] NULL_SALT = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.computeS(NULL_SALT, IDENTITY, PASSWORD, a, A, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullIdentity() {
+  void throwsNullPointerExceptionWhenComputingSAndNullIdentity() {
     // Given
     final byte[] NULL_IDENTITY = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.computeS(SALT, NULL_IDENTITY, PASSWORD, a, A, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullPassword() {
+  void throwsNullPointerExceptionWhenComputingSAndNullPassword() {
     // Given
     final byte[] NULL_PASSWORD = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.computeS(SALT, IDENTITY, NULL_PASSWORD, a, A, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullClientPrivateValueA() {
+  void throwsNullPointerExceptionWhenComputingSAndNullClientPrivateValueA() {
     // Given
     final byte[] NULL_CLIENT_PRIVATE_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, NULL_CLIENT_PRIVATE_VALUE_A, A, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullClientPublicValueA() {
+  void throwsNullPointerExceptionWhenComputingSAndNullClientPublicValueA() {
     // Given
     final byte[] NULL_CLIENT_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, NULL_CLIENT_PUBLIC_VALUE_A, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullServerPublicValueB() {
+  void throwsNullPointerExceptionWhenComputingSAndNullServerPublicValueB() {
     // Given
     final byte[] NULL_SERVERS_PUBLIC_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             srp6ClientService.computeS(SALT, IDENTITY, PASSWORD, a, A, NULL_SERVERS_PUBLIC_VALUE_B)); // When
   }
@@ -300,35 +300,35 @@ class RFC5054SRP6ClientServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingM1AndNullClientPublicValueA() {
+  void throwsNullPointerExceptionWhenComputingM1AndNullClientPublicValueA() {
     // Given
     final byte[] NULL_CLIENT_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.computeM1(NULL_CLIENT_PUBLIC_VALUE_A, B, S)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingM1AndNullServerPublicValueB() {
+  void throwsNullPointerExceptionWhenComputingM1AndNullServerPublicValueB() {
     // Given
     final byte[] NULL_SERVER_PUBLIC_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.computeM1(A, NULL_SERVER_PUBLIC_VALUE_B, S)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingM1AndNullS() {
+  void throwsNullPointerExceptionWhenComputingM1AndNullS() {
     // Given
     final byte[] NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.computeM1(A, B, NULL_S)); // When
   }
 
@@ -436,46 +436,46 @@ class RFC5054SRP6ClientServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM2AndNullClientPublicValueA() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM2AndNullClientPublicValueA() {
     // Given
     final byte[] NULL_CLIENT_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.isValidReceivedM2(NULL_CLIENT_PUBLIC_VALUE_A, S, M1, M2)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM2AndNullS() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM2AndNullS() {
     // Given
     final byte[] NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.isValidReceivedM2(A, NULL_S, M1, M2)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM2AndNullM1() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM2AndNullM1() {
     // Given
     final byte[] NULL_M1 = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.isValidReceivedM2(A, S, NULL_M1, M2)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM2AndNullReceivedM2() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM2AndNullReceivedM2() {
     // Given
     final byte[] NULL_RECEIVED_M2 = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.isValidReceivedM2(A, S, M1, NULL_RECEIVED_M2)); // When
   }
 
@@ -652,13 +652,13 @@ class RFC5054SRP6ClientServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSessionKeyAndNullS() {
+  void throwsNullPointerExceptionWhenComputingSessionKeyAndNullS() {
     // Given
     final byte[] NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ClientService.computeSessionKey(NULL_S)
     );
   }

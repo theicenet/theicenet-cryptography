@@ -32,7 +32,7 @@ import com.theicenet.cryptography.digest.JCADigestService;
 import com.theicenet.cryptography.keyagreement.SRP6ClientService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.math.BigInteger;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Implementation for SRP6 v6a 'client' service according to Specification RFC 5054.

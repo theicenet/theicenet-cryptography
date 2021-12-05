@@ -31,7 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 import javax.crypto.SecretKey;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Java Cryptography Architecture (JCA) based component which makes easy to encrypt and decrypt

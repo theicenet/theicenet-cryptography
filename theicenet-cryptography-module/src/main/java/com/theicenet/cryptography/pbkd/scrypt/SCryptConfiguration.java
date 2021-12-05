@@ -15,7 +15,7 @@
  */
 package com.theicenet.cryptography.pbkd.scrypt;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * @author Juan Fidalgo

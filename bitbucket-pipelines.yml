@@ -1,4 +1,4 @@
-image: maven:3.8.2-openjdk-17
+image: maven:3.8.4-openjdk-17
 
 pipelines:
   pull-requests:
@@ -14,7 +14,7 @@ pipelines:
   branches:
     1.2.x:
       - step:
-          name: Build master
+          name: Build 1.2.x
           caches:
             - maven
           script:

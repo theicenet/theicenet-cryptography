@@ -103,13 +103,13 @@ class PBKDSCryptKeyServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullPassword() {
+  void throwsNullPointerExceptionWhenGeneratingKeyAndNullPassword() {
     // Given
     final String NULL_PASSWORD = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             // When
             pbkdKeyService.generateKey(
@@ -119,13 +119,13 @@ class PBKDSCryptKeyServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullSalt() {
+  void throwsNullPointerExceptionWhenGeneratingKeyAndNullSalt() {
     // Given
     final byte[] NULL_SALT = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             // When
             pbkdKeyService.generateKey(

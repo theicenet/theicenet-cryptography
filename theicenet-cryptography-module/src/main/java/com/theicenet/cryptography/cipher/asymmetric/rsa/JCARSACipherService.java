@@ -22,7 +22,7 @@ import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import javax.crypto.Cipher;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Java Cryptography Architecture (JCA) based component which encrypts and decrypts using RSA

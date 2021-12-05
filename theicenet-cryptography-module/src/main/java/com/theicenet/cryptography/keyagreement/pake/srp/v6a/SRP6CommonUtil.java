@@ -23,7 +23,7 @@ import static com.theicenet.cryptography.util.ByteArraysUtil.toUnsignedByteArray
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.math.BigInteger;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * @author Juan Fidalgo

@@ -39,57 +39,57 @@ import org.junit.jupiter.api.Test;
 class SRP6ServerUtilTest {
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingBAndNullN() {
+  void throwsNullPointerExceptionWhenComputingBAndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeB(NULL_N, g, EXPECTED_K, EXPECTED_VERIFIER, b)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingBAndNullG() {
+  void throwsNullPointerExceptionWhenComputingBAndNullG() {
     // Given
     final BigInteger NULL_G = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeB(N, NULL_G, EXPECTED_K, EXPECTED_VERIFIER, b)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingBAndNullK() {
+  void throwsNullPointerExceptionWhenComputingBAndNullK() {
     // Given
     final BigInteger NULL_K = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeB(N, g, NULL_K, EXPECTED_VERIFIER, b)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingBAndNullVerifierV() {
+  void throwsNullPointerExceptionWhenComputingBAndNullVerifierV() {
     // Given
     final BigInteger NULL_VERIFIER = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeB(N, g, EXPECTED_K, NULL_VERIFIER, b)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingBAndNullPrivateValueB() {
+  void throwsNullPointerExceptionWhenComputingBAndNullPrivateValueB() {
     // Given
     final BigInteger NULL_PRIVATE_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeB(N, g, EXPECTED_K, EXPECTED_VERIFIER, NULL_PRIVATE_VALUE_B)); // When
   }
 
@@ -112,57 +112,57 @@ class SRP6ServerUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullN() {
+  void throwsNullPointerExceptionWhenComputingSAndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeS(NULL_N, EXPECTED_VERIFIER, EXPECTED_U, b, EXPECTED_A)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullVerifierV() {
+  void throwsNullPointerExceptionWhenComputingSAndNullVerifierV() {
     // Given
     final BigInteger NULL_VERIFIER = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeS(N, NULL_VERIFIER, EXPECTED_U, b, EXPECTED_A)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullU() {
+  void throwsNullPointerExceptionWhenComputingSAndNullU() {
     // Given
     final BigInteger NULL_U = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeS(N, EXPECTED_VERIFIER, NULL_U, b, EXPECTED_A)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullPrivateValueB() {
+  void throwsNullPointerExceptionWhenComputingSAndNullPrivateValueB() {
     // Given
     final BigInteger NULL_PRIVATE_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeS(N, EXPECTED_VERIFIER, EXPECTED_U, NULL_PRIVATE_VALUE_B, EXPECTED_A)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullPublicValueA() {
+  void throwsNullPointerExceptionWhenComputingSAndNullPublicValueA() {
     // Given
     final BigInteger NULL_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6ServerUtil.computeS(N, EXPECTED_VERIFIER, EXPECTED_U, b, NULL_PUBLIC_VALUE_A)); // When
   }
 

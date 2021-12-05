@@ -60,35 +60,35 @@ class SRP6CommonUtilTest {
   SecureRandomDataService secureRandomDataService;
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingKAndNullDigest() {
+  void throwsNullPointerExceptionWhenComputingKAndNullDigest() {
     // Given
     final DigestService NULL_DIGEST_SERVICE = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeK(NULL_DIGEST_SERVICE, N, g)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingKAndNullN() {
+  void throwsNullPointerExceptionWhenComputingKAndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeK(sha256Digest, NULL_N, g)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingKAndNullG() {
+  void throwsNullPointerExceptionWhenComputingKAndNullG() {
     // Given
     final BigInteger NULL_G = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeK(sha256Digest, N, NULL_G)); // When
   }
 
@@ -111,46 +111,46 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingUAndNullDigest() {
+  void throwNullPointerExceptionWhenComputingUAndNullDigest() {
     // Given
     final DigestService NULL_DIGEST_SERVICE = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeU(NULL_DIGEST_SERVICE, N, EXPECTED_A, EXPECTED_B)); // When
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingUAndNullN() {
+  void throwNullPointerExceptionWhenComputingUAndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeU(sha256Digest, NULL_N, EXPECTED_A, EXPECTED_B)); // When
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingUAndNullPublicValueA() {
+  void throwNullPointerExceptionWhenComputingUAndNullPublicValueA() {
     // Given
     final BigInteger NULL_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeU(sha256Digest, N, NULL_PUBLIC_VALUE_A, EXPECTED_B)); // When
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingUAndNullPublicValueB() {
+  void throwNullPointerExceptionWhenComputingUAndNullPublicValueB() {
     // Given
     final BigInteger NULL_PUBLIC_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeU(sha256Digest, N, EXPECTED_A, NULL_PUBLIC_VALUE_B)); // When
   }
 
@@ -195,13 +195,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM1AndNullDigest() {
+  void throwNullPointerExceptionWhenComputingM1AndNullDigest() {
     // Given
     final DigestService NULL_DIGEST_SERVICE = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM1(
                 NULL_DIGEST_SERVICE,
@@ -212,13 +212,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM1AndNullN() {
+  void throwNullPointerExceptionWhenComputingM1AndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM1(
                 sha256Digest,
@@ -229,13 +229,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM1AndNullPublicValueA() {
+  void throwNullPointerExceptionWhenComputingM1AndNullPublicValueA() {
     // Given
     final BigInteger NULL_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             SRP6CommonUtil.computeM1(
                 sha256Digest,
@@ -246,13 +246,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM1AndNullPublicValueB() {
+  void throwNullPointerExceptionWhenComputingM1AndNullPublicValueB() {
     // Given
     final BigInteger NULL_PUBLIC_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM1(
                 sha256Digest,
@@ -263,13 +263,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM1AndNullS() {
+  void throwNullPointerExceptionWhenComputingM1AndNullS() {
     // Given
     final BigInteger NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM1(
                 sha256Digest,
@@ -308,13 +308,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM2AndNullDigest() {
+  void throwNullPointerExceptionWhenComputingM2AndNullDigest() {
     // Given
     final DigestService NULL_DIGEST_SERVICE = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM2(
                 NULL_DIGEST_SERVICE,
@@ -325,13 +325,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM2AndNullN() {
+  void throwNullPointerExceptionWhenComputingM2AndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM2(
                 sha256Digest,
@@ -342,13 +342,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM2AndNullPublicValueA() {
+  void throwNullPointerExceptionWhenComputingM2AndNullPublicValueA() {
     // Given
     final BigInteger NULL_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM2(
                 sha256Digest,
@@ -359,13 +359,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM2AndNullM1() {
+  void throwNullPointerExceptionWhenComputingM2AndNullM1() {
     // Given
     final BigInteger NULL_M1 = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM2(
                 sha256Digest,
@@ -376,13 +376,13 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwIllegalArgumentExceptionWhenComputingM2AndNullS() {
+  void throwNullPointerExceptionWhenComputingM2AndNullS() {
     // Given
     final BigInteger NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> // When
             SRP6CommonUtil.computeM2(
                 sha256Digest,
@@ -423,35 +423,35 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSessionKeyAndNullDigest() {
+  void throwsNullPointerExceptionWhenComputingSessionKeyAndNullDigest() {
     // Given
     final DigestService NULL_DIGEST_SERVICE = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeSessionKey(NULL_DIGEST_SERVICE, N, EXPECTED_S)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSessionKeyAndNullN() {
+  void throwsNullPointerExceptionWhenComputingSessionKeyAndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeSessionKey(sha256Digest, NULL_N, EXPECTED_S)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSessionKeyAndNullS() {
+  void throwsNullPointerExceptionWhenComputingSessionKeyAndNullS() {
     // Given
     final BigInteger NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.computeSessionKey(sha256Digest, N, NULL_S)); // When
   }
 
@@ -474,24 +474,24 @@ class SRP6CommonUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingPrivateValueAndNullN() {
+  void throwsNullPointerExceptionWhenGeneratingPrivateValueAndNullN() {
     // Given
     final BigInteger NULL_N = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.generatePrivateValue(NULL_N, secureRandomDataService)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingPrivateValueAndNullRandomDataService() {
+  void throwsNullPointerExceptionWhenGeneratingPrivateValueAndNullRandomDataService() {
     // Given
     final SecureRandomDataService NULL_RANDOM_DATA_SERVICE = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> SRP6CommonUtil.generatePrivateValue(N, NULL_RANDOM_DATA_SERVICE)); // When
   }
 

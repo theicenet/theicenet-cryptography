@@ -132,7 +132,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @EnumSource(PBKDF2ShaAlgorithm.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullPassword(
+  void throwsNullPointerExceptionWhenGeneratingKeyAndNullPassword(
       PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
@@ -145,7 +145,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             // When
             pbkdKeyService.generateKey(
@@ -156,7 +156,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
   @ParameterizedTest
   @EnumSource(PBKDF2ShaAlgorithm.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullSalt(PBKDF2ShaAlgorithm shaAlgorithm) {
+  void throwsNullPointerExceptionWhenGeneratingKeyAndNullSalt(PBKDF2ShaAlgorithm shaAlgorithm) {
     // Given
     final var pbkdKeyService =
         new JCAPBKDF2WithHmacSHAKeyService(
@@ -168,7 +168,7 @@ class JCAPBKDF2WithHmacSHAKeyServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             // When
             pbkdKeyService.generateKey(

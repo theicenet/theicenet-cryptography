@@ -54,35 +54,35 @@ class RFC5054SRP6VerifierServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingVerifierAndNullSalt() {
+  void throwsNullPointerExceptionWhenGeneratingVerifierAndNullSalt() {
     // Given
     final byte[] NULL_SALT = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6VerifierService.generateVerifier(NULL_SALT, IDENTITY, PASSWORD)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingVerifierAndNullIdentity() {
+  void throwsNullPointerExceptionWhenGeneratingVerifierAndNullIdentity() {
     // Given
     final byte[] NULL_IDENTITY = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6VerifierService.generateVerifier(SALT, NULL_IDENTITY, PASSWORD)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenGeneratingVerifierAndNullPassword() {
+  void throwsNullPointerExceptionWhenGeneratingVerifierAndNullPassword() {
     // Given
     final byte[] NULL_PASSWORD = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6VerifierService.generateVerifier(SALT, IDENTITY, NULL_PASSWORD)); // When
   }
 

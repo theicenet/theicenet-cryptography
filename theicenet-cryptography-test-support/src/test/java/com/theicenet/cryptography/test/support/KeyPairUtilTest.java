@@ -90,24 +90,24 @@ class KeyPairUtilTest {
               + "0f4d3349d127f4902bfc2d8b1e980");
 
   @Test
-  void throwsIllegalArgumentExceptionWhenToPublicKeyAndNullPublicKeyByteArray() {
+  void throwsNullPointerExceptionWhenToPublicKeyAndNullPublicKeyByteArray() {
     // Given
     final byte[] NULL_PUBLIC_KEY = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> KeyPairUtil.toPublicKey(NULL_PUBLIC_KEY, RSA)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenToPublicKeyAndNullAlgorithm() {
+  void throwsNullPointerExceptionWhenToPublicKeyAndNullAlgorithm() {
     // Given
     final String NULL_ALGORITHM = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> KeyPairUtil.toPublicKey(RSA_PUBLIC_KEY_2048_BITS_BYTE_ARRAY, NULL_ALGORITHM)); // When
   }
 
@@ -148,24 +148,24 @@ class KeyPairUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenToPrivateKeyAndNullPrivateKeyByteArray() {
+  void throwsNullPointerExceptionWhenToPrivateKeyAndNullPrivateKeyByteArray() {
     // Given
     final byte[] NULL_PRIVATE_KEY = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> KeyPairUtil.toPrivateKey(NULL_PRIVATE_KEY, RSA)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenToPrivateKeyAndNullAlgorithm() {
+  void throwsNullPointerExceptionWhenToPrivateKeyAndNullAlgorithm() {
     // Given
     final String NULL_ALGORITHM = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> KeyPairUtil.toPrivateKey(RSA_PRIVATE_KEY_2048_BITS_BYTE_ARRAY, NULL_ALGORITHM)); // When
   }
 
