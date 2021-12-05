@@ -101,7 +101,7 @@ class JCAAESCipherServiceTest {
   OutputStream clearContentOutputStream;
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayAndNullSecretKeyAndNonIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingByteArrayAndNullSecretKeyAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -113,12 +113,12 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.encrypt(NULL_SECRET_KEY, CLEAR_CONTENT));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayAndNullSecretKeyAndIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingByteArrayAndNullSecretKeyAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -130,12 +130,12 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.encrypt(NULL_SECRET_KEY, CLEAR_CONTENT));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayAndNullClearContentAndNonIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingByteArrayAndNullClearContentAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -147,12 +147,12 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.encrypt(SECRET_KEY_1234567890123456_128_BITS, NULL_CLEAR_CONTENT));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingByteArrayAndNullClearContentAndIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingByteArrayAndNullClearContentAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -164,7 +164,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.encrypt(SECRET_KEY_1234567890123456_128_BITS, NULL_CLEAR_CONTENT));
   }
 
@@ -374,7 +374,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingByteArrayAndNullSecretKeyAndNonIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingByteArrayAndNullSecretKeyAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -386,12 +386,12 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.decrypt(NULL_SECRET_KEY, ENCRYPTED_CONTENT_AES));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingByteArrayAndNullSecretKeyAndNonMode() {
+  void throwsNullPointerExceptionWhenDecryptingByteArrayAndNullSecretKeyAndNonMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -403,12 +403,12 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.decrypt(NULL_SECRET_KEY, ENCRYPTED_CONTENT_AES));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingByteArrayAndNullEncryptedContentAndNonIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingByteArrayAndNullEncryptedContentAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -420,12 +420,12 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.decrypt(SECRET_KEY_1234567890123456_128_BITS, NULL_ENCRYPTED_CONTENT));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingByteArrayAndNullEncryptedContentAndIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingByteArrayAndNullEncryptedContentAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -437,7 +437,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> aesCipherService.decrypt(SECRET_KEY_1234567890123456_128_BITS, NULL_ENCRYPTED_CONTENT));
   }
 
@@ -670,7 +670,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamAndNullSecretKeyAndNonIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingStreamAndNullSecretKeyAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -682,7 +682,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.encrypt(
                 NULL_SECRET_KEY,
@@ -691,7 +691,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamAndNullSecretKeyAndIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingStreamAndNullSecretKeyAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -703,7 +703,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.encrypt(
                 NULL_SECRET_KEY,
@@ -712,7 +712,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamAndNullClearContentInputStreamAndNonIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingStreamAndNullClearContentInputStreamAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -724,7 +724,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.encrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -733,7 +733,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamAndNullClearContentInputStreamAndIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingStreamAndNullClearContentInputStreamAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -745,7 +745,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.encrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -754,7 +754,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamAndNullClearContentInputStreamAndMode() {
+  void throwsNullPointerExceptionWhenEncryptingStreamAndNullClearContentInputStreamAndMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -766,7 +766,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.encrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -775,7 +775,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamAndNullEncryptedOutputStreamAndNonIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingStreamAndNullEncryptedOutputStreamAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -787,7 +787,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.encrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -796,7 +796,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenEncryptingStreamAndNullEncryptedOutputStreamAndIVMode() {
+  void throwsNullPointerExceptionWhenEncryptingStreamAndNullEncryptedOutputStreamAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -808,7 +808,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.encrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -937,7 +937,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingStreamAndNullSecretKeyAndNonIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingStreamAndNullSecretKeyAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -949,7 +949,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.decrypt(
                 NULL_SECRET_KEY,
@@ -958,7 +958,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingStreamAndNullSecretKeyAndIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingStreamAndNullSecretKeyAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -970,7 +970,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.decrypt(
                 NULL_SECRET_KEY,
@@ -979,7 +979,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingStreamAndNullEncryptedContentInputStreamAndNonIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingStreamAndNullEncryptedContentInputStreamAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -991,7 +991,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.decrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -1000,7 +1000,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingStreamAndNullEncryptedContentInputStreamAndIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingStreamAndNullEncryptedContentInputStreamAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -1012,7 +1012,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.decrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -1021,7 +1021,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingStreamAndNullClearContentOutputStreamAndNonIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingStreamAndNullClearContentOutputStreamAndNonIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -1033,7 +1033,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.decrypt(
                 SECRET_KEY_1234567890123456_128_BITS,
@@ -1042,7 +1042,7 @@ class JCAAESCipherServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenDecryptingStreamAndNullClearContentOutputStreamAndIVMode() {
+  void throwsNullPointerExceptionWhenDecryptingStreamAndNullClearContentOutputStreamAndIVMode() {
     // Given
     final SymmetricCipherService aesCipherService =
         new JCAAESCipherService(
@@ -1054,7 +1054,7 @@ class JCAAESCipherServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             aesCipherService.decrypt(
                 SECRET_KEY_1234567890123456_128_BITS,

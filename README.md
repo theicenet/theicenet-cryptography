@@ -286,7 +286,7 @@ TheIceNet Cryptography library can generate the next type of random data,
 
 ## TheIceNet Cryptography library requirements
 
-- [Java 11](https://adoptopenjdk.net) or later
+- [Java 11](https://adoptopenjdk.net)
 - [Spring Boot 2.0.0](https://spring.io/projects/spring-boot) or later
 - [Maven 3.2+](https://maven.apache.org) or [Gradle 4+](https://gradle.org)
 

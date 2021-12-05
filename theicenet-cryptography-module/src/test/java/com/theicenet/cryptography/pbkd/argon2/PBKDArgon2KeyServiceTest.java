@@ -190,7 +190,7 @@ class PBKDArgon2KeyServiceTest {
 
   @ParameterizedTest
   @EnumSource(Argon2Type.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullPassword(Argon2Type argon2Type) {
+  void throwsNullPointerExceptionWhenGeneratingKeyAndNullPassword(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
         new PBKDArgon2KeyService(
@@ -205,7 +205,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             // When
             pbkdKeyService.generateKey(
@@ -216,7 +216,7 @@ class PBKDArgon2KeyServiceTest {
 
   @ParameterizedTest
   @EnumSource(Argon2Type.class)
-  void throwsIllegalArgumentExceptionWhenGeneratingKeyAndNullSalt(Argon2Type argon2Type) {
+  void throwsNullPointerExceptionWhenGeneratingKeyAndNullSalt(Argon2Type argon2Type) {
     // Given
     final var pbkdKeyService =
         new PBKDArgon2KeyService(
@@ -231,7 +231,7 @@ class PBKDArgon2KeyServiceTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () ->
             // When
             pbkdKeyService.generateKey(

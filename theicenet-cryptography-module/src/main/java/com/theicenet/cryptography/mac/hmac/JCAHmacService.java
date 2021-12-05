@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Java Cryptography Architecture (JCA) based component which implements generation of

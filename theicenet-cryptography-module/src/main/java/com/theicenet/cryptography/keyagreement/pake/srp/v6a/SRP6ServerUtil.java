@@ -20,7 +20,7 @@ import static com.theicenet.cryptography.keyagreement.pake.srp.v6a.SRP6CommonUti
 import com.theicenet.cryptography.digest.DigestService;
 import com.theicenet.cryptography.random.SecureRandomDataService;
 import java.math.BigInteger;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * @author Juan Fidalgo

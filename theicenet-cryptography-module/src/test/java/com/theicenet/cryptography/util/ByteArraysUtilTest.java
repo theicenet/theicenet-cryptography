@@ -56,13 +56,13 @@ class ByteArraysUtilTest {
   static final byte PAD_ZERO = (byte) 0;
 
   @Test
-  void throwsIllegalArgumentExceptionWhenToUnsignedByteArrayAndNullValue() {
+  void throwsNullPointerExceptionWhenToUnsignedByteArrayAndNullValue() {
     // Given
     final BigInteger NULL_VALUE = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> ByteArraysUtil.toUnsignedByteArray(NULL_VALUE)); // When
   }
 
@@ -104,13 +104,13 @@ class ByteArraysUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenToBigIntegerAndNullArray() {
+  void throwsNullPointerExceptionWhenToBigIntegerAndNullArray() {
     // Given
     final byte[] NULL_BYTE_ARRAY = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> ByteArraysUtil.toBigInteger(NULL_BYTE_ARRAY)); // When
 
   }
@@ -174,13 +174,13 @@ class ByteArraysUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenToBigIntegerAndNullHex() {
+  void throwsNullPointerExceptionWhenToBigIntegerAndNullHex() {
     // Given
     final String NULL_HEX = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> ByteArraysUtil.toBigInteger(NULL_HEX)); // When
   }
 
@@ -330,7 +330,7 @@ class ByteArraysUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenWhenPaddingLeftAndNullByteArray() {
+  void throwsNullPointerExceptionWhenWhenPaddingLeftAndNullByteArray() {
     // Given
     final byte[] NULL_BYTE_ARRAY = null;
     final var ANY_LENGTH = 10;
@@ -338,7 +338,7 @@ class ByteArraysUtilTest {
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> ByteArraysUtil.padLeft(NULL_BYTE_ARRAY, ANY_LENGTH, ANY_PADDING_VALUE)); // When
   }
 
@@ -619,26 +619,26 @@ class ByteArraysUtilTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenSplittingAndNullByteArrayAndNoIndexes() {
+  void throwsNullPointerExceptionWhenSplittingAndNullByteArrayAndNoIndexes() {
     // Given
     final byte[] NULL_BYTE_ARRAY = null;
 
     // When
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> ByteArraysUtil.split(NULL_BYTE_ARRAY)
     );
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenSplittingAndNullByteArrayAndIndexes() {
+  void throwsNullPointerExceptionWhenSplittingAndNullByteArrayAndIndexes() {
     // Given
     final byte[] NULL_BYTE_ARRAY = null;
     final var SPLIT_INDEX = 1;
 
     // When
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> ByteArraysUtil.split(NULL_BYTE_ARRAY, SPLIT_INDEX)
     );
   }

@@ -120,46 +120,46 @@ class RFC5054SRP6ServerServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullVerifier() {
+  void throwsNullPointerExceptionWhenComputingSAndNullVerifier() {
     // Given
     final byte[] NULL_VERIFIER = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeS(NULL_VERIFIER, A, b, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullClientPublicValueA() {
+  void throwsNullPointerExceptionWhenComputingSAndNullClientPublicValueA() {
     // Given
     final byte[] NULL_CLIENT_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeS(VERIFIER, NULL_CLIENT_PUBLIC_VALUE_A, b, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullServerPrivateValueB() {
+  void throwsNullPointerExceptionWhenComputingSAndNullServerPrivateValueB() {
     // Given
     final byte[] NULL_SERVER_PRIVATE_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeS(VERIFIER, A, NULL_SERVER_PRIVATE_VALUE_B, B)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSAndNullServerPublicValueB() {
+  void throwsNullPointerExceptionWhenComputingSAndNullServerPublicValueB() {
     // Given
     final byte[] NULL_SERVER_PUBLIC_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeS(VERIFIER, A, b, NULL_SERVER_PUBLIC_VALUE_B)); // When
   }
   
@@ -268,46 +268,46 @@ class RFC5054SRP6ServerServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM1AndNullClientPublicValueA() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM1AndNullClientPublicValueA() {
     // Given
     final byte[] NULL_CLIENT_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.isValidReceivedM1(NULL_CLIENT_PUBLIC_VALUE_A, B, S, M1)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM1AndNullServerPublicValueB() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM1AndNullServerPublicValueB() {
     // Given
     final byte[] NULL_SERVER_PUBLIC_VALUE_B = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.isValidReceivedM1(A, NULL_SERVER_PUBLIC_VALUE_B, S, M1)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM1AndNullS() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM1AndNullS() {
     // Given
     final byte[] NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.isValidReceivedM1(A, B, NULL_S, M1)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenValidatingReceivedM1AndNullM1() {
+  void throwsNullPointerExceptionWhenValidatingReceivedM1AndNullM1() {
     // Given
     final byte[] NULL_M1 = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.isValidReceivedM1(A, B, S, NULL_M1)); // When
   }
 
@@ -484,35 +484,35 @@ class RFC5054SRP6ServerServiceTest {
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingM2AndNullClientPublicValueA() {
+  void throwsNullPointerExceptionWhenComputingM2AndNullClientPublicValueA() {
     // Given
     final byte[] NULL_CLIENT_PUBLIC_VALUE_A = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeM2(NULL_CLIENT_PUBLIC_VALUE_A, S, M1));
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingM2AndNullS() {
+  void throwsNullPointerExceptionWhenComputingM2AndNullS() {
     // Given
     final byte[] NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeM2(A, NULL_S, M1)); // When
   }
 
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingM2AndNullM1() {
+  void throwsNullPointerExceptionWhenComputingM2AndNullM1() {
     // Given
     final byte[] NULL_M1 = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeM2(A, S, NULL_M1)); // When
   }
 
@@ -619,13 +619,13 @@ class RFC5054SRP6ServerServiceTest {
   }
   
   @Test
-  void throwsIllegalArgumentExceptionWhenComputingSessionKeyAndNullS() {
+  void throwsNullPointerExceptionWhenComputingSessionKeyAndNullS() {
     // Given
     final byte[] NULL_S = null;
 
     // Then
     assertThrows(
-        IllegalArgumentException.class,
+        NullPointerException.class,
         () -> srp6ServerService.computeSessionKey(NULL_S)
     );
   }

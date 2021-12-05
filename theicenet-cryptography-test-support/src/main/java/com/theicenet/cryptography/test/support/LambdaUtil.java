@@ -17,7 +17,7 @@ package com.theicenet.cryptography.test.support;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * @author Juan Fidalgo

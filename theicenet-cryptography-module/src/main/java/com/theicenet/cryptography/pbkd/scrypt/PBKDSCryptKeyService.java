@@ -19,7 +19,7 @@ import com.theicenet.cryptography.pbkd.PBKDKeyService;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bouncycastle.crypto.generators.SCrypt;
 
 /**

@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Java Cryptography Architecture (JCA) based component which encrypts and decrypts using AES

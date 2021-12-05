@@ -18,7 +18,7 @@ package com.theicenet.cryptography.key.symmetric.aes;
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyService;
 import com.theicenet.cryptography.key.symmetric.SymmetricKeyServiceException;
 import com.theicenet.cryptography.random.SecureRandomDataService;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
