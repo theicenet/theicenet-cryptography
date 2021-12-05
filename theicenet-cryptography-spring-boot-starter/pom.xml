@@ -6,7 +6,7 @@
   <parent>
     <artifactId>theicenet-cryptography</artifactId>
     <groupId>com.theicenet</groupId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
   </parent>
 
   <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
