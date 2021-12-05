@@ -302,7 +302,7 @@ For Java 11+
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.2.1</version>
+      <version>1.2.2/version>
     </dependency>
 ```
 
@@ -312,7 +312,7 @@ For Java 17+
     <dependency>
       <groupId>com.theicenet</groupId>
       <artifactId>theicenet-cryptography-spring-boot-starter</artifactId>
-      <version>1.3.1</version>
+      <version>1.3.2</version>
     </dependency>
 ```
 
@@ -321,13 +321,13 @@ In Gradle
 For Java 11+
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.2.1'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.2.2'
 ```
 
 For Java 17+
 
 ```groovy
-    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.3.1'
+    compile group: 'com.theicenet', name: 'theicenet-cryptography-spring-boot-starter', version: '1.3.2'
 ```
 
 ## Building TheIceNet Cryptography library
